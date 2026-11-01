@@ -2,11 +2,11 @@
 
 Pharmacy Management & Public Medicine Search - Weekly Mini Project 04, Team 2.
 
-## Foundation only
+## Foundation and Day 1 baseline
 
-This repository supplies the development setup so the six members can build the project themselves. The frontend shows one plain startup message. The backend exposes only process health and Swagger. Feature folders contain ownership notes and empty NestJS module declarations.
+This repository supplies the development setup so the six members can build the project themselves. Alaa is building the shared frontend layout; product feature pages remain assigned work. The backend exposes only process health and Swagger. Feature folders contain ownership notes and empty NestJS module declarations.
 
-Included: React/TypeScript/Vite and NestJS configuration, installed dependencies and lockfile, dev/build commands, environment examples, optional PostgreSQL Compose configuration, an empty Prisma datasource/generator, an empty shared-types package, and the work plan.
+Included: React/TypeScript/Vite and NestJS configuration, installed dependencies and lockfile, dev/build commands, environment examples, optional PostgreSQL Compose configuration, an empty Prisma datasource/generator, a shared API-types package, and the work plan.
 
 The members implement all product pages, styling, routing, forms, API requests, test data, authentication/guards, database models/migrations/seed, business calculations, feature services/DTOs and tests. There are no ready-made product screens or prewritten business rules.
 
@@ -21,7 +21,7 @@ Copy-Item apps/web/.env.example apps/web/.env
 npm run dev
 ```
 
-Copy environment files only on first setup; keep your existing local settings on later pulls. Never commit .env files. No database is required to run this empty foundation.
+Copy environment files only on first setup; keep your existing local settings on later pulls. Never commit .env files. No database is required to run the current frontend and API health endpoint.
 
 - React foundation: <http://localhost:5173>
 - API process health: <http://localhost:3000/api/health>
@@ -68,3 +68,7 @@ No feature tests exist yet; the test runner says so explicitly until members add
 [The final teacher specification](docs/PROJECT-SPECIFICATION.md) is the source of requirements. [Acceptance scenarios](docs/ACCEPTANCE.md) describe what members must implement and prove.
 
 React + TypeScript, NestJS, PostgreSQL/Prisma, JWT and Swagger. Prisma/client are both pinned to 6.19.0. Local demo only; no hosting, payments, ordering, reservations, citizen accounts, maps, external AI or notifications. Arabic/RTL is optional instructor scope and follows CORE. Every member contributes and speaks in the English presentation.
+
+## Day 1 agreements
+
+Shared types, browser routes and database needs are prepared and approved by Alaa as team leader. See [DAY-1-AGREEMENTS.md](docs/DAY-1-AGREEMENTS.md) for the review checklist and [FRONTEND-ROUTES.md](docs/FRONTEND-ROUTES.md) for browser paths. This records Alaa's approval of the baseline, not individual member confirmations. Coordinate later changes with the affected owners. No feature API or business logic is added by this contract work.

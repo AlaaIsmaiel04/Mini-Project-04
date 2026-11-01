@@ -1,6 +1,10 @@
-# Proposed API contract - team planning reference
+# API contract - Day 1 baseline
 
-All paths start with /api. Only /health is implemented. The names below are proposals to coordinate independent work; the team must agree them on Day 1 and write the actual types, DTOs, controllers, services and tests. packages/contracts is intentionally empty. No request clients, response mappers or business logic are supplied.
+**Status: Approved by Alaa as team leader on 1 November 2026.**
+
+All backend paths start with `/api`. Only `/health` is implemented. Shared request/response types are declared in `packages/contracts/src/index.ts` for all feature areas below. Alaa approved these interface definitions as the Day 1 baseline; the feature endpoints remain to be implemented. API owners still write DTOs, controllers, services, guards, response mappers and tests.
+
+Use the [frontend routes](FRONTEND-ROUTES.md) and [Day 1 agreements](DAY-1-AGREEMENTS.md) as the approved baseline. Coordinate any interface changes with Alaa and the affected feature owners.
 
 ## Conventions
 
@@ -55,4 +59,22 @@ Medicine search returns each pharmacy once even if several batches match. Direct
 - Each backend owner writes controllers/services/DTOs, persistence calls, public/private response mapping, Swagger and tests in their module.
 - Alaa coordinates shared wire types, routing, UI primitives and request/session handling. Each frontend member designs/builds their own pages and may create local feature fixtures while APIs are unfinished.
 
-Interface names in the endpoint table are proposed labels, not exported TypeScript interfaces. Define their fields together using the teacher specification. Update this document when an agreed interface changes. No product data or mock/API toggle is built into the foundation.
+The types named in the table are exported by `@smartshelf/contracts`. They are wire shapes, not Prisma models or validated DTO classes. Review their fields with each assigned API/frontend owner. The baseline is approved by Alaa in DAY-1-AGREEMENTS.md. Update the types and documentation together when a later change is agreed.
+
+## Wire-field decisions
+
+- SessionUser contains id, email, role and pharmacyId only. It never contains passwords or password hashes. Backend validation enforces a null pharmacyId for OWNER and one pharmacy ID for PHARMACIST.
+- Subscription contains stored startDate/endDate/suspended; OwnerPharmacy separately includes calculated subscriptionStatus. Expiry and suspension calculation remains Shiam's task.
+- CreatePharmacyInput contains name/area/address/phone. UpdateProfileInput permits only area/address/phone.
+- CreatePharmacistInput contains email/password/pharmacyId and is owner-only. Password hashing stays on the backend.
+- MedicineInput contains displayName/scientificName/category/reorderThreshold. InventoryMedicine adds id, availableQuantity, all calculated indicators and nested batches.
+- CreateBatchInput includes batchNumber, quantity, expiryDate, storageLocation, unitCost and optional barcode text. UpdateBatchInput permits quantity/expiryDate/storageLocation only. Batch responses use a nullable barcode and date-based batch indicators.
+- Dashboard includes all seven required metrics: totalMedicines, totalUnits, inventoryValue, expiringSoonBatchCount, lowStockMedicineCount, expiredBatchCount and expectedWaste, plus pharmacyName/subscriptionStatus/attentionItems.
+- DutyInput contains startsAt/endsAt. Private DutyPeriod adds id. PublicDutyPeriod contains timestamps only.
+- PublicPharmacy is an independent allowlist rather than a private record with fields omitted by accident. It has name/area/address/phone, onDutyNow, nullable current/next duty periods and a nullable inventoryUpdatedAt.
+- ListResponse.total counts results after filters. InventoryResponse also exposes the pharmacist's own subscription status. Public directory filters are area/onDutyNow; medicine search additionally requires q.
+- Empty optional barcode input may be omitted; absent barcode in a batch response is null. Unknown inventory-update fields must still be rejected by DTOs.
+
+TypeScript uses structural typing: typing a database object as PublicPharmacy does not remove extra fields at runtime. Hamid must explicitly construct the public response, including its nested periods. Strings for dates and amounts are only transport types; backend DTOs/services validate actual formats, ranges and business rules.
+
+The business timezone and decimal representation are approved baseline decisions. Currency is unspecified; avoid adding an assumed currency symbol. No product data, mock mode or feature implementation is added by these declarations.
