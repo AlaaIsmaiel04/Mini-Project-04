@@ -76,7 +76,7 @@ Day 8: API integration. Day 12: core acceptance. Days 13-14: English rehearsal a
 
 ### Day 8
 
-With Hamid, switch to real API integration and test search against seeded data. Mock mode remains for isolated styling, but final checks must use real API responses.
+With Hamid, switch to real API integration and test search against seeded data. Use your own local test fixtures for isolated styling; final checks must use real API responses.
 
 ### Day 9
 
