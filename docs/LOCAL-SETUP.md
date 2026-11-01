@@ -9,7 +9,7 @@ Copy-Item apps/web/.env.example apps/web/.env
 npm run dev
 ```
 
-Copy examples once only. No database generation, migration or seed step is needed now: there are no models or seed script yet. The web app displays a plain startup message. API /api/health confirms only that NestJS starts. No product routes, sign-in, accounts, mock-mode behavior or business endpoints are supplied.
+Copy examples once only. No database generation, migration or seed step is needed now: there are no models or seed script yet. The web entry supports the shared layout work; product pages remain assigned to members. API /api/health confirms only that NestJS starts. No product routes, sign-in, accounts, mock-mode behavior or business endpoints are supplied.
 
 ## When the database work is ready
 
@@ -23,6 +23,6 @@ Generation/migrate/deploy/Studio commands are prepared in package.json for use a
 
 Frontend members author pages, routing, styles, request handling, fixtures and UI states. Backend members author guards, DTOs, services, response mapping, calculations and tests. Dependencies are installed as tools, not completed implementations.
 
-The Vite /api proxy is configured to localhost:3000. Alaa implements the request client and session behavior. Agree shared types early in packages/contracts; it currently exports nothing.
+The Vite /api proxy is configured to localhost:3000. Alaa implements the request client and session behavior. Use the Day 1 shared types in packages/contracts approved by Alaa; coordinate later changes with the affected owners. After editing them, run `npm run build -w @smartshelf/contracts` to update declarations before checking consumers.
 
 Run typecheck, test, build and smoke before a PR. With no feature tests yet, npm test prints that none exist; this is not a completed test suite. Smoke validates foundation startup only.

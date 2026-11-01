@@ -3,11 +3,11 @@
 ## What is present
 
 - npm workspaces, TypeScript configuration and a reproducible dependency lockfile.
-- React/Vite entry files with one plain startup message. No product design or routes.
+- React/Vite entry files; Alaa is building the shared layout. Product feature pages and routing remain assigned work.
 - NestJS startup, CORS/validation infrastructure, Swagger and a process-health endpoint.
 - Empty feature modules/folders with ownership notes.
 - Prisma datasource/generator configuration without models, migrations or seed.
-- An empty shared-contract package for the team to fill.
+- Day 1 shared API contracts approved by Alaa as team leader; no runtime feature logic.
 - Optional local PostgreSQL Compose configuration.
 - Work allocation, proposed API routes and requirement/acceptance documents.
 
