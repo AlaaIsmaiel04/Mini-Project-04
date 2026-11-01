@@ -1,71 +1,70 @@
 # SmartShelf
 
-## Pharmacy Management & Public Medicine Search
+Pharmacy Management & Public Medicine Search - Weekly Mini Project 04, Team 2.
 
-SmartShelf is a web application that helps pharmacies manage medicine stock and expiry dates, while helping citizens find available medicines and pharmacies that are on duty.
+## Foundation only
 
-**Status:** Selected by the teacher. Requirements and implementation planning are in progress.
+This repository supplies the development setup so the six members can build the project themselves. The frontend shows one plain startup message. The backend exposes only process health and Swagger. Feature folders contain ownership notes and empty NestJS module declarations.
 
-This project is being developed by a team of six members.
+Included: React/TypeScript/Vite and NestJS configuration, installed dependencies and lockfile, dev/build commands, environment examples, optional PostgreSQL Compose configuration, an empty Prisma datasource/generator, an empty shared-types package, and the work plan.
 
-## Planned Features
+The members implement all product pages, styling, routing, forms, API requests, test data, authentication/guards, database models/migrations/seed, business calculations, feature services/DTOs and tests. There are no ready-made product screens or prewritten business rules.
 
-### Owner Dashboard
+## Start locally - PowerShell
 
-The platform owner, Alaa, will manage pharmacist subscriptions through a dedicated dashboard.
+Node 24 LTS is recommended (minimum 22.12). From the repository root:
 
-- Add pharmacist subscriptions.
-- View and modify subscription information.
-- Delete subscriptions.
-- Manage subscription dates and status.
+```powershell
+npm ci
+Copy-Item apps/api/.env.example apps/api/.env
+Copy-Item apps/web/.env.example apps/web/.env
+npm run dev
+```
 
-### Pharmacist Dashboard
+Copy environment files only on first setup; keep your existing local settings on later pulls. Never commit .env files. No database is required to run this empty foundation.
 
-Each pharmacist will manage their own pharmacy through a private dashboard.
+- React foundation: <http://localhost:5173>
+- API process health: <http://localhost:3000/api/health>
+- Swagger, currently health only: <http://localhost:3000/api/docs>
 
-- Register medicines and batches.
-- Track stock quantities, expiry dates, and storage locations.
-- View low-stock and approaching-expiry alerts.
-- Prioritize the earliest-expiring stock to help reduce waste.
-- View inventory summaries and dashboard statistics.
-- Maintain pharmacy information and on-duty schedules.
+See [local setup](docs/LOCAL-SETUP.md). Database commands become useful after Mustafa creates the models and initial migration. Seed scripts and accounts must be authored by the team; no demo credentials/data are supplied.
 
-### Public Citizen Website
+## Team responsibilities
 
-Citizens will access a public website to find medicines and pharmacies.
+| Member           | Assignment                                                                                    |
+| ---------------- | --------------------------------------------------------------------------------------------- |
+| Mustafa Al Shaar | Backend: database design/migrations/seed, Prisma integration, JWT/guards and inventory API    |
+| Shiam Ezzo       | Backend: owner pharmacy/account onboarding, subscriptions and effective-status helper         |
+| Hamid Al Haj     | Mostly backend: profile/duty/public APIs; small theme and language task after CORE            |
+| Mohammad Kashmar | About 60% backend: indicators/dashboard; 40% frontend: dashboard/profile/duty screens         |
+| Yousef Yousef    | Simpler frontend: public search, directory and pharmacy cards                                 |
+| Alaa Ismaiel     | Remaining frontend: routing/shell/shared UI, sign-in, owner/inventory screens and integration |
 
-- Search for medicines by name.
-- Find pharmacies reporting that a medicine is available.
-- View pharmacies that are currently on duty.
-- View pharmacy addresses and contact information.
+Each member builds their area from scratch. The [team plan](docs/TEAM-PLAN.md) and [individual guides](docs/tasks) cover relative Day 1-14. The six updated PDFs are in [output/pdf](output/pdf).
 
-The public website will be hosted at a shared URL once deployment is ready. The final domain and hosting provider have not yet been selected.
+## Work independently
 
-## Access and Privacy
+- Agree route names, response fields, shared helper signatures and database needs on Day 1. The [API proposal](docs/API-CONTRACT.md) is a planning document; the team writes the actual types and code.
+- Frontend members create their own small feature-local fixtures while APIs are in progress. No fixtures or adapters are prebuilt.
+- Backend members create their own service tests/fake persistence inputs while shared authentication work proceeds.
+- Work mainly in your assigned folders. Alaa coordinates shared frontend/types changes; Mustafa authors migrations.
+- Existing branches: alaa, mustafa, hamid, Mohammad, Yousef, Sheam (Shiam). Branch names are case-sensitive conventions, not per-member access restrictions.
+- Publish the reviewed foundation through a PR first. Then integrate small PRs into main throughout the two weeks.
 
-- The owner dashboard is reserved for the platform owner.
-- Pharmacists can manage their own pharmacy's information and inventory.
-- Citizens can search public pharmacy and medicine availability information.
-- Internal inventory details and subscription information will remain private.
+## Checks
 
-## Team
+```powershell
+npm run typecheck
+npm test
+npm run build
+npm run smoke
+npm run format:check
+```
 
-- Alaa
-- Mustafa
-- Hamid
-- Mohammad
-- Sheam
-- Yousef
+No feature tests exist yet; the test runner says so explicitly until members add .spec.ts files. Smoke checks only verify foundation startup/health and the built frontend. CI does not claim business features are implemented.
 
-## Collaboration Workflow
+## Scope and requirements
 
-1. Pull the latest changes from `main` into your working branch before starting a task.
-2. Make changes on your own branch, then commit and push them.
-3. Open a pull request targeting `main` when the changes are ready for review.
-4. Alaa reviews and merges accepted changes into the protected `main` branch.
+[The final teacher specification](docs/PROJECT-SPECIFICATION.md) is the source of requirements. [Acceptance scenarios](docs/ACCEPTANCE.md) describe what members must implement and prove.
 
-## Scope Notes
-
-The features above describe the planned project scope, rather than completed functionality. The technology stack, setup instructions, and deployment details will be added as implementation progresses.
-
-Online payments, medicine ordering, and reservations are outside the current planned scope.
+React + TypeScript, NestJS, PostgreSQL/Prisma, JWT and Swagger. Prisma/client are both pinned to 6.19.0. Local demo only; no hosting, payments, ordering, reservations, citizen accounts, maps, external AI or notifications. Arabic/RTL is optional instructor scope and follows CORE. Every member contributes and speaks in the English presentation.

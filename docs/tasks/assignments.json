@@ -1,0 +1,566 @@
+[
+  {
+    "slug": "Mustafa",
+    "name": "Mustafa Al Shaar",
+    "branch": "mustafa",
+    "role": "Backend foundations, authentication and inventory",
+    "goal": "Deliver a secure, persisted inventory API. You own schema changes and shared backend security; other members implement their own modules against your stable foundations.",
+    "folders": [
+      "apps/api/prisma/**",
+      "apps/api/src/prisma/**",
+      "apps/api/src/modules/auth/**",
+      "apps/api/src/modules/inventory/**",
+      "apps/api/src/common/security.ts"
+    ],
+    "interfaces": [
+      "POST /auth/login; GET /auth/me",
+      "GET/POST /pharmacist/medicines; PATCH /pharmacist/medicines/:id",
+      "POST /pharmacist/medicines/:id/batches; PATCH /pharmacist/batches/:id",
+      "Reuse Mohammad's pure inventory calculations and Shiam's effective subscription helper."
+    ],
+    "week1": [
+      [
+        "Day 1",
+        "Run the empty NestJS foundation. Design the Prisma models/relations with the team and agree JWT claims, Actor/guard interfaces and calculation helper signatures. You author the database, migrations, Prisma service and demo seed; none are prebuilt."
+      ],
+      [
+        "Day 2",
+        "Implement the initial schema/migration and Prisma service, then build login DTO, bcrypt comparison, JWT issuance and /auth/me. Start a small auth PR; keep schema and guard interfaces stable for teammates."
+      ],
+      [
+        "Day 3",
+        "Implement and test JWT, role, ownership and active-subscription write guards plus the business-date utility. Share the imports/interfaces with Shiam and Hamid. Begin seed data; finish it alongside inventory work."
+      ],
+      [
+        "Day 4",
+        "Implement medicine create/update/list with trim+case uniqueness, own-pharmacy scoping, query DTOs and database conflict mapping. Use Mohammad's calculation helper for response indicators."
+      ],
+      [
+        "Day 5",
+        "Implement batch creation and edit. Allow already expired stock; reject invalid quantity/date/cost. Only quantity, expiry and location are editable. Keep immutable batch fields rejected in PATCH DTO."
+      ],
+      [
+        "Day 6",
+        "Wrap medicine/batch mutation and inventoryUpdatedAt in one transaction. Complete name/status filtering, count and multiple indicators; add Swagger response DTOs and meaningful logs."
+      ],
+      [
+        "Day 7",
+        "Buffer/review: run API tests, seed and migrate on a clean dedicated database. Merge a usable inventory API by the end of Week 1; record any blockers in the team plan."
+      ]
+    ],
+    "week2": [
+      [
+        "Day 8",
+        "Integrate real inventory/sign-in requests with Alaa. Compare API payloads with shared contracts; fix backend mismatches rather than adding mock fallback."
+      ],
+      [
+        "Day 9",
+        "Add regression tests: guessed cross-pharmacy medicine/batch IDs, owner inventory attempt, missing/wrong token, inactive subscription read versus write."
+      ],
+      [
+        "Day 10",
+        "Verify duplicate names across pharmacies, duplicate batches, unknown fields, fractional quantities, negative cost and invalid dates. Failed writes must leave inventoryUpdatedAt unchanged."
+      ],
+      [
+        "Day 11",
+        "Exercise every inventory indicator filter with Mohammad's fixtures. Verify calendar boundaries and decimal serialization; preserve simultaneous indicators."
+      ],
+      [
+        "Day 12",
+        "Review the other backend modules for guard coverage and ownership/privacy errors with their owners. Check persisted data survives restart and migrations apply on another laptop."
+      ],
+      [
+        "Day 13",
+        "Run owner->pharmacist->public flow with team. Freeze schema and API shapes; fix only core defects. Review seed coverage and prepare Swagger examples."
+      ],
+      [
+        "Day 14",
+        "Buffer/final rehearsal: show login, a forbidden guessed-ID request and database persistence. Explain controller->service->Prisma and why medicine differs from batch in English."
+      ]
+    ],
+    "checks": [
+      "A01/A02: missing/invalid token and wrong role fail; owner cannot edit inventory; cross-pharmacy read/write fails.",
+      "A05: inactive pharmacists read but cannot change medicines/batches; clear 403 reason.",
+      "A07/A08: normalized duplicate names/batches conflict; bad dates/negative or fractional quantities/immutable PATCH fields rejected.",
+      "A10/A12: filters include every relevant indicator; stock mutation and timestamp are atomic.",
+      "A17: clean migrations, repeatable seed, restart persistence and Swagger match contracts."
+    ],
+    "handoffs": [
+      "Day 1: agree Actor/JWT/guard imports and schema fields. You author these; none is prebuilt.",
+      "Day 2-3: auth/guard PR available for all backend owners.",
+      "Day 2: receive calculation helper from Mohammad; write service tests with fixed sample inputs while waiting.",
+      "Day 6-7: inventory endpoints ready for Alaa. Day 8 begins API integration."
+    ],
+    "presentation": "Show authenticated Swagger inventory access, reject an unauthorized/cross-pharmacy write, then show the persisted PostgreSQL record. Explain one transaction and one uniqueness rule.",
+    "avoid": "Do not take over owner/duty/dashboard services or frontend pages. Review colleagues' PRs instead. Do not add optional dispensing, sales, AI or deployment."
+  },
+  {
+    "slug": "Shiam",
+    "name": "Shiam Ezzo",
+    "branch": "Sheam",
+    "role": "Owner onboarding and subscription backend",
+    "goal": "Build one focused owner module: pharmacies, pharmacist accounts and subscription management. Build your owner module and subscription helper yourself. Agree the schema and authentication interfaces with Mustafa; authentication is his separate responsibility.",
+    "folders": [
+      "apps/api/src/modules/owner/**",
+      "apps/api/src/common/subscription-status.ts",
+      "apps/api/src/common/subscription-status.spec.ts"
+    ],
+    "interfaces": [
+      "GET/POST /owner/pharmacies; POST /owner/pharmacists",
+      "POST/PATCH/DELETE /owner/pharmacies/:id/subscription",
+      "Implement/test effectiveSubscriptionStatus(subscription,today); agree this reusable interface with other API owners.",
+      "All routes OWNER-only; return OwnerPharmacy/Subscription/SessionUser shapes from contracts."
+    ],
+    "week1": [
+      [
+        "Day 1",
+        "Run the empty backend. Agree Pharmacy/User/Subscription fields with Mustafa, then plan your own owner controller/service/DTOs and subscription-status helper. Read the exact status rules in the teacher specification."
+      ],
+      [
+        "Day 2",
+        "Write effectiveSubscriptionStatus and its tests from scratch: null, future start, inclusive boundaries, expired and suspended. Share its interface/PR early. Use your own fake Prisma fixtures while authentication is in progress."
+      ],
+      [
+        "Day 3",
+        "Implement create pharmacy and list/search pharmacies. Return effective subscription status using one captured business date; add DTO validation and explicit response mapping."
+      ],
+      [
+        "Day 4",
+        "Implement pharmacist account creation linked to an existing pharmacy. Normalize email, hash initial password, reject duplicates and never return/log the hash."
+      ],
+      [
+        "Day 5",
+        "Implement create subscription: one per pharmacy, strict date validation, end after start. Test conflict for a second subscription; use the database unique constraint."
+      ],
+      [
+        "Day 6",
+        "Implement subscription date edits, suspend/reactivate and deletion. Delete only Subscription; all stock/accounts/duty/history must remain. Log safe business events."
+      ],
+      [
+        "Day 7",
+        "Buffer/review: attach Mustafa's guards, add owner-only Swagger docs and status filters. Open a complete owner API PR for Week 1 review."
+      ]
+    ],
+    "week2": [
+      [
+        "Day 8",
+        "Connect the real owner endpoints with Alaa's UI. Verify all dates, statuses and validation messages match the contracts."
+      ],
+      [
+        "Day 9",
+        "Add controller/API tests: anonymous fails 401, pharmacist fails 403, nonexistent pharmacy/subscription fails 404 and invalid UUID/body fails 400."
+      ],
+      [
+        "Day 10",
+        "Run the subscription lifecycle: create ACTIVE, suspend, reactivate, expire through test clock, delete to NONE. Ensure filtering/search uses effective rather than stored status."
+      ],
+      [
+        "Day 11",
+        "Pair briefly with Hamid and Mustafa: changing/deleting subscription must remove public listing and block pharmacist writes while preserving reads/data."
+      ],
+      [
+        "Day 12",
+        "Check dates in Asia/Amman around midnight; add regression tests for future-start NONE and suspended-but-expired precedence. Fix Swagger/example/error inconsistencies."
+      ],
+      [
+        "Day 13",
+        "Full-flow rehearsal with seeded owner and two pharmacist accounts. Confirm no password/hash in any owner response. Prepare English demo steps."
+      ],
+      [
+        "Day 14",
+        "Buffer/final fixes. Show owner onboarding and subscription deletion preserving pharmacy data. Explain ACTIVE/EXPIRED/SUSPENDED/NONE in English."
+      ]
+    ],
+    "checks": [
+      "A03: owner creates pharmacy and pharmacist linked to it; email conflict/nonexistent pharmacy rejected.",
+      "A04: inclusive date boundaries, suspension precedence, future/missing NONE; one subscription only; end>start.",
+      "A06: deleting subscription retains users/pharmacy/medicines/batches/duty exactly.",
+      "A01/A05: only owner changes subscriptions; inactive pharmacist read/write/public behavior integrates correctly.",
+      "Unknown fields rejected; proper HTTP errors; summaries/parameters/auth/responses in Swagger; safe logs."
+    ],
+    "handoffs": [
+      "Independent start: write/test your status helper and service using your own fake data. Agree database fields and wire types on Day 1.",
+      "Day 2-3: use Mustafa's shared guards; ask him for review of account creation/security.",
+      "Day 5: give Alaa sample owner payloads; Day 7: owner endpoints available.",
+      "Day 11: verify subscription effects with Hamid/Mustafa without editing their modules."
+    ],
+    "presentation": "Create a pharmacy/account, change its subscription, delete that subscription and show that inventory still exists. Explain the difference between stored suspension and calculated effective status.",
+    "avoid": "No frontend, login implementation, inventory edits, billing or schema migrations. Request schema changes from Mustafa. The existing Git branch is spelled Sheam even though the task guide uses Shiam."
+  },
+  {
+    "slug": "Hamid",
+    "name": "Hamid Al Haj",
+    "branch": "hamid",
+    "role": "Profile, duty and public backend; small display-preferences task",
+    "goal": "Deliver the pharmacy profile/duty APIs and privacy-safe public search/directory. Spend most effort on backend core; language and theme controls are a small follow-up after your core endpoints work.",
+    "folders": [
+      "apps/api/src/modules/pharmacy/**",
+      "apps/api/src/modules/public/**",
+      "apps/web/src/features/preferences/**",
+      "apps/web/src/locales/**",
+      "apps/web/src/theme.css"
+    ],
+    "interfaces": [
+      "GET/PATCH /pharmacist/profile; GET/POST /pharmacist/duty-periods",
+      "PATCH/DELETE /pharmacist/duty-periods/:id",
+      "GET /public/medicines?q=&area=&onDutyNow=; GET /public/pharmacies",
+      "Implement the PublicPharmacy allowlist; use shared auth/status helpers after their owners merge them. Agree interfaces on Day 1."
+    ],
+    "week1": [
+      [
+        "Day 1",
+        "Agree profile/duty/public response fields and schema needs with the team. Create your own DTOs, service fixtures, public response mapper and fixed-clock tests; no helpers, adapters or dataset are supplied."
+      ],
+      [
+        "Day 2",
+        "Implement own profile read/update with area/address/phone validation. Inactive subscription can read; updates require ACTIVE. Do not allow changing pharmacyId or pharmacy name here."
+      ],
+      [
+        "Day 3",
+        "Implement duty list/create/edit/delete. Validate offset-aware instants, end>start and duration<=24h; derive pharmacy from actor and enforce guessed-ID ownership."
+      ],
+      [
+        "Day 4",
+        "Prevent overlaps, including concurrent requests (serializable transaction/retry or per-pharmacy lock). Exclude the same period on edit; allow adjacent periods. Test overnight and exact start/end."
+      ],
+      [
+        "Day 5",
+        "Implement public pharmacy directory: ACTIVE only, area/duty filters, current and next period. Map exact public fields and nested start/end only."
+      ],
+      [
+        "Day 6",
+        "Implement medicine search: partial display/scientific name, active subscription and at least one positive nonexpired batch. Combine area/duty filters; deduplicate pharmacies and return empty list normally."
+      ],
+      [
+        "Day 7",
+        "Buffer/review: test privacy allowlist and inactive/expired-only/zero-only stock. Document endpoints/DTOs/auth in Swagger; publish profile/duty/public PRs."
+      ]
+    ],
+    "week2": [
+      [
+        "Day 8",
+        "Integrate profile/duty API with Mohammad and public API with Yousef. Compare payloads; show them current/next/null period examples and proper errors."
+      ],
+      [
+        "Day 9",
+        "Add regression cases: subscription delete removes listing, future subscription hidden, exact duty end excluded, different pharmacy overlaps allowed and no private fields leak."
+      ],
+      [
+        "Day 10",
+        "Verify all CORE endpoints pass before preferences. Add working persistent light/dark control using theme.css tokens. Keep structural page CSS owned by Alaa."
+      ],
+      [
+        "Day 11",
+        "Add EN/AR control and small translation provider/dictionaries. Set document lang and direction; keep medicine/scientific names, phone and batch identifiers readable LTR. Arabic is optional instructor scope: cut translation expansion if core is blocked."
+      ],
+      [
+        "Day 12",
+        "With Alaa, connect Preferences in the shell coordinated with Alaa and translate shared labels in one small integration PR. Check dark contrast, keyboard use, persistence and RTL in public/profile pages."
+      ],
+      [
+        "Day 13",
+        "Run public availability and overnight-duty rehearsal with the team. Inspect actual JSON for private fields, including nested objects; prepare Swagger privacy example."
+      ],
+      [
+        "Day 14",
+        "Buffer/final fixes. Explain overnight intervals, public privacy and eligible stock in English. Show one rejected overlap and a public search result."
+      ]
+    ],
+    "checks": [
+      "A02/A05: own pharmacy only; inactive profile/duty writes forbidden with reason; reads allowed.",
+      "A13: overnight, inclusive start/exclusive end, adjacent intervals, >24h, edit-self and simultaneous overlaps.",
+      "A14: name/area/duty combine; inactive or expired/zero-only stock never appears; no duplicate pharmacy results.",
+      "A15: exact public allowlist and ACTIVE directory; current/next/null periods; no account/subscription/cost/quantity/storage/IDs.",
+      "Preferences: persisted light/dark and EN/AR controls, sensible contrast/RTL; do not delay core for optional translation."
+    ],
+    "handoffs": [
+      "Independent start: agree schema/response fields and create your own Prisma/clock test fixtures. Use the specification as the source of rules.",
+      "Day 2-3: use Mustafa's guards and Shiam's status helper when merged; do not implement another auth/status system.",
+      "Day 5: profile/duty examples for Mohammad; Day 6-7: public examples/endpoints for Yousef.",
+      "Day 10-12: preferences integration with Alaa only after backend core is stable."
+    ],
+    "presentation": "Show an overnight duty period, reject an overlapping period, then search publicly and inspect the response allowlist in Swagger. Explain why exact quantities stay private.",
+    "avoid": "No public page layout, dashboard UI, inventory endpoints or schema migrations. No maps, hosting, SMS or citizen accounts. Do not spend Week 1 translating the application."
+  },
+  {
+    "slug": "Mohammad",
+    "name": "Mohammad Kashmar",
+    "branch": "Mohammad",
+    "role": "Dashboard and calculations backend (~60%); dashboard/profile/duty UI (~40%)",
+    "goal": "Own the shared stock calculations and pharmacist dashboard API, then build dashboard and pharmacy profile/duty screens. Agree response types early and create your own small local test fixtures to build screens before Hamid finishes his endpoints.",
+    "folders": [
+      "apps/api/src/modules/dashboard/**",
+      "apps/api/src/common/inventory-calculations.ts and its tests",
+      "apps/web/src/features/dashboard/**",
+      "apps/web/src/features/pharmacy/**"
+    ],
+    "interfaces": [
+      "GET /pharmacist/dashboard -> Dashboard",
+      "calculateMedicine(batches,threshold,today) and calculateDashboard(medicines,today): agree signatures with Mustafa Day 1.",
+      "Dashboard frontend calls your API; profile/duty frontend calls Hamid's endpoints through feature api.ts.",
+      "Backend calculates all indicators; no editable status fields and no authoritative frontend calculations."
+    ],
+    "week1": [
+      [
+        "Day 1",
+        "Agree calculation helper input/output with Mustafa and publish the types. Read all indicator/dashboard rules and write a small hand-calculated fixture with expired, healthy, zero and low+expiring stock."
+      ],
+      [
+        "Day 2",
+        "Implement/test pure date/quantity/indicator helper in common/inventory-calculations.ts. Deliver this small PR first so Mustafa can use it without waiting for the dashboard."
+      ],
+      [
+        "Day 3",
+        "Test yesterday/today/+90/+91 expiry boundaries, available sums, quantity==threshold and simultaneous indicators. HEALTHY ignores empty expired/soon batches, but nonempty ones prevent healthy."
+      ],
+      [
+        "Day 4",
+        "Implement dashboard aggregation with Prisma.Decimal: nonexpired units/value, expiring batch count, low-stock medicines, expired batch count and positive expired waste value. Add hand-calculation tests."
+      ],
+      [
+        "Day 5",
+        "Implement own-pharmacy dashboard service/controller using shared auth/role/ownership foundations. Inactive subscription reads remain allowed. Add all attention items with multiple indicators."
+      ],
+      [
+        "Day 6",
+        "Document/test dashboard in Swagger. Give Mustafa fixed-date response fixtures and compare inventory filters with the same helper. Keep all calculations in backend services/pure functions."
+      ],
+      [
+        "Day 7",
+        "Buffer/review: publish your backend PR. Start dashboard cards and profile/duty forms from scratch with your own feature-local sample data; coordinate shared routing/styles with Alaa."
+      ]
+    ],
+    "week2": [
+      [
+        "Day 8",
+        "Finish backend regression tests: ownership, inactive reads, empty pharmacy, decimal costs and no expired units in available totals. Connect DashboardPage to your real endpoint."
+      ],
+      [
+        "Day 9",
+        "Build all required dashboard metrics, pharmacy name, subscription banner and attention list. Show all relevant badges and loading/empty/error states."
+      ],
+      [
+        "Day 10",
+        "Build pharmacy profile form with editable area/address/phone only. Show Hamid's backend validation messages and disable changes for inactive subscription while retaining read access."
+      ],
+      [
+        "Day 11",
+        "Build duty list/add/edit/delete forms. Convert datetime-local values with explicit local timezone to UTC ISO; show current periods clearly and surface overlap/end/duration errors."
+      ],
+      [
+        "Day 12",
+        "Integrate Hamid's real profile/duty APIs. Refresh views after mutations; check delete confirmation, successful form reset and retained values after errors. Coordinate dashboard refresh after Alaa's inventory changes."
+      ],
+      [
+        "Day 13",
+        "Use real API integration for all your screens. Reconcile hand-calculated totals with persisted stock and fix discrepancies with Mustafa. Rehearse keyboard/mobile/error cases."
+      ],
+      [
+        "Day 14",
+        "Buffer/final rehearsal. Explain one calculation in English, show multi-indicator attention and an invalid duty change. Know how your shared helper is used by inventory too."
+      ]
+    ],
+    "checks": [
+      "A09: expiry boundaries and calendar days correct; no editable status data.",
+      "A10: LOW_STOCK at equality, multiple indicators retained and correct healthy/nonempty handling.",
+      "A11: 10x2.50 nonexpired +3x4.00 expired yields value 25.00/waste 12.00/units 10.",
+      "Dashboard scoped to own pharmacy and available to inactive subscribers; empty data has honest zero/empty values.",
+      "A16: all 3 frontend areas handle loading/empty/error, validation and inactive read-only state; profile/duty mutations refresh."
+    ],
+    "handoffs": [
+      "Critical: Day 1 signatures and Day 2 helper PR for Mustafa; this is the main backend dependency.",
+      "Independent UI work: create local dashboard/profile/duty fixtures from agreed response types while Hamid builds his endpoints.",
+      "Day 7: dashboard API available. Day 8: get Hamid's profile/duty endpoint examples.",
+      "Day 12: coordinate a refresh mechanism with Alaa; avoid editing each other's pages directly."
+    ],
+    "presentation": "Explain a dashboard total from actual batches, show a medicine with two indicators and demonstrate a duty/profile edit. Describe why expired stock still contributes to waste but not availability.",
+    "avoid": "Do not implement inventory mutations, authentication, owner services or public search. Do not store calculated statuses or recompute authoritative totals in React."
+  },
+  {
+    "slug": "Yousef",
+    "name": "Yousef Yousef",
+    "branch": "Yousef",
+    "role": "Public medicine search and pharmacy directory frontend",
+    "goal": "Build two clear public screens from scratch, with simple components and agreed API shapes. No backend, database, sign-in or private inventory work is assigned to you.",
+    "folders": [
+      "apps/web/src/features/public-search/**",
+      "apps/web/src/features/directory/**"
+    ],
+    "interfaces": [
+      "Create searchMedicines({q,area,onDutyNow}) using response fields agreed with Hamid; no request adapter is provided.",
+      "Create listPublicPharmacies({area,onDutyNow}); public DTOs/types must be agreed and written by the team.",
+      "Hamid owns these API endpoints. Read public fields only; cards never show stock counts/costs/batches.",
+      "Use simple loading/error/badge components you create; ask Alaa for shared layout changes."
+    ],
+    "week1": [
+      [
+        "Day 1",
+        "Run the plain React foundation. Find your public-search/directory folders. Sketch two simple screens and create your first page/card component yourself. Agree public response fields with Hamid and routes with Alaa."
+      ],
+      [
+        "Day 2",
+        "Add a labeled medicine input and Search button to PublicSearchPage. Save the submitted query in component state; avoid sending a request on every keypress."
+      ],
+      [
+        "Day 3",
+        "Add area text input and on-duty checkbox. Send q/area/onDutyNow through a search request function you create in your feature. Prevent empty medicine submission and keep entered values visible."
+      ],
+      [
+        "Day 4",
+        "Build PharmacyCard yourself: name, area, address, phone link, on-duty badge and current/next duty time. Create a small local fixture file to test cards; format dates and handle missing inventory timestamps clearly."
+      ],
+      [
+        "Day 5",
+        "Implement loading, no-results and error states yourself, with a helpful message and Retry button. Exercise each state with your own local fixtures or simulated requests; no shared state component is prebuilt."
+      ],
+      [
+        "Day 6",
+        "Add area/on-duty filters to DirectoryPage using listPublicPharmacies. Reuse PharmacyCard. Directory opens without requiring a medicine query or sign-in."
+      ],
+      [
+        "Day 7",
+        "Buffer/review: check phone-sized layout and keyboard labels. Open Week 1 UI PR with screenshots for search, directory and empty/error examples."
+      ]
+    ],
+    "week2": [
+      [
+        "Day 8",
+        "With Hamid, switch to real API integration and test search against seeded data. Mock mode remains for isolated styling, but final checks must use real API responses."
+      ],
+      [
+        "Day 9",
+        "Verify partial/case-insensitive scientific-name search, an area with no matches and area+on-duty together. Report API mistakes to Hamid instead of calculating stock/status in React."
+      ],
+      [
+        "Day 10",
+        "Check request changes do not show stale results. Add a visible result count and clear/reset filters; retry errors without losing the current query."
+      ],
+      [
+        "Day 11",
+        "Test directory current/next/null duty examples and missing timestamp. Add accurate labels so 'off duty' does not claim a pharmacy is closed; duty status is all we know."
+      ],
+      [
+        "Day 12",
+        "Check accessibility: input labels, keyboard order, buttons, meaningful status text and responsive cards. With Hamid, check your pages in dark mode/Arabic if those optional controls are ready."
+      ],
+      [
+        "Day 13",
+        "Follow the citizen demo: search medicine, apply duty filter, inspect address/phone, try a no-match term. Confirm no private details appear anywhere in your cards."
+      ],
+      [
+        "Day 14",
+        "Buffer/final rehearsal. Present the citizen search and directory in English, show empty/error behavior and explain what information citizens can and cannot see."
+      ]
+    ],
+    "checks": [
+      "Search requires a nonempty medicine query and sends the correct filters; directory does not require medicine text.",
+      "All cards show only allowed public fields; no quantity/cost/barcode/batch/subscription information.",
+      "Loading, zero results, backend errors, retry and result count work without reloading the browser.",
+      "Current/next duty and null values are clear; on-duty badge does not falsely claim general opening hours.",
+      "Real API-mode search, scientific names, combined filters, keyboard and narrow-screen layout tested."
+    ],
+    "handoffs": [
+      "Start immediately with your own page sketches/components and small local fixtures. Week 1 frontend work does not need a running backend.",
+      "Ask Alaa for shared component/style help; keep changes inside your feature folders.",
+      "Day 6-7: get Hamid's public JSON examples; Day 8 integrate real API integration.",
+      "Report backend defects with search term, filters and observed result so Hamid can reproduce."
+    ],
+    "presentation": "Demonstrate a medicine search, area and duty filtering, the pharmacy contact card and a no-results state. Explain that public availability does not expose exact quantities.",
+    "avoid": "No backend, database, accounts, owner pages, maps or medical advice. Do not hard-code live results or hide an API error by silently showing sample data."
+  },
+  {
+    "slug": "Alaa",
+    "name": "Alaa Ismaiel",
+    "branch": "alaa",
+    "role": "Frontend foundations, sign-in, owner/inventory UI and integration",
+    "goal": "Own the remaining frontend and coordinate the complete local demo. Keep teammates independent through shared components and contracts, and merge small working PRs throughout the two weeks.",
+    "folders": [
+      "apps/web/src/app/**, components/**, lib/**",
+      "apps/web/src/features/auth/**",
+      "apps/web/src/features/owner/**",
+      "apps/web/src/features/inventory/**",
+      "apps/web/src/styles.css; root docs/config with teammate review"
+    ],
+    "interfaces": [
+      "Sign-in uses Mustafa's /auth/login + /auth/me and Role/SessionUser contracts.",
+      "Owner UI calls Shiam's owner endpoints; inventory UI calls Mustafa's medicine/batch endpoints.",
+      "Use Mohammad's dashboard screen and Hamid's Preferences component through routes coordinated with Alaa; Yousef owns public screens.",
+      "You review shared types/schema/route changes; Mustafa alone authors Prisma migrations."
+    ],
+    "week1": [
+      [
+        "Day 1",
+        "Publish the foundation-only starter through a PR. Agree API shapes, schema needs, routing and ownership with the team. Create shared TypeScript wire types together; feature folders are empty and the single page is only a startup check."
+      ],
+      [
+        "Day 2",
+        "Create the application routes, navigation, responsive shell and shared styles/components yourself. Begin sign-in/logout, session handling and role-specific route protection; coordinate real JWT requests with Mustafa."
+      ],
+      [
+        "Day 3",
+        "Build the owner pharmacy list/search/status filters and create-pharmacy form from scratch. Use response types agreed with Shiam and write your own local fixtures while his API is in progress."
+      ],
+      [
+        "Day 4",
+        "Build account creation and subscription forms yourself: dates, suspend/reactivate and delete confirmation. Implement request/error handling; use local test data until Shiam's endpoints are ready."
+      ],
+      [
+        "Day 5",
+        "Build inventory search/status filters, visible count, batch detail rows and every indicator badge. Inactive subscription keeps read access but disables mutations with a clear explanation."
+      ],
+      [
+        "Day 6",
+        "Build medicine create/edit and batch create/edit forms. Read-only batch number/cost/barcode after creation; editable quantity/expiry/location. After success refresh data without page reload."
+      ],
+      [
+        "Day 7",
+        "Buffer/review: merge Week 1 PRs, check each member has visible contributions, and start real owner/inventory API integration. Record remaining blockers and avoid large late merges."
+      ]
+    ],
+    "week2": [
+      [
+        "Day 8",
+        "Connect sign-in/owner/inventory to the real API. Show 400/401/403/404/409 messages, reset stale session on unauthorized responses and use role-specific navigation."
+      ],
+      [
+        "Day 9",
+        "Complete real create/update/delete flows and validation feedback. Verify subscription changes refresh owner views and pharmacist read-only status; do not bypass backend rules with client-only checks."
+      ],
+      [
+        "Day 10",
+        "Coordinate inventory/dashboard refresh with Mohammad (navigation reload or shared invalidation). Verify low+expiring badges and counts against real API payloads, including empty inventory."
+      ],
+      [
+        "Day 11",
+        "Integrate Hamid's preference controls with minimal shared-file edits. Review Yousef's mobile/keyboard public pages; help with reusable components while preserving his ownership."
+      ],
+      [
+        "Day 12",
+        "Run docs/ACCEPTANCE.md with all members in real API integration. Confirm clean startup on another member's laptop and no .env/node_modules committed. Fix frontend defects and assign backend fixes to owners."
+      ],
+      [
+        "Day 13",
+        "Freeze feature scope, merge tested fixes and rehearse the full English demo: owner onboarding -> stock -> dashboard -> public search -> rejected action -> persisted database."
+      ],
+      [
+        "Day 14",
+        "Buffer/final review. Update README with real setup and known limitations. Prepare short presentation sections for all six people; verify demo data/time and every member's understanding."
+      ]
+    ],
+    "checks": [
+      "A16: all owned screens loading/empty/error, backend validation and subscription reason; successful changes refresh views.",
+      "Private routes prompt sign-in and enforce role navigation; real integration has no fake-login or sample fallback.",
+      "Inventory supports multiple indicators and visible-item count; immutable batch fields are not submitted in PATCH.",
+      "Owner can onboard and edit/delete subscriptions while inventory remains preserved; delete confirmation is explicit.",
+      "A17/A18: another laptop can start locally; all CORE scenarios checked; every member contributes and speaks English."
+    ],
+    "handoffs": [
+      "Day 1: starter PR first; shared contracts/schema discussion; other members then branch from the baseline.",
+      "Day 2-3: receive Mustafa auth/guards; frontend can use mocks until ready.",
+      "Day 6-8: receive Shiam owner and Mustafa inventory APIs, Hamid public/profile/duty APIs and Mohammad dashboard.",
+      "Daily: short status and small PR review; Days 8 and 12 are integration gates, not the first time anyone merges."
+    ],
+    "presentation": "Introduce the problem and product, show owner/inventory UX and loading/error feedback, then hand off to each member. Explain one UI decision and one honest remaining limitation.",
+    "avoid": "Do not take over other members' assigned features. No deployment, billing, new stack, big design rewrite or optional challenges before CORE is integrated. Do not merge broken builds just to meet a date."
+  }
+]
