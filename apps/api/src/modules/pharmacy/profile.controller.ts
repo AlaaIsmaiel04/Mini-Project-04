@@ -15,8 +15,8 @@ import {
   TemporaryPharmacistGuard,
 } from './adapters/temporary-auth.adapter';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { ProfileRejectionFilter } from './profile-rejection.filter';
 import { ProfileService } from './profile.service';
+import { RejectedChangeFilter } from './rejected-change.filter';
 
 @ApiTags('pharmacist')
 @ApiBearerAuth()
@@ -41,7 +41,7 @@ export class ProfileController {
   @ApiOperation({
     summary: 'Update own area, address and phone; requires ACTIVE subscription',
   })
-  @UseFilters(ProfileRejectionFilter)
+  @UseFilters(RejectedChangeFilter)
   @Patch()
   updateProfile(
     @CurrentPharmacist() actor: PharmacistActor,
