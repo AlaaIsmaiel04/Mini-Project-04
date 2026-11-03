@@ -2,6 +2,35 @@
   display: grid;
   gap: 24px;
 }
+
+.owner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.owner-management > section {
+  border-top: 1px solid #dce5e1;
+  margin-top: 24px;
+  padding-top: 16px;
+}
+.owner-page .owner-danger {
+  background: #a32727;
+  border-color: #a32727;
+}
+.owner-page .owner-danger:hover {
+  background: #802020;
+}
+.owner-page .owner-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.owner-page .owner-checkbox input {
+  width: auto;
+}
+.owner-pharmacy > button {
+  margin-top: 16px;
+}
 .owner-heading p {
   margin-bottom: 0;
   color: #60756c;
