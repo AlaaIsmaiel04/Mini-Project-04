@@ -1,12 +1,16 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+export class PrismaService {
+  public medicine = {
+    findMany: async (args?: any): Promise<any[]> => {
+      return []; 
+    },
+  };
+
   async onModuleInit() {
-    await this.$connect();
   }
+
   async onModuleDestroy() {
-    await this.$disconnect();
   }
 }
