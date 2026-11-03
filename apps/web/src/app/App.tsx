@@ -8,6 +8,8 @@ import {
 import type { Role } from '@smartshelf/contracts';
 import { useAuth } from '../features/auth/AuthProvider';
 import { LoginPage } from '../features/auth/LoginPage';
+import { DashboardPage } from '../features/dashboard/DashboardPage';
+import { PharmacyProfilePage } from '../features/pharmacy/PharmacyProfilePage';
 
 function RequireRole({ role }: { role: Role }) {
   const { user } = useAuth();
@@ -118,7 +120,7 @@ export function App() {
           <Route element={<RequireRole role="PHARMACIST" />}>
             <Route
               path="/pharmacist"
-              element={<h2>Pharmacist dashboard</h2>}
+              element={<DashboardPage />}
             />
             <Route
               path="/pharmacist/inventory"
@@ -126,7 +128,7 @@ export function App() {
             />
             <Route
               path="/pharmacist/profile"
-              element={<h2>Pharmacy profile & duty</h2>}
+              element={<PharmacyProfilePage />}
             />
           </Route>
 
