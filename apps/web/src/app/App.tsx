@@ -4,6 +4,15 @@ import { useAuth } from '../features/auth/AuthProvider';
 import { LoginPage } from '../features/auth/LoginPage';
 import { lazy, Suspense } from 'react';
 import { OwnerPharmaciesPage } from '../features/owner/OwnerPharmaciesPage';
+import { InventoryPage } from '../features/inventory/InventoryPage';
+
+const InventoryPreviewPage = import.meta.env.DEV
+  ? lazy(() =>
+      import('../features/inventory/InventoryPreviewPage').then((module) => ({
+        default: module.InventoryPreviewPage,
+      })),
+    )
+  : null;
 
 const OwnerPreviewPage = import.meta.env.DEV
   ? lazy(() =>
@@ -108,15 +117,23 @@ export function App() {
 
           <Route element={<RequireRole role="PHARMACIST" />}>
             <Route path="/pharmacist" element={<h2>Pharmacist dashboard</h2>} />
-            <Route
-              path="/pharmacist/inventory"
-              element={<h2>Medicine inventory</h2>}
-            />
+            <Route path="/pharmacist/inventory" element={<InventoryPage />} />
             <Route
               path="/pharmacist/profile"
               element={<h2>Pharmacy profile & duty</h2>}
             />
           </Route>
+
+          {InventoryPreviewPage && (
+            <Route
+              path="/dev/inventory"
+              element={
+                <Suspense fallback={<p role="status">Loading preview…</p>}>
+                  <InventoryPreviewPage />
+                </Suspense>
+              }
+            />
+          )}
 
           {OwnerPreviewPage && (
             <Route
