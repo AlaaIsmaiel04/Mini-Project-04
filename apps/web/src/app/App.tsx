@@ -1,13 +1,17 @@
-import {
-  Link,
-  Navigate,
-  Outlet,
-  Route,
-  Routes,
-} from 'react-router-dom';
+import { Link, Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import type { Role } from '@smartshelf/contracts';
 import { useAuth } from '../features/auth/AuthProvider';
 import { LoginPage } from '../features/auth/LoginPage';
+import { lazy, Suspense } from 'react';
+import { OwnerPharmaciesPage } from '../features/owner/OwnerPharmaciesPage';
+
+const OwnerPreviewPage = import.meta.env.DEV
+  ? lazy(() =>
+      import('../features/owner/OwnerPreviewPage').then((module) => ({
+        default: module.OwnerPreviewPage,
+      })),
+    )
+  : null;
 
 function RequireRole({ role }: { role: Role }) {
   const { user } = useAuth();
@@ -18,10 +22,7 @@ function RequireRole({ role }: { role: Role }) {
 
   if (user.role !== role) {
     return (
-      <Navigate
-        to={user.role === 'OWNER' ? '/owner' : '/pharmacist'}
-        replace
-      />
+      <Navigate to={user.role === 'OWNER' ? '/owner' : '/pharmacist'} replace />
     );
   }
 
@@ -68,11 +69,7 @@ export function App() {
 
             {user ? (
               <li>
-                <button
-                  type="button"
-                  className="nav-button"
-                  onClick={signOut}
-                >
+                <button type="button" className="nav-button" onClick={signOut}>
                   Sign out
                 </button>
               </li>
@@ -97,18 +94,12 @@ export function App() {
             }
           />
 
-          <Route
-            path="/pharmacies"
-            element={<h2>Pharmacies</h2>}
-          />
+          <Route path="/pharmacies" element={<h2>Pharmacies</h2>} />
 
           <Route path="/login" element={<LoginPage />} />
 
           <Route element={<RequireRole role="OWNER" />}>
-            <Route
-              path="/owner"
-              element={<h2>Owner dashboard</h2>}
-            />
+            <Route path="/owner" element={<OwnerPharmaciesPage />} />
             <Route
               path="/owner/pharmacies/:pharmacyId/subscription"
               element={<h2>Subscription management</h2>}
@@ -116,10 +107,7 @@ export function App() {
           </Route>
 
           <Route element={<RequireRole role="PHARMACIST" />}>
-            <Route
-              path="/pharmacist"
-              element={<h2>Pharmacist dashboard</h2>}
-            />
+            <Route path="/pharmacist" element={<h2>Pharmacist dashboard</h2>} />
             <Route
               path="/pharmacist/inventory"
               element={<h2>Medicine inventory</h2>}
@@ -129,6 +117,17 @@ export function App() {
               element={<h2>Pharmacy profile & duty</h2>}
             />
           </Route>
+
+          {OwnerPreviewPage && (
+            <Route
+              path="/dev/owner"
+              element={
+                <Suspense fallback={<p role="status">Loading preview…</p>}>
+                  <OwnerPreviewPage />
+                </Suspense>
+              }
+            />
+          )}
 
           <Route
             path="*"
