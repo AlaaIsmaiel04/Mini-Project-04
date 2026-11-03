@@ -31,6 +31,13 @@ function createPreviewService(): OwnerPharmacyService {
           },
     subscriptionStatus,
   }));
+  const emails = new Set<string>();
+
+  function findPharmacy(id: string) {
+    const pharmacy = pharmacies.find((item) => item.id === id);
+    if (!pharmacy) throw new Error('Preview pharmacy not found.');
+    return pharmacy;
+  }
   return {
     async list(filters) {
       const items = pharmacies.filter(
@@ -52,6 +59,60 @@ function createPreviewService(): OwnerPharmacyService {
       pharmacies = [pharmacy, ...pharmacies];
       return pharmacy;
     },
+    async createPharmacist(input) {
+      findPharmacy(input.pharmacyId);
+      if (emails.has(input.email))
+        throw new Error(
+          'An account with this email already exists in this preview.',
+        );
+      emails.add(input.email);
+      // Never store the password, even in this temporary preview.
+      return {
+        id: crypto.randomUUID(),
+        email: input.email,
+        role: 'PHARMACIST',
+        pharmacyId: input.pharmacyId,
+      };
+    },
+    async saveSubscription(pharmacyId, input, exists) {
+      const pharmacy = findPharmacy(pharmacyId);
+      if (Boolean(pharmacy.subscription) !== exists)
+        throw new Error('The subscription has changed. Reload its details.');
+      const subscription = {
+        ...input,
+        id: pharmacy.subscription?.id ?? crypto.randomUUID(),
+      };
+      // Only the preview simulates status against a fixed demonstration date.
+      // The real owner page always reads the status calculated by the backend.
+      pharmacies = pharmacies.map((item) =>
+        item.id === pharmacyId
+          ? {
+              ...item,
+              subscription,
+              subscriptionStatus: input.suspended
+                ? 'SUSPENDED'
+                : input.endDate < '2026-11-03'
+                  ? 'EXPIRED'
+                  : input.startDate > '2026-11-03'
+                    ? 'NONE'
+                    : 'ACTIVE',
+            }
+          : item,
+      );
+      return subscription;
+    },
+    async deleteSubscription(pharmacyId) {
+      findPharmacy(pharmacyId);
+      pharmacies = pharmacies.map((item) =>
+        item.id === pharmacyId
+          ? {
+              ...item,
+              subscription: null,
+              subscriptionStatus: 'NONE',
+            }
+          : item,
+      );
+    },
   };
 }
 
@@ -64,7 +125,8 @@ export function OwnerPreviewPage() {
         <p>
           Synthetic sample data only. Changes reset when this page is reopened
           or refreshed. No account is signed in and no database requests are
-          made.
+          made. Subscription status changes use a fixed sample date of 3
+          November 2026.
         </p>
       </aside>
       <OwnerPharmaciesView service={service} />

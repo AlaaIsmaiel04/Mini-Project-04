@@ -11,6 +11,11 @@ import { useAuth } from '../auth/AuthProvider';
 import { createOwnerPharmacyService } from './owner-api';
 import type { OwnerPharmacyService } from './owner-api';
 import './owner.css';
+import {
+  OwnerPharmacyManagement,
+  OwnerSubscriptionRoute,
+} from './OwnerPharmacyManagement';
+import { useParams } from 'react-router-dom';
 
 const statusLabels: Record<SubscriptionStatus, string> = {
   ACTIVE: 'Active',
@@ -32,13 +37,18 @@ function errorMessage(error: unknown) {
 }
 
 export function OwnerPharmaciesPage() {
+  const { pharmacyId } = useParams();
   const { accessToken, signOut } = useAuth();
   // Keep the service stable while the current session is unchanged.
   const service = useMemo(
     () => createOwnerPharmacyService(accessToken ?? '', signOut),
     [accessToken, signOut],
   );
-  return <OwnerPharmaciesView service={service} />;
+  return pharmacyId ? (
+    <OwnerSubscriptionRoute service={service} />
+  ) : (
+    <OwnerPharmaciesView service={service} />
+  );
 }
 
 // A service boundary lets local previews exercise this same UI without fake login.
@@ -60,6 +70,7 @@ export function OwnerPharmaciesView({
   const [creating, setCreating] = useState(false);
   const [formError, setFormError] = useState('');
   const [success, setSuccess] = useState('');
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -226,6 +237,14 @@ export function OwnerPharmaciesView({
                           <dd>{pharmacy.phone}</dd>
                         </div>
                       </dl>
+                      <button
+                        type="button"
+                        className="owner-secondary"
+                        onClick={() => setSelectedId(pharmacy.id)}
+                        aria-label={`Manage ${pharmacy.name}`}
+                      >
+                        Manage pharmacy
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -234,6 +253,24 @@ export function OwnerPharmaciesView({
           )}
         </div>
       </section>
+
+      {selectedId && (
+        <>
+          <button
+            type="button"
+            className="owner-secondary"
+            onClick={() => setSelectedId(null)}
+          >
+            Close pharmacy management
+          </button>
+          <OwnerPharmacyManagement
+            key={selectedId}
+            pharmacyId={selectedId}
+            service={service}
+            onChanged={() => setRevision((value) => value + 1)}
+          />
+        </>
+      )}
 
       <section
         className="owner-panel"

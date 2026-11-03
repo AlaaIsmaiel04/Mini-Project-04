@@ -102,7 +102,7 @@ export function App() {
             <Route path="/owner" element={<OwnerPharmaciesPage />} />
             <Route
               path="/owner/pharmacies/:pharmacyId/subscription"
-              element={<h2>Subscription management</h2>}
+              element={<OwnerPharmaciesPage />}
             />
           </Route>
 
