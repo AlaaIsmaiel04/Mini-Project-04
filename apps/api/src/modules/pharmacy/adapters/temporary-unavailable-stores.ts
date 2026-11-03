@@ -23,7 +23,9 @@ export class TemporaryUnavailablePharmacyStore implements PharmacyStore {
 export class TemporaryUnavailableDutyPeriodStore implements DutyPeriodStore {
   listForPharmacy = dataUnavailable;
   listEndingAfter = dataUnavailable;
-  createIfNoOverlap = dataUnavailable;
-  updateIfNoOverlap = dataUnavailable;
+  findForPharmacy = dataUnavailable;
+  create = dataUnavailable;
+  update = dataUnavailable;
   delete = dataUnavailable;
+  transaction = dataUnavailable;
 }

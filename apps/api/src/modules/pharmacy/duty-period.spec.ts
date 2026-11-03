@@ -15,6 +15,7 @@ import { SUBSCRIPTION_STATUS } from './adapters/temporary-subscription-status.ad
 import { DutyInputDto } from './dto/duty-input.dto';
 import { DutyPeriodController } from './duty-period.controller';
 import { DutyPeriodService } from './duty-period.service';
+import { PharmacyLock } from './pharmacy-lock';
 import { PharmacyModule } from './pharmacy.module';
 import { DUTY_PERIOD_STORE } from './stores/duty-period.store';
 import { InMemoryDutyPeriodStore } from './testing/in-memory-duty-period.store';
@@ -75,6 +76,7 @@ describe('duty period endpoints for a signed-in pharmacist', () => {
   let store: InMemoryDutyPeriodStore;
   let subscriptions: InMemorySubscriptionStatus;
   let signedIn: object | undefined;
+  let readDelayMs = 0;
   const warnings = mock.method(Logger.prototype, 'warn', () => undefined);
 
   const pharmacist = {
@@ -102,13 +104,11 @@ describe('duty period endpoints for a signed-in pharmacist', () => {
   const storedFor = (pharmacyId: string) => store.listForPharmacy(pharmacyId);
 
   async function seed(pharmacyId: string, times = OVERNIGHT): Promise<string> {
-    const result = await store.createIfNoOverlap(pharmacyId, {
+    const period = await store.create(pharmacyId, {
       startsAt: new Date(times.startsAt),
       endsAt: new Date(times.endsAt),
     });
-    assert.equal(result.status, 'saved');
-    if (result.status !== 'saved') throw new Error('seed failed');
-    return result.period.id;
+    return period.id;
   }
 
   before(async () => {
@@ -120,7 +120,9 @@ describe('duty period endpoints for a signed-in pharmacist', () => {
       return true;
     }) as never);
 
-    store = new InMemoryDutyPeriodStore();
+    store = new InMemoryDutyPeriodStore(
+      () => new Promise((resolve) => setTimeout(resolve, readDelayMs)),
+    );
     subscriptions = new InMemorySubscriptionStatus();
 
     class DutyTestModule {}
@@ -128,6 +130,7 @@ describe('duty period endpoints for a signed-in pharmacist', () => {
       controllers: [DutyPeriodController],
       providers: [
         DutyPeriodService,
+        PharmacyLock,
         { provide: DUTY_PERIOD_STORE, useValue: store },
         { provide: SUBSCRIPTION_STATUS, useValue: subscriptions },
       ],
@@ -145,6 +148,7 @@ describe('duty period endpoints for a signed-in pharmacist', () => {
   });
 
   beforeEach(async () => {
+    readDelayMs = 0;
     for (const pharmacyId of [PHARMACY_A, PHARMACY_B]) {
       for (const { id } of await storedFor(pharmacyId)) {
         await store.delete(pharmacyId, id);
@@ -492,6 +496,253 @@ describe('duty period endpoints for a signed-in pharmacist', () => {
         assert.equal(stored.startsAt.toISOString(), OVERNIGHT_UTC.startsAt);
       });
     }
+  });
+
+  describe('overlaps against an overnight period 20:00 -> 08:00', () => {
+    const allowed: [string, { startsAt: string; endsAt: string }][] = [
+      [
+        'one ending exactly at its start',
+        {
+          startsAt: '2026-11-04T19:00:00+03:00',
+          endsAt: OVERNIGHT.startsAt,
+        },
+      ],
+      [
+        'one starting exactly at its end',
+        {
+          startsAt: OVERNIGHT.endsAt,
+          endsAt: '2026-11-05T10:00:00+03:00',
+        },
+      ],
+      [
+        'one starting at its end, written in UTC',
+        {
+          startsAt: OVERNIGHT_UTC.endsAt,
+          endsAt: '2026-11-05T07:00:00Z',
+        },
+      ],
+      ['the next night', LATER],
+    ];
+    for (const [label, times] of allowed) {
+      it(`POST allows ${label}`, async () => {
+        await seed(PHARMACY_A);
+
+        assert.equal((await post(times)).status, 201);
+        assert.equal((await storedFor(PHARMACY_A)).length, 2);
+      });
+    }
+
+    const overlapping: [string, { startsAt: string; endsAt: string }][] = [
+      ['identical times', OVERNIGHT],
+      [
+        'a period at 02:00, after midnight',
+        {
+          startsAt: '2026-11-05T02:00:00+03:00',
+          endsAt: '2026-11-05T03:00:00+03:00',
+        },
+      ],
+      [
+        'a period crossing its midnight',
+        {
+          startsAt: '2026-11-04T23:00:00+03:00',
+          endsAt: '2026-11-05T01:00:00+03:00',
+        },
+      ],
+      [
+        'a period ending one millisecond after its start',
+        {
+          startsAt: '2026-11-04T19:00:00+03:00',
+          endsAt: '2026-11-04T20:00:00.001+03:00',
+        },
+      ],
+      [
+        'a period starting one millisecond before its end',
+        {
+          startsAt: '2026-11-05T07:59:59.999+03:00',
+          endsAt: '2026-11-05T10:00:00+03:00',
+        },
+      ],
+      [
+        'a period containing it',
+        {
+          startsAt: '2026-11-04T19:00:00+03:00',
+          endsAt: '2026-11-05T09:00:00+03:00',
+        },
+      ],
+      [
+        'an overlap written in UTC',
+        {
+          startsAt: '2026-11-04T23:00:00Z',
+          endsAt: '2026-11-05T01:00:00Z',
+        },
+      ],
+    ];
+    for (const [label, times] of overlapping) {
+      it(`POST returns 409 for ${label} and stores nothing`, async () => {
+        await seed(PHARMACY_A);
+
+        const response = await post(times);
+        const body = await response.json();
+
+        assert.equal(response.status, 409);
+        assert.equal(body.statusCode, 409);
+        assert.equal(body.error, 'Conflict');
+        assert.match(body.message, /overlaps an existing duty period/);
+        assert.equal((await storedFor(PHARMACY_A)).length, 1);
+      });
+    }
+
+    it('POST allows a day and night chain with exact handovers', async () => {
+      assert.equal((await post(OVERNIGHT)).status, 201);
+      const day = {
+        startsAt: OVERNIGHT.endsAt,
+        endsAt: '2026-11-05T20:00:00+03:00',
+      };
+      const nextNight = {
+        startsAt: day.endsAt,
+        endsAt: '2026-11-06T08:00:00+03:00',
+      };
+
+      assert.equal((await post(day)).status, 201);
+      assert.equal((await post(nextNight)).status, 201);
+      assert.equal((await (await list()).json()).total, 3);
+    });
+
+    it('POST does not compare with another pharmacy', async () => {
+      await seed(PHARMACY_B);
+
+      assert.equal((await post(OVERNIGHT)).status, 201);
+    });
+
+    it('PATCH may keep exactly its own times', async () => {
+      const id = await seed(PHARMACY_A);
+
+      assert.equal((await patch(id, OVERNIGHT)).status, 200);
+    });
+
+    it('PATCH may move or shrink within its own times', async () => {
+      const id = await seed(PHARMACY_A);
+
+      const shrunk = await patch(id, {
+        startsAt: '2026-11-04T22:00:00+03:00',
+        endsAt: '2026-11-05T02:00:00+03:00',
+      });
+      const moved = await patch(id, {
+        startsAt: '2026-11-05T01:00:00+03:00',
+        endsAt: '2026-11-05T09:00:00+03:00',
+      });
+
+      assert.equal(shrunk.status, 200);
+      assert.equal(moved.status, 200);
+    });
+
+    it('PATCH may become adjacent to another period', async () => {
+      await seed(PHARMACY_A);
+      const id = await seed(PHARMACY_A, LATER);
+
+      const response = await patch(id, {
+        startsAt: OVERNIGHT.endsAt,
+        endsAt: '2026-11-05T10:00:00+03:00',
+      });
+
+      assert.equal(response.status, 200);
+    });
+
+    it('PATCH returns 409 for one millisecond of overlap and keeps its times', async () => {
+      await seed(PHARMACY_A);
+      const id = await seed(PHARMACY_A, LATER);
+
+      const response = await patch(id, {
+        startsAt: '2026-11-05T07:59:59.999+03:00',
+        endsAt: '2026-11-05T10:00:00+03:00',
+      });
+
+      assert.equal(response.status, 409);
+      const stored = await store.findForPharmacy(PHARMACY_A, id);
+      assert.equal(stored?.startsAt.toISOString(), '2026-11-06T17:00:00.000Z');
+    });
+
+    it('PATCH does not compare with another pharmacy', async () => {
+      await seed(PHARMACY_B);
+      const id = await seed(PHARMACY_A, LATER);
+
+      assert.equal((await patch(id, OVERNIGHT)).status, 200);
+    });
+
+    it('PATCH answers 404, not 409, for a guessed id with overlapping times', async () => {
+      await seed(PHARMACY_A);
+      const guessed = await seed(PHARMACY_B, LATER);
+
+      assert.equal((await patch(guessed, OVERNIGHT)).status, 404);
+      assert.equal((await patch(MISSING_ID, OVERNIGHT)).status, 404);
+    });
+  });
+
+  describe('two simultaneous requests through the API', () => {
+    // Long enough for both requests to read before either one could write.
+    beforeEach(() => {
+      readDelayMs = 25;
+    });
+
+    it('POST: one gets 201, the other 409, and one period is stored', async () => {
+      const responses = await Promise.all([post(OVERNIGHT), post(OVERNIGHT)]);
+
+      assert.deepEqual(
+        responses.map((response) => response.status).sort(),
+        [201, 409],
+      );
+      assert.equal((await storedFor(PHARMACY_A)).length, 1);
+    });
+
+    it('POST: partly overlapping times also give one 201 and one 409', async () => {
+      const responses = await Promise.all([
+        post(OVERNIGHT),
+        post({
+          startsAt: '2026-11-05T02:00:00+03:00',
+          endsAt: '2026-11-05T10:00:00+03:00',
+        }),
+      ]);
+
+      assert.deepEqual(
+        responses.map((response) => response.status).sort(),
+        [201, 409],
+      );
+      assert.equal((await storedFor(PHARMACY_A)).length, 1);
+    });
+
+    it('POST: adjacent times both get 201', async () => {
+      const responses = await Promise.all([
+        post(OVERNIGHT),
+        post({
+          startsAt: OVERNIGHT.endsAt,
+          endsAt: '2026-11-05T10:00:00+03:00',
+        }),
+      ]);
+
+      assert.deepEqual(
+        responses.map((response) => response.status),
+        [201, 201],
+      );
+    });
+
+    it('PATCH: two edits into one free slot give one 200 and one 409', async () => {
+      const first = await seed(PHARMACY_A);
+      const second = await seed(PHARMACY_A, LATER);
+      const freeSlot = {
+        startsAt: '2026-11-10T20:00:00+03:00',
+        endsAt: '2026-11-11T08:00:00+03:00',
+      };
+
+      const responses = await Promise.all([
+        patch(first, freeSlot),
+        patch(second, freeSlot),
+      ]);
+
+      assert.deepEqual(
+        responses.map((response) => response.status).sort(),
+        [200, 409],
+      );
+    });
   });
 
   describe('DELETE /pharmacist/duty-periods/:id', () => {

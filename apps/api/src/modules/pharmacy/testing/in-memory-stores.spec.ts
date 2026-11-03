@@ -17,68 +17,56 @@ const OVERNIGHT = times(
 );
 
 describe('InMemoryDutyPeriodStore', () => {
-  it('rejects an overlap but allows a period starting at the exact end', async () => {
+  it('finds, changes and deletes a period within its own pharmacy', async () => {
     const store = new InMemoryDutyPeriodStore();
-    await store.createIfNoOverlap(PHARMACY_A, OVERNIGHT);
-
-    const overlap = await store.createIfNoOverlap(
-      PHARMACY_A,
-      times('2026-11-05T07:59:00+03:00', '2026-11-05T10:00:00+03:00'),
-    );
-    const adjacent = await store.createIfNoOverlap(
-      PHARMACY_A,
-      times('2026-11-05T08:00:00+03:00', '2026-11-05T10:00:00+03:00'),
+    const created = await store.create(PHARMACY_A, OVERNIGHT);
+    const later = times(
+      '2026-11-06T20:00:00+03:00',
+      '2026-11-07T08:00:00+03:00',
     );
 
-    assert.equal(overlap.status, 'overlap');
-    assert.equal(adjacent.status, 'saved');
+    const found = await store.findForPharmacy(PHARMACY_A, created.id);
+    const updated = await store.update(PHARMACY_A, created.id, later);
+    const deleted = await store.delete(PHARMACY_A, created.id);
+
+    assert.equal(found?.id, created.id);
+    assert.equal(updated.startsAt.getTime(), later.startsAt.getTime());
+    assert.equal(deleted, true);
+    assert.equal((await store.listForPharmacy(PHARMACY_A)).length, 0);
   });
 
-  it('allows the same times at a different pharmacy', async () => {
+  it('does not find, change or delete a period through another pharmacy', async () => {
     const store = new InMemoryDutyPeriodStore();
-    await store.createIfNoOverlap(PHARMACY_A, OVERNIGHT);
+    const created = await store.create(PHARMACY_A, OVERNIGHT);
 
-    const result = await store.createIfNoOverlap(PHARMACY_B, OVERNIGHT);
+    const found = await store.findForPharmacy(PHARMACY_B, created.id);
+    const deleted = await store.delete(PHARMACY_B, created.id);
 
-    assert.equal(result.status, 'saved');
-  });
-
-  it('ignores the period being edited when checking for overlaps', async () => {
-    const store = new InMemoryDutyPeriodStore();
-    const created = await store.createIfNoOverlap(PHARMACY_A, OVERNIGHT);
-    assert.equal(created.status, 'saved');
-    if (created.status !== 'saved') return;
-
-    const result = await store.updateIfNoOverlap(
-      PHARMACY_A,
-      created.period.id,
-      times('2026-11-04T21:00:00+03:00', '2026-11-05T09:00:00+03:00'),
-    );
-
-    assert.equal(result.status, 'saved');
-  });
-
-  it('does not find a period through another pharmacy', async () => {
-    const store = new InMemoryDutyPeriodStore();
-    const created = await store.createIfNoOverlap(PHARMACY_A, OVERNIGHT);
-    assert.equal(created.status, 'saved');
-    if (created.status !== 'saved') return;
-
-    const update = await store.updateIfNoOverlap(
-      PHARMACY_B,
-      created.period.id,
-      OVERNIGHT,
-    );
-    const deleted = await store.delete(PHARMACY_B, created.period.id);
-
-    assert.equal(update.status, 'not_found');
+    assert.equal(found, null);
     assert.equal(deleted, false);
+    await assert.rejects(store.update(PHARMACY_B, created.id, OVERNIGHT));
     assert.equal((await store.listForPharmacy(PHARMACY_A)).length, 1);
+  });
+
+  it('returns the snapshot taken before a slow read finished', async () => {
+    let finishRead = () => {};
+    const store = new InMemoryDutyPeriodStore(
+      () =>
+        new Promise((resolve) => {
+          finishRead = resolve;
+        }),
+    );
+
+    const reading = store.listForPharmacy(PHARMACY_A);
+    await store.create(PHARMACY_A, OVERNIGHT);
+    finishRead();
+
+    assert.deepEqual(await reading, []);
   });
 
   it('excludes a period from listEndingAfter at its exact end', async () => {
     const store = new InMemoryDutyPeriodStore();
-    await store.createIfNoOverlap(PHARMACY_A, OVERNIGHT);
+    await store.create(PHARMACY_A, OVERNIGHT);
 
     const atEnd = await store.listEndingAfter([PHARMACY_A], OVERNIGHT.endsAt);
     const beforeEnd = await store.listEndingAfter(

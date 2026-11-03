@@ -40,10 +40,7 @@ describe('temporary adapters fail closed', () => {
     await assert.rejects(pharmacies.list(), ServiceUnavailableException);
     await assert.rejects(pharmacies.findById(), ServiceUnavailableException);
     await assert.rejects(duties.listForPharmacy(), ServiceUnavailableException);
-    await assert.rejects(
-      duties.createIfNoOverlap(),
-      ServiceUnavailableException,
-    );
+    await assert.rejects(duties.transaction(), ServiceUnavailableException);
   });
 });
 
