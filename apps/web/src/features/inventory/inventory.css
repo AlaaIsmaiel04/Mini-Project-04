@@ -1,0 +1,166 @@
+.inventory-page {
+  display: grid;
+  gap: 24px;
+}
+.inventory-page header p {
+  color: #60756c;
+  margin-bottom: 0;
+}
+.inventory-panel {
+  padding: 24px;
+  background: white;
+  border: 1px solid #dce5e1;
+  border-radius: 10px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.inventory-panel h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+.inventory-page label,
+.inventory-preview-notice label {
+  display: grid;
+  gap: 8px;
+  font-weight: 600;
+  min-width: 0;
+}
+.inventory-page input,
+.inventory-page select,
+.inventory-preview-notice select {
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #b8c9c1;
+  border-radius: 6px;
+  background: white;
+  color: inherit;
+  font: inherit;
+}
+.inventory-page button {
+  padding: 12px 16px;
+  border: 1px solid #176b53;
+  border-radius: 6px;
+  background: #176b53;
+  color: white;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.inventory-page button:hover {
+  background: #10533f;
+}
+.inventory-page .inventory-secondary {
+  background: white;
+  color: #176b53;
+}
+.inventory-page :is(input, select, button, summary):focus-visible,
+.inventory-preview-notice select:focus-visible {
+  outline: 2px solid #176b53;
+  outline-offset: 3px;
+}
+.inventory-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+}
+.inventory-filters label {
+  flex: 1 1 200px;
+}
+.inventory-medicines,
+.inventory-batch-list {
+  display: grid;
+  gap: 20px;
+  list-style: none;
+  padding: 0;
+}
+.inventory-scientific {
+  margin-top: 0;
+  color: #60756c;
+}
+.inventory-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+}
+.inventory-badge {
+  padding: 5px 9px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.inventory-badge-healthy {
+  background: #e1f3e9;
+  color: #176b53;
+}
+.inventory-badge-expired {
+  background: #fff1f0;
+  color: #a32727;
+}
+.inventory-badge-expiring_soon {
+  background: #fff4d6;
+  color: #75520c;
+}
+.inventory-badge-low_stock {
+  background: #e9efff;
+  color: #294d9d;
+}
+.inventory-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+}
+.inventory-facts dt {
+  font-size: 13px;
+  color: #60756c;
+  margin-bottom: 4px;
+}
+.inventory-facts dd {
+  margin: 0;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.inventory-batches {
+  border-top: 1px solid #dce5e1;
+  padding-top: 16px;
+}
+.inventory-batches summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 6px 0;
+}
+.inventory-batch-list > li {
+  border: 1px solid #dce5e1;
+  border-radius: 6px;
+  padding: 16px;
+}
+.inventory-batch-list h4 {
+  margin-top: 0;
+}
+.inventory-readonly,
+.inventory-preview-notice {
+  padding: 16px;
+  border: 1px solid #dbbd6b;
+  background: #fff9e8;
+  border-radius: 8px;
+}
+.inventory-preview-notice {
+  margin-bottom: 24px;
+}
+.inventory-preview-notice select {
+  max-width: 320px;
+}
+.inventory-readonly p {
+  margin-bottom: 0;
+}
+@media (max-width: 600px) {
+  .inventory-panel {
+    padding: 16px;
+  }
+  .inventory-facts {
+    grid-template-columns: 1fr;
+  }
+}
