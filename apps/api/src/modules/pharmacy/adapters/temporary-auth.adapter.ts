@@ -2,6 +2,7 @@ import {
   type CanActivate,
   createParamDecorator,
   type ExecutionContext,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -24,10 +25,16 @@ export class TemporaryPharmacistGuard implements CanActivate {
 }
 
 export function readPharmacistActor(request: {
-  actor?: Partial<PharmacistActor>;
+  actor?: { userId?: string; role?: string; pharmacyId?: string | null };
 }): PharmacistActor {
   const actor = request.actor;
-  if (!actor?.userId || actor.role !== 'PHARMACIST' || !actor.pharmacyId) {
+  if (!actor?.userId || !actor.role) {
+    throw new UnauthorizedException('A pharmacist sign-in is required');
+  }
+  if (actor.role !== 'PHARMACIST') {
+    throw new ForbiddenException('Only pharmacists can use this endpoint');
+  }
+  if (!actor.pharmacyId) {
     throw new UnauthorizedException('A pharmacist sign-in is required');
   }
   return {

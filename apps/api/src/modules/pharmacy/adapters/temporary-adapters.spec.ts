@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import {
+  ForbiddenException,
   ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -57,20 +58,21 @@ describe('readPharmacistActor', () => {
     assert.deepEqual(readPharmacistActor({ actor }), actor);
   });
 
-  it('rejects a missing actor, an owner and a missing pharmacy', () => {
-    const requests = [
-      {},
-      {
-        actor: { userId: USER_ID, role: 'OWNER', pharmacyId: PHARMACY_ID },
-      },
-      { actor: { userId: USER_ID, role: 'PHARMACIST' } },
-    ];
+  it('rejects a missing actor and a pharmacist without a pharmacy as 401', () => {
+    const requests = [{}, { actor: { userId: USER_ID, role: 'PHARMACIST' } }];
 
     for (const request of requests) {
-      assert.throws(
-        () => readPharmacistActor(request as never),
-        UnauthorizedException,
-      );
+      assert.throws(() => readPharmacistActor(request), UnauthorizedException);
     }
+  });
+
+  it('rejects an owner as 403', () => {
+    assert.throws(
+      () =>
+        readPharmacistActor({
+          actor: { userId: USER_ID, role: 'OWNER', pharmacyId: null },
+        }),
+      ForbiddenException,
+    );
   });
 });
