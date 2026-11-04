@@ -33,6 +33,11 @@
     "typescript": "~5.9.3"
   },
   "dependencies": {
-    "@prisma/client": "^7.10.1"
+    "@prisma/client": "^6.19.0"
+  },
+  "allowScripts": {
+    "@prisma/engines": true,
+    "prisma": true,
+    "@prisma/client": true
   }
 }

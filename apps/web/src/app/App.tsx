@@ -8,7 +8,7 @@ import {
 import type { Role } from '@smartshelf/contracts';
 import { useAuth } from '../features/auth/AuthProvider';
 import { LoginPage } from '../features/auth/LoginPage';
-import { DashboardPage } from '../features/dashboard/DashboardPage';
+import DashboardPage from '../features/dashboard/DashboardPage';
 import { PharmacyProfilePage } from '../features/pharmacy/PharmacyProfilePage';
 
 function RequireRole({ role }: { role: Role }) {
