@@ -16,7 +16,7 @@ import {
   type PharmacyStore,
 } from './stores/pharmacy.store';
 
-const PHARMACY_NOT_FOUND = 'Pharmacy not found';
+export const PHARMACY_NOT_FOUND = 'Pharmacy not found';
 
 function toProfileResponse(
   pharmacy: PharmacyRecord,

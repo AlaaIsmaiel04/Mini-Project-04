@@ -10,7 +10,10 @@ export class MedicineSearchQueryDto
 {
   @ApiProperty({
     type: String,
-    description: 'Part of a display or scientific name, ignoring case',
+    minLength: 1,
+    description:
+      'Part of a display or scientific name, ignoring case. Required, and cannot be empty after surrounding spaces are removed.',
+    example: 'amox',
   })
   @Transform(trim)
   // Also rejects a missing or repeated q, because only a string can pass.

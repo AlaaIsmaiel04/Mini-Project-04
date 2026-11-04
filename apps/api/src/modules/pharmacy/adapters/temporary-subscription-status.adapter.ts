@@ -14,7 +14,7 @@ export interface SubscriptionStatusReader {
 
 // R-6: the reason returned when an inactive pharmacy attempts a change.
 // TEMPORARY: replace when Mustafa/Shiam merge. Mustafa owns the subscription-write guard.
-const INACTIVE_SUBSCRIPTION_REASONS: Record<
+export const INACTIVE_SUBSCRIPTION_REASONS: Record<
   Exclude<SubscriptionStatus, 'ACTIVE'>,
   string
 > = {

@@ -17,7 +17,9 @@ const parseStrictBoolean = ({ value }: { value: unknown }) => {
 export class PublicPharmaciesQueryDto implements PublicPharmacyFilters {
   @ApiPropertyOptional({
     type: String,
-    description: 'Exact area, ignoring case and surrounding spaces',
+    description:
+      'Exact area, ignoring case and surrounding spaces. A blank value adds no filter.',
+    example: 'Downtown',
   })
   @IsOptional()
   @Transform(trim)
@@ -26,7 +28,9 @@ export class PublicPharmaciesQueryDto implements PublicPharmacyFilters {
 
   @ApiPropertyOptional({
     type: Boolean,
-    description: 'true lists only pharmacies on duty now; false adds no filter',
+    description:
+      'Exactly true or false. true lists only pharmacies on duty now; false adds no filter.',
+    example: true,
   })
   @IsOptional()
   @Transform(parseStrictBoolean)

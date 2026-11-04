@@ -24,8 +24,8 @@ import {
 } from './stores/duty-period.store';
 
 const MAX_DUTY_MS = 24 * 60 * 60 * 1000;
-const DUTY_NOT_FOUND = 'Duty period not found';
-const DUTY_OVERLAP =
+export const DUTY_NOT_FOUND = 'Duty period not found';
+export const DUTY_OVERLAP =
   'This duty period overlaps an existing duty period. Choose times that do not overlap; a period may start exactly when another one ends.';
 
 function toDutyPeriod(period: DutyPeriodRecord): DutyPeriod {
