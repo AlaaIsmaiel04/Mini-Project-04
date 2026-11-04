@@ -6,9 +6,9 @@ Pharmacy Management & Public Medicine Search - Weekly Mini Project 04, Team 2.
 
 The frontend includes shared routing/navigation, staff sign-in requests, owner pharmacy/account/subscription forms, and inventory browsing plus medicine/batch create/edit forms. Real routes send requests using the agreed API contracts. Development-only owner/inventory previews use explicitly synthetic in-memory data and reset on refresh; they never replace failed API responses.
 
-The backend includes process health, Swagger, and Hamid's Day 1-2 profile read/update implementation, merged through PR #9 (`9d406f9`). It also includes profile/duty DTOs, test fixtures, a public response mapper, and API tests. The registered profile endpoints still use temporary adapters: authentication rejects requests, while persistence and subscription-status adapters report unavailable dependencies. Prisma has no models, migrations or seed script yet. Real sign-in and persisted workflows therefore remain pending. Public search/directory and duty endpoints, dashboard/profile/duty frontend screens, and Preferences are not integrated yet.
+The backend includes health, Swagger and Hamid's profile, duty-period, public directory and medicine-search routes, merged through PRs #9 and #10. Temporary adapters still reject private authentication and report unavailable persistence/subscription dependencies. Valid public data requests currently return 503 until these dependencies are integrated. Real sign-in and persisted workflows remain pending Mustafa and Shiam's work. Dashboard/profile/duty frontend screens, public frontend features and dark theme remain pending their assigned members. The shared EN/AR language control, saved preference and RTL foundation are implemented by Alaa; owner/inventory labels, forms and feedback also switch language. Future public/profile/dashboard features still require language integration.
 
-See [Alaa's day-by-day progress and dependencies](docs/ALAA-PROGRESS.md) and the [English demo/rehearsal plan](docs/DEMO-REHEARSAL.md). The Figma layout implementation is deferred until the functional work and team integration are ready. After Hamid's merge, owner flows, inventory forms, focus-based session checks, expiry notices and role redirects passed browser checks using development fixtures or simulated API responses. Real-API acceptance remains pending.
+See [Alaa's progress and dependencies](docs/ALAA-PROGRESS.md), the [demo/rehearsal plan](docs/DEMO-REHEARSAL.md) and [interface handoff](DESIGN.md). The existing shell, sign-in, owner and inventory screens now follow the saved Figma design, adapted to responsive layouts with English/Arabic navigation, sign-in, owner and inventory copy. See [language scope and handoff](docs/LANGUAGE.md). Functional browser checks use development fixtures or simulated API responses; real-API acceptance remains pending.
 
 ## Start locally - PowerShell
 
@@ -27,9 +27,9 @@ Copy environment files only on first setup; keep your existing local settings on
 - Synthetic owner preview (development only): <http://localhost:5173/dev/owner>
 - Synthetic inventory/forms preview (development only): <http://localhost:5173/dev/inventory>
 - API process health: <http://localhost:3000/api/health>
-- Swagger, including health and profile routes: <http://localhost:3000/api/docs>
+- Swagger, including health, profile, duty and public routes: <http://localhost:3000/api/docs>
 
-`GET` and `PATCH /api/pharmacist/profile` are registered but currently return 401 through the temporary authentication guard. This is expected until shared authentication is integrated. Profile Swagger schemas still need the documentation improvements planned for Hamid's Day 7.
+`GET` and `PATCH /api/pharmacist/profile` are registered but currently return 401 through the temporary authentication guard. This is expected until shared authentication is integrated. Hamid's route schemas and public-response documentation are included; shared authentication and persistence still need integration.
 
 See [local setup](docs/LOCAL-SETUP.md). Database commands become useful after Mustafa creates the models and initial migration. Seed scripts and accounts must be authored by the team; no demo credentials/data are supplied.
 
@@ -65,7 +65,7 @@ npm run smoke
 npm run format:check
 ```
 
-`npm test` currently runs 108 API tests and five frontend request/validation tests; all passed in the combined local checkout on 4 November 2026. API tests cover profile validation, ownership and subscription restrictions using test actors/stores, plus DTOs, public mapping and fixtures. They do not prove real JWT or PostgreSQL integration. Typecheck, production build, foundation smoke checks, and owner/inventory/session browser checks also passed after the merge. Smoke checks verify health, Swagger and the built frontend; full CORE acceptance still requires the real backend and persisted data.
+`npm test` currently runs 418 API tests and eight frontend request/validation/language tests. API tests cover profile/duty/public rules, ownership, subscription restrictions, privacy and Swagger using test actors/stores. They do not prove real JWT or PostgreSQL integration. Typecheck, production build, foundation smoke checks, and owner/inventory/session browser checks also passed after the merge. Smoke checks verify health, Swagger and the built frontend; full CORE acceptance still requires the real backend and persisted data.
 
 ## Scope and requirements
 

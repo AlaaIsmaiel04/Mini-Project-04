@@ -1,3 +1,5 @@
+import { useLanguage } from '../preferences/LanguageProvider';
+import type { MessageValue } from '../../locales/messages';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import type { OwnerPharmacy } from '@smartshelf/contracts';
@@ -10,11 +12,12 @@ export function PharmacistAccountForm({
   pharmacy: OwnerPharmacy;
   service: OwnerPharmacyService;
 }) {
+  const { t, translateMessage } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [success, setSuccess] = useState<MessageValue>('');
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -32,7 +35,10 @@ export function PharmacistAccountForm({
         password,
         pharmacyId: pharmacy.id,
       });
-      setSuccess(`Account ${user.email} was created for ${pharmacy.name}.`);
+      setSuccess({
+        key: 'Account {email} was created for {name}.',
+        params: { email: user.email, name: pharmacy.name },
+      });
       setEmail('');
     } catch (reason) {
       setError(
@@ -49,15 +55,19 @@ export function PharmacistAccountForm({
 
   return (
     <section aria-labelledby="account-heading">
-      <h4 id="account-heading">Create pharmacist account</h4>
-      <p>This account will be linked to {pharmacy.name} only.</p>
+      <h4 id="account-heading">{t('Create pharmacist account')}</h4>
+      <p>
+        {t('This account will be linked to {name} only.', {
+          name: pharmacy.name,
+        })}
+      </p>
       <form className="owner-create-form" onSubmit={submit}>
         <fieldset disabled={pending}>
           <legend className="owner-visually-hidden">
-            Pharmacist credentials
+            {t('Pharmacist credentials')}
           </legend>
           <label htmlFor="pharmacist-email">
-            Pharmacist email
+            {t('Pharmacist email')}
             <input
               id="pharmacist-email"
               type="email"
@@ -71,7 +81,7 @@ export function PharmacistAccountForm({
             />
           </label>
           <label htmlFor="pharmacist-password">
-            Initial password
+            {t('Initial password')}
             <input
               id="pharmacist-password"
               type="password"
@@ -87,16 +97,16 @@ export function PharmacistAccountForm({
         </fieldset>
         {error && (
           <p role="alert" className="form-error">
-            {error}
+            {translateMessage(error)}
           </p>
         )}
         {success && (
           <p role="status" className="owner-success">
-            {success}
+            {translateMessage(success)}
           </p>
         )}
         <button type="submit" disabled={pending}>
-          {pending ? 'Creating account…' : 'Create account'}
+          {pending ? t('Creating account…') : t('Create account')}
         </button>
       </form>
     </section>

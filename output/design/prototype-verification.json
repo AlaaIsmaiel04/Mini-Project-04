@@ -1,0 +1,722 @@
+{
+  "fileKey": "08Fxp25B9QPT0iFPfSamGN",
+  "method": "Figma browser editor; each action and destination confirmed in interaction panel",
+  "verifiedLinks": 166,
+  "links": [
+    [
+      "5:23",
+      "10 â€¢ medicine-add"
+    ],
+    [
+      "5:39",
+      "02 â€¢ inventory"
+    ],
+    [
+      "5:45",
+      "04 â€¢ profile"
+    ],
+    [
+      "5:8",
+      "20 â€¢ settings"
+    ],
+    [
+      "5:16",
+      "20 â€¢ settings"
+    ],
+    [
+      "5:55",
+      "20 â€¢ settings"
+    ],
+    [
+      "5:61",
+      "09 â€¢ login"
+    ],
+    [
+      "5:99",
+      "02 â€¢ inventory"
+    ],
+    [
+      "5:134",
+      "20 â€¢ settings"
+    ],
+    [
+      "5:140",
+      "20 â€¢ settings"
+    ],
+    [
+      "5:147",
+      "10 â€¢ medicine-add"
+    ],
+    [
+      "5:157",
+      "01 â€¢ dashboard"
+    ],
+    [
+      "5:169",
+      "04 â€¢ profile"
+    ],
+    [
+      "5:179",
+      "20 â€¢ settings"
+    ],
+    [
+      "5:185",
+      "09 â€¢ login"
+    ],
+    [
+      "5:200",
+      "19 â€¢ filters"
+    ],
+    [
+      "5:206",
+      "10 â€¢ medicine-add"
+    ],
+    [
+      "5:312",
+      "03 â€¢ detail"
+    ],
+    [
+      "5:324",
+      "20 â€¢ settings"
+    ],
+    [
+      "5:330",
+      "20 â€¢ settings"
+    ],
+    [
+      "5:337",
+      "10 â€¢ medicine-add"
+    ],
+    [
+      "5:347",
+      "01 â€¢ dashboard"
+    ],
+    [
+      "5:353",
+      "02 â€¢ inventory"
+    ],
+    [
+      "5:359",
+      "04 â€¢ profile"
+    ],
+    [
+      "5:369",
+      "20 â€¢ settings"
+    ],
+    [
+      "5:375",
+      "09 â€¢ login"
+    ],
+    [
+      "5:386",
+      "02 â€¢ inventory"
+    ],
+    [
+      "5:392",
+      "11 â€¢ medicine-edit"
+    ],
+    [
+      "5:398",
+      "12 â€¢ batch-add"
+    ],
+    [
+      "5:461",
+      "13 â€¢ batch-edit"
+    ],
+    [
+      "5:473",
+      "20 â€¢ settings"
+    ],
+    [
+      "5:479",
+      "20 â€¢ settings"
+    ],
+    [
+      "5:486",
+      "10 â€¢ medicine-add"
+    ],
+    [
+      "5:496",
+      "01 â€¢ dashboard"
+    ],
+    [
+      "5:502",
+      "02 â€¢ inventory"
+    ],
+    [
+      "5:518",
+      "20 â€¢ settings"
+    ],
+    [
+      "5:524",
+      "09 â€¢ login"
+    ],
+    [
+      "5:541",
+      "17 â€¢ duty-add"
+    ],
+    [
+      "5:570",
+      "18 â€¢ duty-edit"
+    ],
+    [
+      "5:576",
+      "27 â€¢ duty-delete"
+    ],
+    [
+      "5:597",
+      "24 â€¢ profile-success"
+    ],
+    [
+      "5:607",
+      "20 â€¢ settings"
+    ],
+    [
+      "5:613",
+      "20 â€¢ settings"
+    ],
+    [
+      "5:620",
+      "14 â€¢ onboard"
+    ],
+    [
+      "5:636",
+      "06 â€¢ subscription"
+    ],
+    [
+      "5:646",
+      "20 â€¢ settings"
+    ],
+    [
+      "5:652",
+      "09 â€¢ login"
+    ],
+    [
+      "5:748",
+      "06 â€¢ subscription"
+    ],
+    [
+      "5:754",
+      "15 â€¢ account"
+    ],
+    [
+      "5:763",
+      "20 â€¢ settings"
+    ],
+    [
+      "5:769",
+      "20 â€¢ settings"
+    ],
+    [
+      "5:776",
+      "14 â€¢ onboard"
+    ],
+    [
+      "5:786",
+      "05 â€¢ owner"
+    ],
+    [
+      "5:802",
+      "20 â€¢ settings"
+    ],
+    [
+      "5:808",
+      "09 â€¢ login"
+    ],
+    [
+      "5:825",
+      "25 â€¢ suspend"
+    ],
+    [
+      "5:831",
+      "26 â€¢ subscription-delete"
+    ],
+    [
+      "5:852",
+      "23 â€¢ subscription-success"
+    ],
+    [
+      "5:863",
+      "09 â€¢ login"
+    ],
+    [
+      "5:869",
+      "08 â€¢ directory"
+    ],
+    [
+      "5:915",
+      "21 â€¢ public-detail"
+    ],
+    [
+      "5:921",
+      "41 â€¢ call-info"
+    ],
+    [
+      "5:935",
+      "21 â€¢ public-detail"
+    ],
+    [
+      "5:941",
+      "41 â€¢ call-info"
+    ],
+    [
+      "5:955",
+      "21 â€¢ public-detail"
+    ],
+    [
+      "5:961",
+      "41 â€¢ call-info"
+    ],
+    [
+      "5:972",
+      "09 â€¢ login"
+    ],
+    [
+      "5:984",
+      "07 â€¢ search"
+    ],
+    [
+      "5:1057",
+      "21 â€¢ public-detail"
+    ],
+    [
+      "5:1071",
+      "08 â€¢ directory"
+    ],
+    [
+      "5:1077",
+      "07 â€¢ search"
+    ],
+    [
+      "5:1103",
+      "01 â€¢ dashboard"
+    ],
+    [
+      "5:1109",
+      "05 â€¢ owner"
+    ],
+    [
+      "7:303",
+      "02 â€¢ inventory"
+    ],
+    [
+      "7:311",
+      "12 â€¢ batch-add"
+    ],
+    [
+      "7:340",
+      "03 â€¢ detail"
+    ],
+    [
+      "7:346",
+      "22 â€¢ saved"
+    ],
+    [
+      "7:389",
+      "03 â€¢ detail"
+    ],
+    [
+      "7:395",
+      "22 â€¢ saved"
+    ],
+    [
+      "7:423",
+      "03 â€¢ detail"
+    ],
+    [
+      "7:429",
+      "22 â€¢ saved"
+    ],
+    [
+      "7:461",
+      "05 â€¢ owner"
+    ],
+    [
+      "7:467",
+      "15 â€¢ account"
+    ],
+    [
+      "7:495",
+      "05 â€¢ owner"
+    ],
+    [
+      "7:501",
+      "16 â€¢ subscription-create"
+    ],
+    [
+      "7:528",
+      "05 â€¢ owner"
+    ],
+    [
+      "7:534",
+      "23 â€¢ subscription-success"
+    ],
+    [
+      "7:567",
+      "04 â€¢ profile"
+    ],
+    [
+      "7:573",
+      "24 â€¢ profile-success"
+    ],
+    [
+      "7:606",
+      "04 â€¢ profile"
+    ],
+    [
+      "7:612",
+      "24 â€¢ profile-success"
+    ],
+    [
+      "7:623",
+      "02 â€¢ inventory"
+    ],
+    [
+      "7:629",
+      "02 â€¢ inventory"
+    ],
+    [
+      "7:635",
+      "02 â€¢ inventory"
+    ],
+    [
+      "7:641",
+      "02 â€¢ inventory"
+    ],
+    [
+      "7:647",
+      "02 â€¢ inventory"
+    ],
+    [
+      "7:656",
+      "02 â€¢ inventory"
+    ],
+    [
+      "7:668",
+      "01 â€¢ dashboard"
+    ],
+    [
+      "7:685",
+      "01 â€¢ dashboard"
+    ],
+    [
+      "7:703",
+      "41 â€¢ call-info"
+    ],
+    [
+      "7:712",
+      "07 â€¢ search"
+    ],
+    [
+      "9:372",
+      "03 â€¢ detail"
+    ],
+    [
+      "9:380",
+      "02 â€¢ inventory"
+    ],
+    [
+      "9:393",
+      "05 â€¢ owner"
+    ],
+    [
+      "9:404",
+      "04 â€¢ profile"
+    ],
+    [
+      "9:415",
+      "37 â€¢ suspended"
+    ],
+    [
+      "9:421",
+      "06 â€¢ subscription"
+    ],
+    [
+      "9:432",
+      "38 â€¢ none"
+    ],
+    [
+      "9:438",
+      "06 â€¢ subscription"
+    ],
+    [
+      "9:449",
+      "24 â€¢ profile-success"
+    ],
+    [
+      "9:455",
+      "04 â€¢ profile"
+    ],
+    [
+      "9:476",
+      "12 â€¢ batch-add"
+    ],
+    [
+      "9:495",
+      "18 â€¢ duty-edit"
+    ],
+    [
+      "9:507",
+      "10 â€¢ medicine-add"
+    ],
+    [
+      "9:528",
+      "02 â€¢ inventory"
+    ],
+    [
+      "9:534",
+      "01 â€¢ dashboard"
+    ],
+    [
+      "9:546",
+      "07 â€¢ search"
+    ],
+    [
+      "9:552",
+      "08 â€¢ directory"
+    ],
+    [
+      "9:572",
+      "09 â€¢ login"
+    ],
+    [
+      "9:583",
+      "09 â€¢ login"
+    ],
+    [
+      "9:589",
+      "07 â€¢ search"
+    ],
+    [
+      "9:608",
+      "02 â€¢ inventory"
+    ],
+    [
+      "9:619",
+      "23 â€¢ subscription-success"
+    ],
+    [
+      "9:625",
+      "05 â€¢ owner"
+    ],
+    [
+      "9:636",
+      "16 â€¢ subscription-create"
+    ],
+    [
+      "9:642",
+      "05 â€¢ owner"
+    ],
+    [
+      "9:653",
+      "07 â€¢ search"
+    ],
+    [
+      "9:659",
+      "09 â€¢ login"
+    ],
+    [
+      "9:670",
+      "01 â€¢ dashboard"
+    ],
+    [
+      "9:676",
+      "09 â€¢ login"
+    ],
+    [
+      "9:688",
+      "21 â€¢ public-detail"
+    ],
+    [
+      "10:461",
+      "49 â€¢ mobile-menu"
+    ],
+    [
+      "10:490",
+      "44 â€¢ mobile-detail"
+    ],
+    [
+      "10:496",
+      "43 â€¢ mobile-inventory"
+    ],
+    [
+      "10:502",
+      "47 â€¢ mobile-profile"
+    ],
+    [
+      "10:510",
+      "49 â€¢ mobile-menu"
+    ],
+    [
+      "10:522",
+      "19 â€¢ filters"
+    ],
+    [
+      "10:534",
+      "44 â€¢ mobile-detail"
+    ],
+    [
+      "10:545",
+      "44 â€¢ mobile-detail"
+    ],
+    [
+      "10:551",
+      "10 â€¢ medicine-add"
+    ],
+    [
+      "10:559",
+      "49 â€¢ mobile-menu"
+    ],
+    [
+      "10:576",
+      "13 â€¢ batch-edit"
+    ],
+    [
+      "10:582",
+      "12 â€¢ batch-add"
+    ],
+    [
+      "10:588",
+      "43 â€¢ mobile-inventory"
+    ],
+    [
+      "10:596",
+      "49 â€¢ mobile-menu"
+    ],
+    [
+      "10:632",
+      "41 â€¢ call-info"
+    ],
+    [
+      "10:639",
+      "08 â€¢ directory"
+    ],
+    [
+      "10:647",
+      "49 â€¢ mobile-menu"
+    ],
+    [
+      "10:668",
+      "05 â€¢ owner"
+    ],
+    [
+      "10:679",
+      "06 â€¢ subscription"
+    ],
+    [
+      "10:685",
+      "14 â€¢ onboard"
+    ],
+    [
+      "10:693",
+      "49 â€¢ mobile-menu"
+    ],
+    [
+      "10:713",
+      "24 â€¢ profile-success"
+    ],
+    [
+      "10:724",
+      "18 â€¢ duty-edit"
+    ],
+    [
+      "10:730",
+      "27 â€¢ duty-delete"
+    ],
+    [
+      "10:736",
+      "17 â€¢ duty-add"
+    ],
+    [
+      "10:744",
+      "49 â€¢ mobile-menu"
+    ],
+    [
+      "10:761",
+      "42 â€¢ mobile-dashboard"
+    ],
+    [
+      "10:768",
+      "45 â€¢ mobile-search"
+    ],
+    [
+      "10:784",
+      "42 â€¢ mobile-dashboard"
+    ],
+    [
+      "10:790",
+      "43 â€¢ mobile-inventory"
+    ],
+    [
+      "10:796",
+      "47 â€¢ mobile-profile"
+    ],
+    [
+      "10:802",
+      "46 â€¢ mobile-owner"
+    ],
+    [
+      "10:808",
+      "20 â€¢ settings"
+    ],
+    [
+      "10:814",
+      "45 â€¢ mobile-search"
+    ],
+    [
+      "10:820",
+      "48 â€¢ mobile-login"
+    ]
+  ],
+  "pending": [],
+  "status": "Prototype wiring and visual review complete",
+  "flows": {
+    "Pharmacist": "https://www.figma.com/proto/08Fxp25B9QPT0iFPfSamGN/SmartShelf-%E2%80%94-Complete-UI---UX?scaling=scale-down&content-scaling=fixed&show-proto-sidebar=1&starting-point-node-id=5%3A5",
+    "Owner": "https://www.figma.com/proto/08Fxp25B9QPT0iFPfSamGN/SmartShelf-%E2%80%94-Complete-UI---UX?scaling=scale-down&content-scaling=fixed&show-proto-sidebar=1&starting-point-node-id=5%3A604",
+    "Public search": "https://www.figma.com/proto/08Fxp25B9QPT0iFPfSamGN/SmartShelf-%E2%80%94-Complete-UI---UX?scaling=scale-down&content-scaling=fixed&show-proto-sidebar=1&starting-point-node-id=5%3A861",
+    "Mobile": "https://www.figma.com/proto/08Fxp25B9QPT0iFPfSamGN/SmartShelf-%E2%80%94-Complete-UI---UX?scaling=scale-down&content-scaling=fixed&show-proto-sidebar=1&starting-point-node-id=10%3A459"
+  },
+  "visualReview": {
+    "frames": 50,
+    "mobileViewport": [
+      390,
+      844
+    ],
+    "mobileOverflow": "VERTICAL",
+    "fixes": [
+      "login heading overlap",
+      "six full-height sidebars",
+      "displayed result counts",
+      "generic inventory save feedback",
+      "disabled unfinished English preference"
+    ]
+  },
+  "smokeTests": [
+    [
+      "5:5",
+      "7:277",
+      "7:352",
+      "9:364"
+    ],
+    [
+      "5:604",
+      "7:435",
+      "7:473"
+    ],
+    [
+      "5:861",
+      "7:691"
+    ],
+    [
+      "10:459",
+      "10:774"
+    ]
+  ],
+  "planReconciliation": {
+    "planned": 185,
+    "crossScreenLinks": 166,
+    "selfLinksOmitted": 18,
+    "unfinishedEnglishDisabled": 1
+  },
+  "mobileScrollSmokeTest": "Profile 10:691 scrolled in presentation mode; add-duty action becomes visible below viewport."
+}

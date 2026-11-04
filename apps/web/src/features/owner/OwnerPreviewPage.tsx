@@ -1,3 +1,4 @@
+import { useLanguage } from '../preferences/LanguageProvider';
 import { useMemo } from 'react';
 import type { OwnerPharmacy, SubscriptionStatus } from '@smartshelf/contracts';
 import { OwnerPharmaciesView } from './OwnerPharmaciesPage';
@@ -117,16 +118,16 @@ function createPreviewService(): OwnerPharmacyService {
 }
 
 export function OwnerPreviewPage() {
+  const { t, translateMessage } = useLanguage();
   const service = useMemo(createPreviewService, []);
   return (
     <>
       <aside className="owner-preview-notice">
-        <strong>Local development preview</strong>
+        <strong>{t('Local development preview')}</strong>
         <p>
-          Synthetic sample data only. Changes reset when this page is reopened
-          or refreshed. No account is signed in and no database requests are
-          made. Subscription status changes use a fixed sample date of 3
-          November 2026.
+          {t(
+            'Synthetic sample data only. Changes reset when this page is reopened or refreshed. No account is signed in and no database requests are made. Subscription status changes use a fixed sample date of 3 November 2026.',
+          )}
         </p>
       </aside>
       <OwnerPharmaciesView service={service} />

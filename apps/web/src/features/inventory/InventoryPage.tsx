@@ -1,3 +1,4 @@
+import { useLanguage } from '../preferences/LanguageProvider';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import type {
@@ -32,14 +33,15 @@ const subscriptionLabels: Record<SubscriptionStatus, string> = {
 };
 
 function Indicators({ values }: { values: (Indicator | BatchIndicator)[] }) {
+  const { t, translateMessage } = useLanguage();
   return (
-    <ul className="inventory-badges" aria-label="Indicators">
+    <ul className="inventory-badges" aria-label={t('Indicators')}>
       {values.map((value) => (
         <li
           key={value}
           className={`inventory-badge inventory-badge-${value.toLowerCase()}`}
         >
-          {indicatorLabels[value]}
+          {translateMessage(indicatorLabels[value])}
         </li>
       ))}
     </ul>
@@ -56,6 +58,7 @@ export function InventoryPage() {
 }
 
 export function InventoryView({ service }: { service: InventoryService }) {
+  const { t, translateMessage } = useLanguage();
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<Indicator | ''>('');
   const [filters, setFilters] = useState<InventoryFilters>({});
@@ -132,16 +135,17 @@ export function InventoryView({ service }: { service: InventoryService }) {
     <div className="inventory-page">
       <header>
         <h2 ref={heading} tabIndex={-1}>
-          Medicine inventory
+          {t('Medicine inventory')}
         </h2>
         <p>
-          Search your medicines and review stock, expiry indicators and batch
-          details.
+          {t(
+            'Search your medicines and review stock, expiry indicators and batch details.',
+          )}
         </p>
       </header>
       {notice && (
         <p role="status" className="inventory-success">
-          {notice}
+          {translateMessage(notice)}
         </p>
       )}
       <div className="inventory-actions">
@@ -152,10 +156,12 @@ export function InventoryView({ service }: { service: InventoryService }) {
             openEditor({ kind: 'medicine' }, event.currentTarget)
           }
         >
-          Add medicine
+          {t('Add medicine')}
         </button>
         {!loading && result && result.subscriptionStatus !== 'ACTIVE' && (
-          <span>An active subscription is required to make changes.</span>
+          <span>
+            {t('An active subscription is required to make changes.')}
+          </span>
         )}
       </div>
       {editor && (
@@ -180,23 +186,23 @@ export function InventoryView({ service }: { service: InventoryService }) {
         />
       )}
       <section
-        className="inventory-panel"
+        className="inventory-filters-panel"
         aria-labelledby="inventory-filter-heading"
       >
-        <h3 id="inventory-filter-heading">Find medicines</h3>
+        <h3 id="inventory-filter-heading">{t('Find medicines')}</h3>
         <form className="inventory-filters" onSubmit={applyFilters}>
           <label htmlFor="inventory-search">
-            Medicine name
+            {t('Medicine name')}
             <input
               id="inventory-search"
               type="search"
-              placeholder="Display or scientific name"
+              placeholder={t('Display or scientific name')}
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />
           </label>
           <label htmlFor="inventory-status">
-            Indicator
+            {t('Indicator')}
             <select
               id="inventory-status"
               value={status}
@@ -204,15 +210,15 @@ export function InventoryView({ service }: { service: InventoryService }) {
                 setStatus(event.target.value as Indicator | '')
               }
             >
-              <option value="">All indicators</option>
+              <option value="">{t('All indicators')}</option>
               {Object.entries(indicatorLabels).map(([value, label]) => (
                 <option key={value} value={value}>
-                  {label}
+                  {translateMessage(label)}
                 </option>
               ))}
             </select>
           </label>
-          <button type="submit">Search inventory</button>
+          <button type="submit">{t('Search inventory')}</button>
           <button
             type="button"
             className="inventory-secondary"
@@ -222,64 +228,90 @@ export function InventoryView({ service }: { service: InventoryService }) {
               setFilters({});
             }}
           >
-            Clear filters
+            {t('Clear filters')}
           </button>
         </form>
       </section>
       <div aria-busy={loading}>
-        {loading && <p role="status">Loading inventory…</p>}
+        {loading && <p role="status">{t('Loading inventory…')}</p>}
         {error && (
           <div className="form-error" role="alert">
-            <p>{error}</p>
+            <p>{translateMessage(error)}</p>
             <button
               type="button"
               onClick={() => setRevision((value) => value + 1)}
             >
-              Retry inventory
+              {t('Retry inventory')}
             </button>
           </div>
         )}
         {result && (
           <>
             <p>
-              Subscription:{' '}
-              <strong>{subscriptionLabels[result.subscriptionStatus]}</strong>
+              {t('Subscription:')}{' '}
+              <strong>
+                {translateMessage(
+                  subscriptionLabels[result.subscriptionStatus],
+                )}
+              </strong>
             </p>
             {result.subscriptionStatus !== 'ACTIVE' && (
               <aside className="inventory-readonly" role="status">
-                <strong>Read-only inventory</strong>
+                <strong>{t('Read-only inventory')}</strong>
                 <p>
-                  Your pharmacy's subscription is{' '}
-                  {subscriptionLabels[result.subscriptionStatus].toLowerCase()}.
-                  You can view and search your inventory, but cannot add or
-                  change medicines or batches. Contact the owner to activate
-                  your subscription.
+                  {t(
+                    "Your pharmacy's subscription is {status}. You can view and search your inventory, but cannot add or change medicines or batches. Contact the owner to activate your subscription.",
+                    {
+                      status: translateMessage(
+                        subscriptionLabels[result.subscriptionStatus],
+                      ).toLowerCase(),
+                    },
+                  )}
                 </p>
               </aside>
             )}
             <p role="status">
-              {result.items.length}{' '}
-              {result.items.length === 1 ? 'medicine' : 'medicines'} shown
+              {t(
+                result.items.length === 1
+                  ? '{count} medicine shown'
+                  : '{count} medicines shown',
+                { count: result.items.length },
+              )}
               {result.total !== result.items.length &&
-                ` (${result.total} matching in total)`}
+                t(' ({count} matching in total)', { count: result.total })}
             </p>
             {result.items.length === 0 ? (
               <p>
                 {filters.q || filters.status
-                  ? 'No medicines match these filters. Try another name or indicator.'
-                  : 'No medicines in your inventory yet.'}
+                  ? t(
+                      'No medicines match these filters. Try another name or indicator.',
+                    )
+                  : t('No medicines in your inventory yet.')}
               </p>
             ) : (
               <ul className="inventory-medicines">
+                <li className="inventory-table-head" aria-hidden="true">
+                  <span>{t('Medicine / scientific name')}</span>
+                  <span>{t('Category')}</span>
+                  <span>{t('Available')}</span>
+                  <span>{t('Reorder at')}</span>
+                  <span>{t('Indicators')}</span>
+                  <span>{t('Actions')}</span>
+                </li>
                 {result.items.map((medicine) => (
                   <li key={medicine.id}>
                     <article
-                      className="inventory-panel"
+                      className="inventory-panel inventory-row"
                       aria-labelledby={`medicine-${medicine.id}`}
                     >
-                      <h3 id={`medicine-${medicine.id}`}>
-                        {medicine.displayName}
-                      </h3>
+                      <div className="inventory-identity">
+                        <h3 id={`medicine-${medicine.id}`} dir="ltr">
+                          {medicine.displayName}
+                        </h3>
+                        <p className="inventory-scientific" dir="ltr">
+                          {medicine.scientificName}
+                        </p>
+                      </div>
                       <div className="inventory-actions">
                         <button
                           type="button"
@@ -292,7 +324,7 @@ export function InventoryView({ service }: { service: InventoryService }) {
                             )
                           }
                         >
-                          Edit medicine
+                          {t('Edit medicine')}
                         </button>
                         <button
                           type="button"
@@ -304,40 +336,44 @@ export function InventoryView({ service }: { service: InventoryService }) {
                             )
                           }
                         >
-                          Add batch
+                          {t('Add batch')}
                         </button>
                       </div>
-                      <p className="inventory-scientific">
-                        {medicine.scientificName}
-                      </p>
                       <Indicators values={medicine.indicators} />
                       <dl className="inventory-facts">
                         <div>
-                          <dt>Category</dt>
+                          <dt>{t('Category')}</dt>
                           <dd>{medicine.category}</dd>
                         </div>
                         <div>
-                          <dt>Available quantity</dt>
+                          <dt>{t('Available quantity')}</dt>
                           <dd>{medicine.availableQuantity}</dd>
                         </div>
                         <div>
-                          <dt>Reorder threshold</dt>
+                          <dt>{t('Reorder threshold')}</dt>
                           <dd>{medicine.reorderThreshold}</dd>
                         </div>
                       </dl>
                       <details className="inventory-batches">
                         <summary>
-                          Batch details ({medicine.batches.length})
+                          {t('Batch details ({count})', {
+                            count: medicine.batches.length,
+                          })}
                         </summary>
                         {medicine.batches.length === 0 ? (
                           <p>
-                            No batches have been registered for this medicine.
+                            {t(
+                              'No batches have been registered for this medicine.',
+                            )}
                           </p>
                         ) : (
                           <ul className="inventory-batch-list">
                             {medicine.batches.map((batch) => (
                               <li key={batch.id}>
-                                <h4>Batch {batch.batchNumber}</h4>
+                                <h4>
+                                  {t('Batch')}{' '}
+                                  <bdi dir="ltr">{batch.batchNumber}</bdi>
+                                </h4>
                                 <button
                                   type="button"
                                   className="inventory-secondary"
@@ -349,35 +385,42 @@ export function InventoryView({ service }: { service: InventoryService }) {
                                     )
                                   }
                                 >
-                                  Edit batch
+                                  {t('Edit batch')}
                                 </button>
                                 {batch.indicators.length > 0 && (
                                   <Indicators values={batch.indicators} />
                                 )}
                                 <dl className="inventory-facts">
                                   <div>
-                                    <dt>Quantity</dt>
+                                    <dt>{t('Quantity')}</dt>
                                     <dd>{batch.quantity}</dd>
                                   </div>
                                   <div>
-                                    <dt>Expiry date</dt>
+                                    <dt>{t('Expiry date')}</dt>
                                     <dd>
-                                      <time dateTime={batch.expiryDate}>
+                                      <time
+                                        dateTime={batch.expiryDate}
+                                        dir="ltr"
+                                      >
                                         {batch.expiryDate}
                                       </time>
                                     </dd>
                                   </div>
                                   <div>
-                                    <dt>Storage location</dt>
+                                    <dt>{t('Storage location')}</dt>
                                     <dd>{batch.storageLocation}</dd>
                                   </div>
                                   <div>
-                                    <dt>Unit cost</dt>
-                                    <dd>{batch.unitCost}</dd>
+                                    <dt>{t('Unit cost')}</dt>
+                                    <dd dir="ltr">{batch.unitCost}</dd>
                                   </div>
                                   <div>
-                                    <dt>Barcode</dt>
-                                    <dd>{batch.barcode ?? 'Not provided'}</dd>
+                                    <dt>{t('Barcode')}</dt>
+                                    <dd>
+                                      <bdi dir="ltr">
+                                        {batch.barcode ?? t('Not provided')}
+                                      </bdi>
+                                    </dd>
                                   </div>
                                 </dl>
                               </li>
