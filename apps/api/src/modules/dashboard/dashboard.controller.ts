@@ -1,30 +1,23 @@
-import { Controller, Get, Req } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards, UnauthorizedException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { DashboardService } from './dashboard.service';
+import { TemporaryAuthGuard } from './temporary-auth.guard';
 
-@ApiTags('Pharmacist Dashboard') 
+@ApiTags('Pharmacist Dashboard')
 @Controller('pharmacist/dashboard')
+@UseGuards(TemporaryAuthGuard)
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get dashboard metrics and indicators for the logged-in pharmacist' }) // وصف مختصر للعملية
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Returns calculated inventory indicators and totals scoped to the pharmacy.',
-    schema: {
-      example: {
-        totalAvailableUnits: 150,
-        totalAvailableValue: 1250.50,
-        expiringBatchesCount: 2,
-        lowStockMedicinesCount: 3,
-        expiredBatchesCount: 1,
-        totalWasteValue: 45.00
-      }
-    }
-  })
+  @ApiOperation({ summary: 'Get dashboard metrics for logged-in pharmacist' })
+  @ApiResponse({ status: 200, description: 'Dashboard metrics.' })
   async getDashboard(@Req() req: any) {
-    const pharmacyId = req.user?.pharmacyId || 'local-test-pharmacy-id';
+    const pharmacyId = req.user?.pharmacyId;
+
+    if (!pharmacyId) {
+      throw new UnauthorizedException('Pharmacy ID could not be derived from authenticated user.');
+    }
 
     return this.dashboardService.getDashboardData(pharmacyId);
   }

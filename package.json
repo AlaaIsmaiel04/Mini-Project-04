@@ -27,8 +27,12 @@
     "format:check": "prettier --check \"{apps,packages}/**/*.{ts,tsx,css,json}\" \"docs/**/*.md\" README.md"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "concurrently": "^9.2.1",
     "prettier": "^3.6.2",
     "typescript": "~5.9.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^7.10.1"
   }
 }

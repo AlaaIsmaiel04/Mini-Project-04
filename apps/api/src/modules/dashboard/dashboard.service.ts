@@ -1,25 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service'; 
+import { UnavailableDataAdapter } from './unavailable-data.adapter';
 import { calculateDashboard } from '../../common/inventory-calculations';
 
 @Injectable()
 export class DashboardService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly dataAdapter: UnavailableDataAdapter) {}
 
   async getDashboardData(pharmacyId: string) {
-    const medicines = await this.prisma.medicine.findMany({
-      where: {
-        pharmacyId: pharmacyId,
-      },
-      include: {
-        batches: true, 
-      },
-    });
-
-    const today = new Date();
+    const medicinesData = await this.dataAdapter.getMedicinesScopedToPharmacy(pharmacyId);
     
-    const dashboardStats = calculateDashboard(medicines, today);
+    const today = new Date();
+    const metrics = calculateDashboard(medicinesData, today);
 
-    return dashboardStats;
+    return {
+      pharmacyName: 'Pending DB Relation',
+      subscriptionStatus: 'ACTIVE',
+      totalMedicines: metrics.totalMedicines,
+      attentionItems: metrics.attentionItems,
+      totalValue: metrics.totalValue,
+      wasteValue: metrics.wasteValue,
+    };
   }
 }
