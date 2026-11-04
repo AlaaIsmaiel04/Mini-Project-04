@@ -1,48 +1,73 @@
 import type {
-  ApiError,
+  Batch,
+  CreateBatchInput,
+  InventoryMedicine,
   InventoryFilters,
   InventoryResponse,
+  MedicineInput,
+  UpdateBatchInput,
 } from '@smartshelf/contracts';
+import { createApiClient } from '../../lib/api';
 
 export interface InventoryService {
   list: (
     filters: InventoryFilters,
     signal?: AbortSignal,
   ) => Promise<InventoryResponse>;
+  createMedicine: (input: MedicineInput) => Promise<InventoryMedicine>;
+  updateMedicine: (
+    id: string,
+    input: MedicineInput,
+  ) => Promise<InventoryMedicine>;
+  createBatch: (medicineId: string, input: CreateBatchInput) => Promise<Batch>;
+  updateBatch: (id: string, input: UpdateBatchInput) => Promise<Batch>;
 }
 
 export function createInventoryService(
   accessToken: string,
   onUnauthorized: () => void,
 ): InventoryService {
-  const base = (import.meta.env.VITE_API_BASE_URL ?? '/api').replace(/\/$/, '');
+  const request = createApiClient(accessToken, onUnauthorized);
   return {
     async list(filters, signal) {
       const query = new URLSearchParams();
       if (filters.q?.trim()) query.set('q', filters.q.trim());
       if (filters.status) query.set('status', filters.status);
-      const response = await fetch(`${base}/pharmacist/medicines?${query}`, {
+      return request<InventoryResponse>(`/pharmacist/medicines?${query}`, {
         signal,
-        headers: { Authorization: `Bearer ${accessToken}` },
       });
-      if (!response.ok) {
-        if (response.status === 401) {
-          onUnauthorized();
-          throw new Error('Your session has expired. Please sign in again.');
-        }
-        const error = (await response
-          .json()
-          .catch(() => null)) as ApiError | null;
-        const message = Array.isArray(error?.message)
-          ? error.message.join(' ')
-          : error?.message;
-        throw new Error(
-          response.status === 404
-            ? 'The inventory API is not available yet. Please try again later.'
-            : message || 'Unable to load inventory. Please try again.',
-        );
-      }
-      return response.json() as Promise<InventoryResponse>;
+    },
+    createMedicine(input) {
+      return request<InventoryMedicine>('/pharmacist/medicines', {
+        method: 'POST',
+        body: JSON.stringify(input),
+      });
+    },
+    updateMedicine(id, input) {
+      return request<InventoryMedicine>(
+        `/pharmacist/medicines/${encodeURIComponent(id)}`,
+        {
+          method: 'PATCH',
+          body: JSON.stringify(input),
+        },
+      );
+    },
+    createBatch(medicineId, input) {
+      return request<Batch>(
+        `/pharmacist/medicines/${encodeURIComponent(medicineId)}/batches`,
+        {
+          method: 'POST',
+          body: JSON.stringify(input),
+        },
+      );
+    },
+    updateBatch(id, input) {
+      // Explicit allowlist: immutable fields cannot leak into PATCH at runtime.
+      const { quantity, expiryDate, storageLocation } = input;
+      return request<Batch>(`/pharmacist/batches/${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ quantity, expiryDate, storageLocation }),
+      });
     },
   };
 }

@@ -2,13 +2,13 @@
 
 Pharmacy Management & Public Medicine Search - Weekly Mini Project 04, Team 2.
 
-## Foundation and Day 1 baseline
+## Current implementation
 
-This repository supplies the development setup so the six members can build the project themselves. Alaa is building the shared frontend layout; product feature pages remain assigned work. The backend exposes only process health and Swagger. Feature folders contain ownership notes and empty NestJS module declarations.
+The frontend includes shared routing/navigation, staff sign-in requests, owner pharmacy/account/subscription forms, and inventory browsing plus medicine/batch create/edit forms. Real routes send requests using the agreed API contracts. Development-only owner/inventory previews use explicitly synthetic in-memory data and reset on refresh; they never replace failed API responses.
 
-Included: React/TypeScript/Vite and NestJS configuration, installed dependencies and lockfile, dev/build commands, environment examples, optional PostgreSQL Compose configuration, an empty Prisma datasource/generator, a shared API-types package, and the work plan.
+The backend includes process health, Swagger, and Hamid's Day 1-2 profile read/update implementation, merged through PR #9 (`9d406f9`). It also includes profile/duty DTOs, test fixtures, a public response mapper, and API tests. The registered profile endpoints still use temporary adapters: authentication rejects requests, while persistence and subscription-status adapters report unavailable dependencies. Prisma has no models, migrations or seed script yet. Real sign-in and persisted workflows therefore remain pending. Public search/directory and duty endpoints, dashboard/profile/duty frontend screens, and Preferences are not integrated yet.
 
-The members implement all product pages, styling, routing, forms, API requests, test data, authentication/guards, database models/migrations/seed, business calculations, feature services/DTOs and tests. There are no ready-made product screens or prewritten business rules.
+See [Alaa's day-by-day progress and dependencies](docs/ALAA-PROGRESS.md) and the [English demo/rehearsal plan](docs/DEMO-REHEARSAL.md). The Figma layout implementation is deferred until the functional work and team integration are ready. After Hamid's merge, owner flows, inventory forms, focus-based session checks, expiry notices and role redirects passed browser checks using development fixtures or simulated API responses. Real-API acceptance remains pending.
 
 ## Start locally - PowerShell
 
@@ -23,9 +23,13 @@ npm run dev
 
 Copy environment files only on first setup; keep your existing local settings on later pulls. Never commit .env files. No database is required to run the current frontend and API health endpoint.
 
-- React foundation: <http://localhost:5173>
+- React frontend: <http://localhost:5173>
+- Synthetic owner preview (development only): <http://localhost:5173/dev/owner>
+- Synthetic inventory/forms preview (development only): <http://localhost:5173/dev/inventory>
 - API process health: <http://localhost:3000/api/health>
-- Swagger, currently health only: <http://localhost:3000/api/docs>
+- Swagger, including health and profile routes: <http://localhost:3000/api/docs>
+
+`GET` and `PATCH /api/pharmacist/profile` are registered but currently return 401 through the temporary authentication guard. This is expected until shared authentication is integrated. Profile Swagger schemas still need the documentation improvements planned for Hamid's Day 7.
 
 See [local setup](docs/LOCAL-SETUP.md). Database commands become useful after Mustafa creates the models and initial migration. Seed scripts and accounts must be authored by the team; no demo credentials/data are supplied.
 
@@ -44,11 +48,11 @@ Each member builds their area from scratch. The [team plan](docs/TEAM-PLAN.md) a
 
 ## Work independently
 
-- Agree route names, response fields, shared helper signatures and database needs on Day 1. The [API proposal](docs/API-CONTRACT.md) is a planning document; the team writes the actual types and code.
-- Frontend members create their own small feature-local fixtures while APIs are in progress. No fixtures or adapters are prebuilt.
+- Use the approved [API contract baseline](docs/API-CONTRACT.md) and shared wire types. Coordinate changes to response fields, helper signatures and database needs with the affected members.
+- Frontend members maintain feature-local fixtures while APIs are in progress. The current owner/inventory previews use member-authored synthetic data; real routes never fall back to it.
 - Backend members create their own service tests/fake persistence inputs while shared authentication work proceeds.
 - Work mainly in your assigned folders. Alaa coordinates shared frontend/types changes; Mustafa authors migrations.
-- Existing branches: alaa, mustafa, hamid, Mohammad, Yousef, Sheam (Shiam). Branch names are case-sensitive conventions, not per-member access restrictions.
+- Team branches include alaa, mustafa, hamid, hamid-final, Mohammad, Yousef and Sheam (Shiam). Branch names are case-sensitive conventions, not per-member access restrictions.
 - Publish the reviewed foundation through a PR first. Then integrate small PRs into main throughout the two weeks.
 
 ## Checks
@@ -61,7 +65,7 @@ npm run smoke
 npm run format:check
 ```
 
-No feature tests exist yet; the test runner says so explicitly until members add .spec.ts files. Smoke checks only verify foundation startup/health and the built frontend. CI does not claim business features are implemented.
+`npm test` currently runs 108 API tests and five frontend request/validation tests; all passed in the combined local checkout on 4 November 2026. API tests cover profile validation, ownership and subscription restrictions using test actors/stores, plus DTOs, public mapping and fixtures. They do not prove real JWT or PostgreSQL integration. Typecheck, production build, foundation smoke checks, and owner/inventory/session browser checks also passed after the merge. Smoke checks verify health, Swagger and the built frontend; full CORE acceptance still requires the real backend and persisted data.
 
 ## Scope and requirements
 
