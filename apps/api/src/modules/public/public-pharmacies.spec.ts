@@ -19,6 +19,8 @@ import { PublicPharmaciesQueryDto } from './dto/public-pharmacies-query.dto';
 import { PublicController } from './public.controller';
 import { PublicModule } from './public.module';
 import { PublicService } from './public.service';
+import { MEDICINE_AVAILABILITY_STORE } from './stores/medicine-availability.store';
+import { InMemoryMedicineAvailabilityStore } from './testing/in-memory-medicine-availability.store';
 
 const CENTRAL = '11111111-1111-4111-8111-111111111111';
 const EASTERN = '22222222-2222-4222-8222-222222222222';
@@ -158,6 +160,11 @@ describe('GET /public/pharmacies', () => {
         { provide: DUTY_PERIOD_STORE, useValue: periods },
         { provide: SUBSCRIPTION_STATUS, useValue: subscriptions },
         { provide: CLOCK, useValue: { now: () => clock.now() } },
+        // No pharmacy has any stock: the directory must list them anyway.
+        {
+          provide: MEDICINE_AVAILABILITY_STORE,
+          useValue: new InMemoryMedicineAvailabilityStore([]),
+        },
       ],
     })(DirectoryTestModule);
 

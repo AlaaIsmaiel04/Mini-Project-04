@@ -2,8 +2,6 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { InMemoryMedicineAvailabilityStore } from './in-memory-medicine-availability.store';
 
-const TODAY = '2026-11-04';
-
 const medicine = (
   pharmacyId: string,
   batches: { quantity: number; expiryDate: string }[],
@@ -17,52 +15,36 @@ describe('InMemoryMedicineAvailabilityStore', () => {
     ]);
 
     for (const q of ['amox', 'XIL 5', 'CILLIN']) {
-      assert.deepEqual(await store.findPharmacyIdsWithEligibleStock(q, TODAY), [
-        'a',
-      ]);
+      const batches = await store.listBatchesOfMatchingMedicines(q);
+
+      assert.deepEqual(
+        batches.map((batch) => batch.pharmacyId),
+        ['a'],
+      );
     }
   });
 
-  it('counts a batch expiring today but not one that expired yesterday', async () => {
+  it('returns nothing when no name matches', async () => {
     const store = new InMemoryMedicineAvailabilityStore([
-      medicine('today', [{ quantity: 1, expiryDate: TODAY }]),
-      medicine('yesterday', [{ quantity: 1, expiryDate: '2026-11-03' }]),
+      medicine('a', [{ quantity: 5, expiryDate: '2027-01-01' }]),
     ]);
 
-    assert.deepEqual(
-      await store.findPharmacyIdsWithEligibleStock('amox', TODAY),
-      ['today'],
-    );
+    assert.deepEqual(await store.listBatchesOfMatchingMedicines('brufen'), []);
   });
 
-  it('excludes zero-only and expired-only stock', async () => {
-    const store = new InMemoryMedicineAvailabilityStore([
-      medicine('zero', [{ quantity: 0, expiryDate: '2027-01-01' }]),
-      medicine('expired', [{ quantity: 9, expiryDate: '2026-01-01' }]),
-      medicine('split', [
-        { quantity: 0, expiryDate: '2027-01-01' },
-        { quantity: 9, expiryDate: '2026-01-01' },
-      ]),
-    ]);
-
-    assert.deepEqual(
-      await store.findPharmacyIdsWithEligibleStock('amox', TODAY),
-      [],
-    );
-  });
-
-  it('returns a pharmacy once when several medicines and batches match', async () => {
+  it('returns one row per batch, whatever the stock', async () => {
     const store = new InMemoryMedicineAvailabilityStore([
       medicine('a', [
-        { quantity: 1, expiryDate: '2027-01-01' },
-        { quantity: 2, expiryDate: '2027-02-01' },
+        { quantity: 0, expiryDate: '2027-01-01' },
+        { quantity: 9, expiryDate: '2020-01-01' },
       ]),
       medicine('a', [{ quantity: 3, expiryDate: '2027-03-01' }], 'Amoxil 250'),
     ]);
 
-    assert.deepEqual(
-      await store.findPharmacyIdsWithEligibleStock('amox', TODAY),
-      ['a'],
-    );
+    assert.deepEqual(await store.listBatchesOfMatchingMedicines('amox'), [
+      { pharmacyId: 'a', quantity: 0, expiryDate: '2027-01-01' },
+      { pharmacyId: 'a', quantity: 9, expiryDate: '2020-01-01' },
+      { pharmacyId: 'a', quantity: 3, expiryDate: '2027-03-01' },
+    ]);
   });
 });

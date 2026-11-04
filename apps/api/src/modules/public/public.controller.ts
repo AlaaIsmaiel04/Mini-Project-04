@@ -1,6 +1,7 @@
 import { Controller, Get, Inject, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { ListResponse, PublicPharmacy } from '@smartshelf/contracts';
+import { MedicineSearchQueryDto } from './dto/medicine-search-query.dto';
 import { PublicPharmaciesQueryDto } from './dto/public-pharmacies-query.dto';
 import { PublicService } from './public.service';
 
@@ -18,5 +19,16 @@ export class PublicController {
     @Query() query: PublicPharmaciesQueryDto,
   ): Promise<ListResponse<PublicPharmacy>> {
     return this.service.listPharmacies(query);
+  }
+
+  @ApiOperation({
+    summary:
+      'Search a medicine name and list the pharmacies that have it available; returns pharmacy fields only',
+  })
+  @Get('medicines')
+  searchMedicines(
+    @Query() query: MedicineSearchQueryDto,
+  ): Promise<ListResponse<PublicPharmacy>> {
+    return this.service.searchMedicines(query);
   }
 }
