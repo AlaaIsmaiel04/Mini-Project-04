@@ -20,16 +20,24 @@ export interface DashboardMetrics {
 }
 
 export function getAmmanMidnight(date: Date): Date {
-  const ammanString = date.toLocaleString('en-US', { timeZone: 'Asia/Amman' });
-  const ammanDate = new Date(ammanString);
-  ammanDate.setHours(0, 0, 0, 0);
-  return ammanDate;
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Amman',
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric'
+  }).formatToParts(date);
+  
+  const year = parseInt(parts.find(p => p.type === 'year')!.value, 10);
+  const month = parseInt(parts.find(p => p.type === 'month')!.value, 10) - 1;
+  const day = parseInt(parts.find(p => p.type === 'day')!.value, 10);
+  
+  return new Date(Date.UTC(year, month, day));
 }
 
 export function calculateDashboard(medicines: Medicine[], businessDate: Date): DashboardMetrics {
   const todayAmman = getAmmanMidnight(businessDate);
-  const plus90Amman = new Date(todayAmman);
-  plus90Amman.setDate(todayAmman.getDate() + 90);
+  
+  const plus90Amman = new Date(todayAmman.getTime() + 90 * 24 * 60 * 60 * 1000);
 
   let totalMedicines = medicines.length;
   let totalAvailableUnits = 0;

@@ -7,9 +7,9 @@ describe('Inventory Calculations', () => {
     const businessDate = new Date('2026-11-04T12:00:00Z'); 
     const today = getAmmanMidnight(businessDate);
     
-    const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
-    const plus90 = new Date(today); plus90.setDate(today.getDate() + 90);
-    const plus91 = new Date(today); plus91.setDate(today.getDate() + 91);
+    const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+    const plus90 = new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000);
+    const plus91 = new Date(today.getTime() + 91 * 24 * 60 * 60 * 1000);
 
     const medicines = [
       {
