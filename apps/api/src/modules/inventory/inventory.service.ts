@@ -6,16 +6,22 @@ import {
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import type {
+  Batch,
   InventoryMedicine,
   InventoryResponse,
 } from '@smartshelf/contracts';
 import type { Actor } from '../../common/security';
 import { requirePharmacy } from '../../common/security';
-import { businessDate } from '../../common/business-date';
-import { toMedicine } from '../../common/inventory-mapper';
+import { businessDate, parseCalendarDate } from '../../common/business-date';
+import { toBatch, toMedicine } from '../../common/inventory-mapper';
 import { effectiveSubscriptionStatus } from '../../common/subscription-status';
 import { PrismaService } from '../../prisma/prisma.service';
-import { InventoryQueryDto, MedicineDto } from './dto/inventory.dto';
+import {
+  CreateBatchDto,
+  InventoryQueryDto,
+  MedicineDto,
+  UpdateBatchDto,
+} from './dto/inventory.dto';
 
 @Injectable()
 export class InventoryService {
@@ -134,6 +140,53 @@ export class InventoryService {
         include: { batches: true },
       });
       return toMedicine(medicine, today);
+    });
+  }
+
+  createBatch(
+    actor: Actor,
+    medicineId: string,
+    dto: CreateBatchDto,
+  ): Promise<Batch> {
+    return this.mutate(actor, async (tx, pharmacyId, today) => {
+      const medicine = await tx.medicine.findFirst({
+        where: { id: medicineId, pharmacyId },
+        select: { id: true },
+      });
+      if (!medicine)
+        throw new NotFoundException('Medicine not found in your pharmacy.');
+      const batch = await tx.batch.create({
+        data: {
+          medicineId,
+          batchNumber: dto.batchNumber,
+          quantity: dto.quantity,
+          expiryDate: parseCalendarDate(dto.expiryDate),
+          storageLocation: dto.storageLocation,
+          unitCost: new Prisma.Decimal(dto.unitCost),
+          barcode: dto.barcode || null,
+        },
+      });
+      return toBatch(batch, today);
+    });
+  }
+
+  updateBatch(actor: Actor, id: string, dto: UpdateBatchDto): Promise<Batch> {
+    return this.mutate(actor, async (tx, pharmacyId, today) => {
+      const existing = await tx.batch.findFirst({
+        where: { id, medicine: { pharmacyId } },
+        select: { id: true },
+      });
+      if (!existing)
+        throw new NotFoundException('Batch not found in your pharmacy.');
+      const batch = await tx.batch.update({
+        where: { id },
+        data: {
+          quantity: dto.quantity,
+          expiryDate: parseCalendarDate(dto.expiryDate),
+          storageLocation: dto.storageLocation,
+        },
+      });
+      return toBatch(batch, today);
     });
   }
 }
