@@ -2,6 +2,7 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
@@ -25,6 +26,7 @@ import {
 
 @Injectable()
 export class InventoryService {
+  private readonly logger = new Logger(InventoryService.name);
   constructor(private readonly prisma: PrismaService) {}
 
   async list(
@@ -92,8 +94,15 @@ export class InventoryService {
             `Subscription is ${status}; inventory is read-only.`,
           );
         const saved = await action(tx, pharmacyId, today);
+        await tx.pharmacy.update({
+          where: { id: pharmacyId },
+          data: { inventoryUpdatedAt: new Date() },
+        });
         return saved;
       });
+      this.logger.log(
+        `Committed inventory mutation for pharmacy ${pharmacyId}`,
+      );
       return result;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
