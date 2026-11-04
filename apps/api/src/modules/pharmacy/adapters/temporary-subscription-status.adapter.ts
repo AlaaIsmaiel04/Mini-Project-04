@@ -1,4 +1,9 @@
-import { Injectable, ServiceUnavailableException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  type Logger,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import type { SubscriptionStatus } from '@smartshelf/contracts';
 
 export const SUBSCRIPTION_STATUS = Symbol('SUBSCRIPTION_STATUS');
@@ -19,6 +24,20 @@ export const INACTIVE_SUBSCRIPTION_REASONS: Record<
     'Your subscription is suspended. Changes are not allowed until it is reactivated.',
   NONE: 'Your pharmacy has no active subscription. Changes are not allowed.',
 };
+
+export async function assertSubscriptionActive(
+  subscriptions: SubscriptionStatusReader,
+  pharmacyId: string,
+  logger: Logger,
+): Promise<void> {
+  const status = await subscriptions.getEffectiveStatus(pharmacyId);
+  if (status === 'ACTIVE') return;
+
+  logger.warn(
+    `Change rejected for pharmacy ${pharmacyId}: subscription is ${status}`,
+  );
+  throw new ForbiddenException(INACTIVE_SUBSCRIPTION_REASONS[status]);
+}
 
 // TEMPORARY: replace when Mustafa/Shiam merge.
 // Shiam owns the effective-status rule. Until it is merged the status is unknown,

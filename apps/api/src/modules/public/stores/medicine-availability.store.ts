@@ -5,17 +5,26 @@ export const MEDICINE_AVAILABILITY_STORE = Symbol(
   'MEDICINE_AVAILABILITY_STORE',
 );
 
+// Only what the availability rule needs, so medicine names, batch numbers, costs and
+// storage locations never reach the public service.
+export interface MedicineBatchStock {
+  pharmacyId: string;
+  quantity: number;
+  // Calendar date, YYYY-MM-DD.
+  expiryDate: string;
+}
+
 export interface MedicineAvailabilityStore {
   /**
-   * Ids of pharmacies, each once, with a medicine whose display or scientific name
-   * partially matches q (case-insensitive) and a batch with quantity above zero that
-   * is not expired on `today` (YYYY-MM-DD). Subscription status is checked separately.
+   * One row per batch of every medicine whose display or scientific name contains q,
+   * ignoring case, whatever the stock. `PublicService` decides which batches count.
+   * q is plain text, not a pattern, so % and _ must match literally.
    */
-  findPharmacyIdsWithEligibleStock(q: string, today: string): Promise<string[]>;
+  listBatchesOfMatchingMedicines(q: string): Promise<MedicineBatchStock[]>;
 }
 
 // TEMPORARY: replace when Mustafa/Shiam merge.
 @Injectable()
 export class TemporaryUnavailableMedicineAvailabilityStore implements MedicineAvailabilityStore {
-  findPharmacyIdsWithEligibleStock = dataUnavailable;
+  listBatchesOfMatchingMedicines = dataUnavailable;
 }

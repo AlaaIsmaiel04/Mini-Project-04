@@ -7,16 +7,36 @@ import {
   UseFilters,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import type { ProfileResponse } from '@smartshelf/contracts';
 import {
   CurrentPharmacist,
   type PharmacistActor,
   TemporaryPharmacistGuard,
 } from './adapters/temporary-auth.adapter';
+import {
+  ApiErrors,
+  CHANGE_FORBIDDEN,
+  DATA_UNAVAILABLE,
+  type DocumentedError,
+  NOT_A_PHARMACIST,
+  NOT_SIGNED_IN,
+} from './api-errors';
+import { ProfileResponseDto } from './dto/profile-response.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { ProfileRejectionFilter } from './profile-rejection.filter';
-import { ProfileService } from './profile.service';
+import { PHARMACY_NOT_FOUND, ProfileService } from './profile.service';
+import { RejectedChangeFilter } from './rejected-change.filter';
+
+const PROFILE_NOT_FOUND: DocumentedError = {
+  status: 404,
+  description: 'The pharmacy of the signed-in account no longer exists.',
+  message: PHARMACY_NOT_FOUND,
+};
 
 @ApiTags('pharmacist')
 @ApiBearerAuth()
@@ -30,7 +50,19 @@ export class ProfileController {
 
   @ApiOperation({
     summary: 'Read own pharmacy profile; allowed for inactive subscriptions',
+    description:
+      'The pharmacy comes from the signed-in account, never from the request.',
   })
+  @ApiOkResponse({
+    type: ProfileResponseDto,
+    description: 'Your pharmacy and its effective subscription status.',
+  })
+  @ApiErrors(
+    NOT_SIGNED_IN,
+    NOT_A_PHARMACIST,
+    PROFILE_NOT_FOUND,
+    DATA_UNAVAILABLE,
+  )
   @Get()
   getProfile(
     @CurrentPharmacist() actor: PharmacistActor,
@@ -40,8 +72,26 @@ export class ProfileController {
 
   @ApiOperation({
     summary: 'Update own area, address and phone; requires ACTIVE subscription',
+    description:
+      'All three fields are required. The pharmacy comes from the signed-in account, never from the request.',
   })
-  @UseFilters(ProfileRejectionFilter)
+  @ApiOkResponse({
+    type: ProfileResponseDto,
+    description: 'Saved. Returns your updated pharmacy.',
+  })
+  @ApiErrors(
+    {
+      status: 400,
+      description:
+        'A field is missing or invalid, or the body has an unknown field such as name or pharmacyId. Nothing is saved.',
+      message: ['property name should not exist'],
+    },
+    NOT_SIGNED_IN,
+    CHANGE_FORBIDDEN,
+    PROFILE_NOT_FOUND,
+    DATA_UNAVAILABLE,
+  )
+  @UseFilters(RejectedChangeFilter)
   @Patch()
   updateProfile(
     @CurrentPharmacist() actor: PharmacistActor,

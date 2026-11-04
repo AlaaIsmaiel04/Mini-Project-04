@@ -1,17 +1,11 @@
-import {
-  ForbiddenException,
-  Inject,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import type {
   ProfileResponse,
   SubscriptionStatus,
 } from '@smartshelf/contracts';
 import type { PharmacistActor } from './adapters/temporary-auth.adapter';
 import {
-  INACTIVE_SUBSCRIPTION_REASONS,
+  assertSubscriptionActive,
   SUBSCRIPTION_STATUS,
   type SubscriptionStatusReader,
 } from './adapters/temporary-subscription-status.adapter';
@@ -22,7 +16,7 @@ import {
   type PharmacyStore,
 } from './stores/pharmacy.store';
 
-const PHARMACY_NOT_FOUND = 'Pharmacy not found';
+export const PHARMACY_NOT_FOUND = 'Pharmacy not found';
 
 function toProfileResponse(
   pharmacy: PharmacyRecord,
@@ -63,15 +57,11 @@ export class ProfileService {
     actor: PharmacistActor,
     input: UpdateProfileDto,
   ): Promise<ProfileResponse> {
-    const status = await this.subscriptions.getEffectiveStatus(
+    await assertSubscriptionActive(
+      this.subscriptions,
       actor.pharmacyId,
+      this.logger,
     );
-    if (status !== 'ACTIVE') {
-      this.logger.warn(
-        `Profile change rejected for pharmacy ${actor.pharmacyId}: subscription is ${status}`,
-      );
-      throw new ForbiddenException(INACTIVE_SUBSCRIPTION_REASONS[status]);
-    }
 
     const pharmacy = await this.pharmacies.updateProfile(actor.pharmacyId, {
       area: input.area,
@@ -80,6 +70,6 @@ export class ProfileService {
     });
     if (!pharmacy) throw new NotFoundException(PHARMACY_NOT_FOUND);
 
-    return toProfileResponse(pharmacy, status);
+    return toProfileResponse(pharmacy, 'ACTIVE');
   }
 }

@@ -3,64 +3,67 @@ import type {
   DutyPeriodRecord,
   DutyPeriodStore,
   DutyTimes,
-  DutyWriteResult,
 } from '../stores/duty-period.store';
 
 const byStart = (a: DutyTimes, b: DutyTimes) =>
   a.startsAt.getTime() - b.startsAt.getTime();
 
-// Test only: never bind this in a module. Each write runs without yielding, which
-// is not evidence of concurrency safety; that needs the real database.
+// Test only: never bind this in a module. Like a database with no transaction, a read
+// and a later write are separate steps. A read takes its snapshot and then waits for
+// readLatency, so simultaneous callers can all read before any of them writes.
 export class InMemoryDutyPeriodStore implements DutyPeriodStore {
   private periods: DutyPeriodRecord[] = [];
 
-  async listForPharmacy(pharmacyId: string): Promise<DutyPeriodRecord[]> {
-    return this.periods
-      .filter((period) => period.pharmacyId === pharmacyId)
-      .sort(byStart)
-      .map((period) => ({ ...period }));
+  constructor(
+    private readonly readLatency: () => Promise<void> = () => Promise.resolve(),
+    private readonly newId: () => string = randomUUID,
+  ) {}
+
+  listForPharmacy(pharmacyId: string): Promise<DutyPeriodRecord[]> {
+    return this.read((period) => period.pharmacyId === pharmacyId);
   }
 
-  async listEndingAfter(
+  listEndingAfter(
     pharmacyIds: string[],
     at: Date,
   ): Promise<DutyPeriodRecord[]> {
-    return this.periods
-      .filter(
-        (period) =>
-          pharmacyIds.includes(period.pharmacyId) &&
-          period.endsAt.getTime() > at.getTime(),
-      )
-      .sort(byStart)
-      .map((period) => ({ ...period }));
+    return this.read(
+      (period) =>
+        pharmacyIds.includes(period.pharmacyId) &&
+        period.endsAt.getTime() > at.getTime(),
+    );
   }
 
-  async createIfNoOverlap(
+  async findForPharmacy(
+    pharmacyId: string,
+    id: string,
+  ): Promise<DutyPeriodRecord | null> {
+    const [period] = await this.read(
+      (candidate) => candidate.id === id && candidate.pharmacyId === pharmacyId,
+    );
+    return period ?? null;
+  }
+
+  async create(
     pharmacyId: string,
     { startsAt, endsAt }: DutyTimes,
-  ): Promise<Exclude<DutyWriteResult, { status: 'not_found' }>> {
-    if (this.overlaps(pharmacyId, { startsAt, endsAt })) {
-      return { status: 'overlap' };
-    }
-    const period = { id: randomUUID(), pharmacyId, startsAt, endsAt };
+  ): Promise<DutyPeriodRecord> {
+    const period = { id: this.newId(), pharmacyId, startsAt, endsAt };
     this.periods.push(period);
-    return { status: 'saved', period: { ...period } };
+    return { ...period };
   }
 
-  async updateIfNoOverlap(
+  async update(
     pharmacyId: string,
     id: string,
     { startsAt, endsAt }: DutyTimes,
-  ): Promise<DutyWriteResult> {
+  ): Promise<DutyPeriodRecord> {
     const period = this.periods.find(
       (candidate) => candidate.id === id && candidate.pharmacyId === pharmacyId,
     );
-    if (!period) return { status: 'not_found' };
-    if (this.overlaps(pharmacyId, { startsAt, endsAt }, id)) {
-      return { status: 'overlap' };
-    }
+    if (!period) throw new Error(`No duty period ${id}`);
     Object.assign(period, { startsAt, endsAt });
-    return { status: 'saved', period: { ...period } };
+    return { ...period };
   }
 
   async delete(pharmacyId: string, id: string): Promise<boolean> {
@@ -72,18 +75,19 @@ export class InMemoryDutyPeriodStore implements DutyPeriodStore {
     return deleted;
   }
 
-  // Half-open intervals: a period may start at the exact end of another.
-  private overlaps(
-    pharmacyId: string,
-    { startsAt, endsAt }: DutyTimes,
-    ignoredId?: string,
-  ): boolean {
-    return this.periods.some(
-      (period) =>
-        period.pharmacyId === pharmacyId &&
-        period.id !== ignoredId &&
-        period.startsAt.getTime() < endsAt.getTime() &&
-        startsAt.getTime() < period.endsAt.getTime(),
-    );
+  // Provides no isolation, so tests show what PharmacyLock alone protects.
+  transaction<T>(work: (store: DutyPeriodStore) => Promise<T>): Promise<T> {
+    return work(this);
+  }
+
+  private async read(
+    matches: (period: DutyPeriodRecord) => boolean,
+  ): Promise<DutyPeriodRecord[]> {
+    const snapshot = this.periods
+      .filter(matches)
+      .sort(byStart)
+      .map((period) => ({ ...period }));
+    await this.readLatency();
+    return snapshot;
   }
 }

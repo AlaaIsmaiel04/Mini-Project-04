@@ -8,6 +8,9 @@ import {
   TemporaryUnavailablePharmacyStore,
 } from './adapters/temporary-unavailable-stores';
 import { CLOCK, SystemClock } from './clock';
+import { DutyPeriodController } from './duty-period.controller';
+import { DutyPeriodService } from './duty-period.service';
+import { PharmacyLock } from './pharmacy-lock';
 import { ProfileController } from './profile.controller';
 import { ProfileService } from './profile.service';
 import { DUTY_PERIOD_STORE } from './stores/duty-period.store';
@@ -15,9 +18,11 @@ import { PHARMACY_STORE } from './stores/pharmacy.store';
 
 /** Hamid: own profile and duty-period persistence/validation. */
 @Module({
-  controllers: [ProfileController],
+  controllers: [ProfileController, DutyPeriodController],
   providers: [
     ProfileService,
+    DutyPeriodService,
+    PharmacyLock,
     { provide: CLOCK, useClass: SystemClock },
     // TEMPORARY: replace when Mustafa/Shiam merge.
     { provide: PHARMACY_STORE, useClass: TemporaryUnavailablePharmacyStore },

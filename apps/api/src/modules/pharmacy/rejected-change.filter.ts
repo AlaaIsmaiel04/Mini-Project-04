@@ -10,19 +10,19 @@ import type { Request, Response } from 'express';
 type RequestWithActor = Request & { actor?: { pharmacyId?: string | null } };
 
 /**
- * Validation runs before the service, so rejected bodies are logged here. Only the
+ * Validation runs before the service, so rejected requests are logged here. Only the
  * pharmacy is logged: submitted values and even field names come from the caller.
  */
 @Catch(BadRequestException)
-export class ProfileRejectionFilter implements ExceptionFilter<BadRequestException> {
-  private readonly logger = new Logger(ProfileRejectionFilter.name);
+export class RejectedChangeFilter implements ExceptionFilter<BadRequestException> {
+  private readonly logger = new Logger(RejectedChangeFilter.name);
 
   catch(exception: BadRequestException, host: ArgumentsHost): void {
     const http = host.switchToHttp();
     const pharmacyId = http.getRequest<RequestWithActor>().actor?.pharmacyId;
 
     this.logger.warn(
-      `Profile change rejected for pharmacy ${pharmacyId}: invalid input`,
+      `Change rejected for pharmacy ${pharmacyId}: invalid input`,
     );
     http
       .getResponse<Response>()
