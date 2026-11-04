@@ -16,6 +16,7 @@ export class InMemoryDutyPeriodStore implements DutyPeriodStore {
 
   constructor(
     private readonly readLatency: () => Promise<void> = () => Promise.resolve(),
+    private readonly newId: () => string = randomUUID,
   ) {}
 
   listForPharmacy(pharmacyId: string): Promise<DutyPeriodRecord[]> {
@@ -47,7 +48,7 @@ export class InMemoryDutyPeriodStore implements DutyPeriodStore {
     pharmacyId: string,
     { startsAt, endsAt }: DutyTimes,
   ): Promise<DutyPeriodRecord> {
-    const period = { id: randomUUID(), pharmacyId, startsAt, endsAt };
+    const period = { id: this.newId(), pharmacyId, startsAt, endsAt };
     this.periods.push(period);
     return { ...period };
   }
