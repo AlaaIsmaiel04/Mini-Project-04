@@ -38,11 +38,11 @@ function errorMessage(error: unknown) {
 
 export function OwnerPharmaciesPage() {
   const { pharmacyId } = useParams();
-  const { accessToken, signOut } = useAuth();
+  const { accessToken, invalidateSession } = useAuth();
   // Keep the service stable while the current session is unchanged.
   const service = useMemo(
-    () => createOwnerPharmacyService(accessToken ?? '', signOut),
-    [accessToken, signOut],
+    () => createOwnerPharmacyService(accessToken ?? '', invalidateSession),
+    [accessToken, invalidateSession],
   );
   return pharmacyId ? (
     <OwnerSubscriptionRoute service={service} />

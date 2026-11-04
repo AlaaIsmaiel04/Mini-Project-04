@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './AuthProvider';
 
 export function LoginPage() {
-  const { user, signIn } = useAuth();
+  const { user, signIn, sessionNotice } = useAuth();
+  const location = useLocation();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,10 +14,7 @@ export function LoginPage() {
 
   if (user) {
     return (
-      <Navigate
-        to={user.role === 'OWNER' ? '/owner' : '/pharmacist'}
-        replace
-      />
+      <Navigate to={user.role === 'OWNER' ? '/owner' : '/pharmacist'} replace />
     );
   }
 
@@ -48,6 +46,11 @@ export function LoginPage() {
     <section className="auth-card">
       <h2>Staff sign in</h2>
       <p>Sign in to manage your workspace.</p>
+      {(sessionNotice || location.state?.signInRequired) && (
+        <p role="status">
+          {sessionNotice || 'Please sign in to open your workspace.'}
+        </p>
+      )}
 
       <form className="auth-form" onSubmit={handleSubmit}>
         <label htmlFor="login-email">

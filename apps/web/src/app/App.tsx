@@ -26,7 +26,7 @@ function RequireRole({ role }: { role: Role }) {
   const { user } = useAuth();
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace state={{ signInRequired: true }} />;
   }
 
   if (user.role !== role) {

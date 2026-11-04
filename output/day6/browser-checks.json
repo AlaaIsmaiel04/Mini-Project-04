@@ -1,0 +1,29 @@
+{
+  "date": "2026-11-04",
+  "route": "/dev/inventory",
+  "method": "Browser UI through CUA; synthetic in-memory service, fixed fixture date 2026-11-03",
+  "checks": [
+    "Medicine create: required/whitespace validation and successful creation with refreshed count",
+    "Medicine edit: duplicate conflict retains draft; retry saves; cancellation leaves record unchanged",
+    "Batch create: fractional quantity rejected; zero quantity and historical expiry saved; leading-zero barcode preserved",
+    "Batch edit: quantity/expiry/location save updates available units; immutable fields unchanged",
+    "Duplicate batch conflict preserves draft; cancel does not add; current filters retained after save and newly nonmatching item disappears",
+    "400/404/network failed saves display reasons and preserve editable draft",
+    "403 preserves reason/draft, locks save, permits cancel without changing record",
+    "Successful save with failed subsequent read retains success + error; Retry loads saved record without resubmitting mutation",
+    "Slow save disables fields, Save, and Cancel until completion",
+    "EXPIRED/SUSPENDED/NONE disable mutation and retain draft; ACTIVE restores editing",
+    "Mobile 390px batch form has no horizontal overflow; keyboard moves through read-only/editable fields to Save/Cancel; keyboard Cancel preserves original quantity",
+    "390px medicine form has no horizontal overflow and keyboard submit creates medicine and refreshes count",
+    "Focus restoration is synchronous after Cancel; subsequent Add opens the correct editor",
+    "Final batch Cancel regression: unsaved quantity 111 discarded; saved 80 retained; focus restored to Edit batch"
+  ],
+  "pending": [
+    "Real API authentication/authorization",
+    "PostgreSQL persistence and backend rule acceptance"
+  ],
+  "screenshots": [
+    "desktop-batch-editor.png",
+    "mobile-medicine-form.png"
+  ]
+}

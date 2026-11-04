@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import type {
   BatchIndicator,
@@ -10,6 +10,12 @@ import type {
 import { useAuth } from '../auth/AuthProvider';
 import { createInventoryService } from './inventory-api';
 import type { InventoryService } from './inventory-api';
+import { InventoryForm } from './InventoryForms';
+import type { InventoryEditor } from './InventoryForms';
+import {
+  notifyInventoryChanged,
+  useInventoryRevision,
+} from '../../lib/inventory-updates';
 import './inventory.css';
 
 const indicatorLabels: Record<Indicator, string> = {
@@ -41,10 +47,10 @@ function Indicators({ values }: { values: (Indicator | BatchIndicator)[] }) {
 }
 
 export function InventoryPage() {
-  const { accessToken, signOut } = useAuth();
+  const { accessToken, invalidateSession } = useAuth();
   const service = useMemo(
-    () => createInventoryService(accessToken ?? '', signOut),
-    [accessToken, signOut],
+    () => createInventoryService(accessToken ?? '', invalidateSession),
+    [accessToken, invalidateSession],
   );
   return <InventoryView service={service} />;
 }
@@ -57,6 +63,39 @@ export function InventoryView({ service }: { service: InventoryService }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [revision, setRevision] = useState(0);
+  const stockRevision = useInventoryRevision();
+  const [editor, setEditor] = useState<InventoryEditor | null>(null);
+  const [notice, setNotice] = useState('');
+  const heading = useRef<HTMLHeadingElement>(null);
+  const trigger = useRef<HTMLButtonElement | null>(null);
+  const restoreFocus = useRef(false);
+  const active = !loading && !error && result?.subscriptionStatus === 'ACTIVE';
+
+  useEffect(() => {
+    const refresh = () => setRevision((value) => value + 1);
+    window.addEventListener('focus', refresh);
+    return () => window.removeEventListener('focus', refresh);
+  }, []);
+
+  function openEditor(value: InventoryEditor, button: HTMLButtonElement) {
+    trigger.current = button;
+    setNotice('');
+    setEditor(value);
+  }
+
+  function closeEditor() {
+    restoreFocus.current = true;
+    setEditor(null);
+  }
+
+  useLayoutEffect(() => {
+    if (!editor && restoreFocus.current) {
+      restoreFocus.current = false;
+      if (trigger.current?.isConnected && !trigger.current.disabled)
+        trigger.current.focus();
+      else heading.current?.focus();
+    }
+  }, [editor]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -82,7 +121,7 @@ export function InventoryView({ service }: { service: InventoryService }) {
       },
     );
     return () => controller.abort();
-  }, [service, filters, revision]);
+  }, [service, filters, revision, stockRevision]);
 
   function applyFilters(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -92,12 +131,54 @@ export function InventoryView({ service }: { service: InventoryService }) {
   return (
     <div className="inventory-page">
       <header>
-        <h2>Medicine inventory</h2>
+        <h2 ref={heading} tabIndex={-1}>
+          Medicine inventory
+        </h2>
         <p>
           Search your medicines and review stock, expiry indicators and batch
           details.
         </p>
       </header>
+      {notice && (
+        <p role="status" className="inventory-success">
+          {notice}
+        </p>
+      )}
+      <div className="inventory-actions">
+        <button
+          type="button"
+          disabled={!active || !!editor}
+          onClick={(event) =>
+            openEditor({ kind: 'medicine' }, event.currentTarget)
+          }
+        >
+          Add medicine
+        </button>
+        {!loading && result && result.subscriptionStatus !== 'ACTIVE' && (
+          <span>An active subscription is required to make changes.</span>
+        )}
+      </div>
+      {editor && (
+        <InventoryForm
+          editor={editor}
+          service={service}
+          active={active}
+          accessMessage={
+            loading
+              ? 'Checking whether changes are allowed.'
+              : error
+                ? 'Unable to verify access. Retry loading inventory before saving.'
+                : 'Changes are unavailable because your subscription is not active.'
+          }
+          onCancel={closeEditor}
+          onForbidden={() => setRevision((value) => value + 1)}
+          onSaved={(message) => {
+            closeEditor();
+            setNotice(message);
+            notifyInventoryChanged();
+          }}
+        />
+      )}
       <section
         className="inventory-panel"
         aria-labelledby="inventory-filter-heading"
@@ -199,6 +280,33 @@ export function InventoryView({ service }: { service: InventoryService }) {
                       <h3 id={`medicine-${medicine.id}`}>
                         {medicine.displayName}
                       </h3>
+                      <div className="inventory-actions">
+                        <button
+                          type="button"
+                          className="inventory-secondary"
+                          disabled={!active || !!editor}
+                          onClick={(event) =>
+                            openEditor(
+                              { kind: 'medicine', medicine },
+                              event.currentTarget,
+                            )
+                          }
+                        >
+                          Edit medicine
+                        </button>
+                        <button
+                          type="button"
+                          disabled={!active || !!editor}
+                          onClick={(event) =>
+                            openEditor(
+                              { kind: 'batch', medicine },
+                              event.currentTarget,
+                            )
+                          }
+                        >
+                          Add batch
+                        </button>
+                      </div>
                       <p className="inventory-scientific">
                         {medicine.scientificName}
                       </p>
@@ -230,6 +338,19 @@ export function InventoryView({ service }: { service: InventoryService }) {
                             {medicine.batches.map((batch) => (
                               <li key={batch.id}>
                                 <h4>Batch {batch.batchNumber}</h4>
+                                <button
+                                  type="button"
+                                  className="inventory-secondary"
+                                  disabled={!active || !!editor}
+                                  onClick={(event) =>
+                                    openEditor(
+                                      { kind: 'batch', medicine, batch },
+                                      event.currentTarget,
+                                    )
+                                  }
+                                >
+                                  Edit batch
+                                </button>
                                 {batch.indicators.length > 0 && (
                                   <Indicators values={batch.indicators} />
                                 )}

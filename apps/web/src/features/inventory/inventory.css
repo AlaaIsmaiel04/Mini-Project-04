@@ -156,6 +156,39 @@
 .inventory-readonly p {
   margin-bottom: 0;
 }
+.inventory-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-block: 12px;
+}
+.inventory-form-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 16px;
+  padding: 0;
+  border: 0;
+  margin: 20px 0;
+  min-width: 0;
+}
+.inventory-page button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.inventory-page input[readonly] {
+  background: #edf5f0;
+  color: #435c51;
+}
+.inventory-success {
+  padding: 16px;
+  background: #e1f3e9;
+  color: #176b53;
+  border-radius: 6px;
+}
+.inventory-editor {
+  scroll-margin-top: 20px;
+}
 @media (max-width: 600px) {
   .inventory-panel {
     padding: 16px;
