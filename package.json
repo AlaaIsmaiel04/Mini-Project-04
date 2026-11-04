@@ -24,7 +24,8 @@
     "db:deploy": "npm run db:deploy -w @smartshelf/api",
     "db:studio": "npm run db:studio -w @smartshelf/api",
     "format": "prettier --write \"{apps,packages}/**/*.{ts,tsx,css,json}\" \"docs/**/*.md\" README.md",
-    "format:check": "prettier --check \"{apps,packages}/**/*.{ts,tsx,css,json}\" \"docs/**/*.md\" README.md"
+    "format:check": "prettier --check \"{apps,packages}/**/*.{ts,tsx,css,json}\" \"docs/**/*.md\" README.md",
+    "pretypecheck": "npx prisma generate --schema=./apps/api/src/prisma/schema.prisma"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
