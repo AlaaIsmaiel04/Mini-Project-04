@@ -1,3 +1,5 @@
+import { useLanguage } from '../preferences/LanguageProvider';
+import type { MessageKey } from '../../locales/messages';
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import type {
@@ -36,6 +38,7 @@ export function InventoryForm({
   onCancel: () => void;
   onForbidden: () => void;
 }) {
+  const { t, translateMessage } = useLanguage();
   const batch = editor.kind === 'batch' ? editor.batch : undefined;
   const medicine = editor.medicine;
   const editing = editor.kind === 'medicine' ? !!medicine : !!batch;
@@ -125,7 +128,7 @@ export function InventoryForm({
 
   function field(
     name: keyof typeof fields,
-    label: string,
+    label: MessageKey,
     options: {
       type?: string;
       immutable?: boolean;
@@ -136,12 +139,22 @@ export function InventoryForm({
   ) {
     return (
       <label htmlFor={`stock-${name}`}>
-        {label}
-        {options.optional ? ' (optional)' : ''}
-        {options.immutable ? ' (read-only)' : ''}
+        {t(label)}
+        {options.optional ? t(' (optional)') : ''}
+        {options.immutable ? t(' (read-only)') : ''}
         <input
           id={`stock-${name}`}
           name={name}
+          dir={
+            [
+              'displayName',
+              'scientificName',
+              'batchNumber',
+              'barcode',
+            ].includes(name)
+              ? 'ltr'
+              : undefined
+          }
           type={options.type ?? 'text'}
           value={fields[name]}
           readOnly={options.immutable}
@@ -165,22 +178,25 @@ export function InventoryForm({
 
   return (
     <section
-      className="inventory-panel inventory-editor"
+      className={`inventory-panel inventory-editor inventory-editor-${editor.kind}`}
       aria-labelledby="stock-form-heading"
     >
       <h3 id="stock-form-heading" ref={heading} tabIndex={-1}>
-        {title}
+        {translateMessage(title)}
         {editor.kind === 'batch' ? ` — ${medicine?.displayName}` : ''}
       </h3>
       {editor.kind === 'batch' && (
         <p>
-          Past expiry dates are allowed for accurate waste tracking. Batch
-          number, unit cost and barcode cannot be changed after creation.
+          {t(
+            'Past expiry dates are allowed for accurate waste tracking. Batch number, unit cost and barcode cannot be changed after creation.',
+          )}
         </p>
       )}
       <form onSubmit={save} aria-busy={pending}>
         <fieldset disabled={blocked} className="inventory-form-fields">
-          <legend className="visually-hidden">{title} details</legend>
+          <legend className="visually-hidden">
+            {t('{title} details', { title: translateMessage(title) })}
+          </legend>
           {editor.kind === 'medicine' ? (
             <>
               {field('displayName', 'Display name')}
@@ -208,17 +224,30 @@ export function InventoryForm({
             </>
           )}
         </fieldset>
+        {editor.kind === 'medicine' && (
+          <p className="inventory-editor-note">
+            {t(
+              'Medicine display names must be unique within your pharmacy, ignoring case and surrounding spaces.',
+            )}
+          </p>
+        )}
         {error && (
           <p role="alert" className="form-error">
-            {error}
+            {translateMessage(error)}
           </p>
         )}
         {!active && (
-          <p role="status">{accessMessage} Your draft is preserved.</p>
+          <p role="status">
+            {translateMessage(accessMessage)} {t('Your draft is preserved.')}
+          </p>
         )}
         <div className="inventory-actions">
           <button type="submit" disabled={blocked}>
-            {pending ? 'Saving…' : editing ? 'Save changes' : title}
+            {pending
+              ? t('Saving…')
+              : editing
+                ? t('Save changes')
+                : translateMessage(title)}
           </button>
           <button
             type="button"
@@ -226,7 +255,7 @@ export function InventoryForm({
             disabled={pending}
             onClick={onCancel}
           >
-            Cancel
+            {t('Cancel')}
           </button>
         </div>
       </form>

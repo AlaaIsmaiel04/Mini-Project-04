@@ -4,6 +4,8 @@
 
 Branch: hamid | Plan begins when the team receives the starter.
 
+Update 4 November 2026: Alaa has taken over the Day 11 EN/AR foundation with the user's approval. Coordinate further language changes with Alaa and use the existing provider; see `docs/LANGUAGE.md`. Dark mode remains a separate task.
+
 Deliver the pharmacy profile/duty APIs and privacy-safe public search/directory. Spend most effort on backend core; language and theme controls are a small follow-up after your core endpoints work.
 
 ## Your code ownership

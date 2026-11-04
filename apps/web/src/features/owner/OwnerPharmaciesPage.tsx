@@ -1,3 +1,5 @@
+import { useLanguage } from '../preferences/LanguageProvider';
+import type { MessageValue } from '../../locales/messages';
 import { useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import type {
@@ -57,6 +59,7 @@ export function OwnerPharmaciesView({
 }: {
   service: OwnerPharmacyService;
 }) {
+  const { t, translateMessage } = useLanguage();
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<SubscriptionStatus | ''>('');
   const [filters, setFilters] = useState<OwnerPharmacyFilters>({});
@@ -69,7 +72,7 @@ export function OwnerPharmaciesView({
   const [form, setForm] = useState<CreatePharmacyInput>(emptyForm);
   const [creating, setCreating] = useState(false);
   const [formError, setFormError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [success, setSuccess] = useState<MessageValue>('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -120,9 +123,10 @@ export function OwnerPharmaciesView({
     try {
       const pharmacy = await service.create(input);
       setForm(emptyForm);
-      setSuccess(
-        `${pharmacy.name} was created successfully. Search and status filters have been cleared.`,
-      );
+      setSuccess({
+        key: '{name} was created successfully. Search and status filters have been cleared.',
+        params: { name: pharmacy.name },
+      });
       // Clear filters so the newly created pharmacy (without a subscription) is visible.
       setSearch('');
       setStatus('');
@@ -137,25 +141,25 @@ export function OwnerPharmaciesView({
   return (
     <div className="owner-page">
       <header className="owner-heading">
-        <h2>Pharmacy management</h2>
-        <p>Find registered pharmacies and add a new pharmacy.</p>
+        <h2>{t('Pharmacy management')}</h2>
+        <p>{t('Find registered pharmacies and add a new pharmacy.')}</p>
       </header>
 
-      <section className="owner-panel" aria-labelledby="pharmacies-heading">
-        <h3 id="pharmacies-heading">Pharmacies</h3>
+      <section className="owner-directory" aria-labelledby="pharmacies-heading">
+        <h3 id="pharmacies-heading">{t('Pharmacies')}</h3>
         <form className="owner-filters" onSubmit={applyFilters}>
           <label htmlFor="pharmacy-search">
-            Search by name
+            {t('Search by name')}
             <input
               id="pharmacy-search"
               type="search"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Pharmacy name"
+              placeholder={t('Pharmacy name')}
             />
           </label>
           <label htmlFor="pharmacy-status">
-            Subscription status
+            {t('Subscription status')}
             <select
               id="pharmacy-status"
               value={status}
@@ -163,15 +167,15 @@ export function OwnerPharmaciesView({
                 setStatus(event.target.value as SubscriptionStatus | '')
               }
             >
-              <option value="">All statuses</option>
+              <option value="">{t('All statuses')}</option>
               {Object.entries(statusLabels).map(([value, label]) => (
                 <option key={value} value={value}>
-                  {label}
+                  {translateMessage(label)}
                 </option>
               ))}
             </select>
           </label>
-          <button type="submit">Search</button>
+          <button type="submit">{t('Search')}</button>
           <button
             type="button"
             className="owner-secondary"
@@ -181,38 +185,52 @@ export function OwnerPharmaciesView({
               setFilters({});
             }}
           >
-            Clear filters
+            {t('Clear filters')}
           </button>
         </form>
 
         <div aria-busy={loading}>
-          {loading && <p role="status">Loading pharmacies…</p>}
+          {loading && <p role="status">{t('Loading pharmacies…')}</p>}
           {listError && (
             <div role="alert" className="form-error">
-              <p>{listError}</p>
+              <p>{translateMessage(listError)}</p>
               <button
                 type="button"
                 className="owner-secondary"
                 onClick={() => setRevision((value) => value + 1)}
               >
-                Retry
+                {t('Retry')}
               </button>
             </div>
           )}
           {result && (
             <>
               <p role="status">
-                {result.total} {result.total === 1 ? 'pharmacy' : 'pharmacies'}{' '}
-                found
+                {t(
+                  result.total === 1
+                    ? '{count} pharmacy found'
+                    : '{count} pharmacies found',
+                  { count: result.total },
+                )}
               </p>
               {result.items.length === 0 ? (
                 <p>
                   {filters.q || filters.status
-                    ? 'No pharmacies match these filters. Try another name or status.'
-                    : 'No pharmacies yet. Add your first pharmacy below.'}
+                    ? t(
+                        'No pharmacies match these filters. Try another name or status.',
+                      )
+                    : t('No pharmacies yet. Add your first pharmacy below.')}
                 </p>
               ) : (
                 <ul className="owner-pharmacy-list">
+                  <li className="owner-table-head" aria-hidden="true">
+                    <span>{t('Pharmacy')}</span>
+                    <span>{t('Area')}</span>
+                    <span>{t('Address')}</span>
+                    <span>{t('Phone')}</span>
+                    <span>{t('Subscription')}</span>
+                    <span>{t('Action')}</span>
+                  </li>
                   {result.items.map((pharmacy) => (
                     <li key={pharmacy.id} className="owner-pharmacy">
                       <div className="owner-pharmacy-heading">
@@ -220,30 +238,32 @@ export function OwnerPharmaciesView({
                         <span
                           className={`owner-badge owner-badge-${pharmacy.subscriptionStatus.toLowerCase()}`}
                         >
-                          {statusLabels[pharmacy.subscriptionStatus]}
+                          {translateMessage(
+                            statusLabels[pharmacy.subscriptionStatus],
+                          )}
                         </span>
                       </div>
                       <dl>
                         <div>
-                          <dt>Area</dt>
+                          <dt>{t('Area')}</dt>
                           <dd>{pharmacy.area}</dd>
                         </div>
                         <div>
-                          <dt>Address</dt>
+                          <dt>{t('Address')}</dt>
                           <dd>{pharmacy.address}</dd>
                         </div>
                         <div>
-                          <dt>Phone</dt>
-                          <dd>{pharmacy.phone}</dd>
+                          <dt>{t('Phone')}</dt>
+                          <dd dir="ltr">{pharmacy.phone}</dd>
                         </div>
                       </dl>
                       <button
                         type="button"
                         className="owner-secondary"
                         onClick={() => setSelectedId(pharmacy.id)}
-                        aria-label={`Manage ${pharmacy.name}`}
+                        aria-label={t('Manage {name}', { name: pharmacy.name })}
                       >
-                        Manage pharmacy
+                        {t('Manage pharmacy')}
                       </button>
                     </li>
                   ))}
@@ -261,7 +281,7 @@ export function OwnerPharmaciesView({
             className="owner-secondary"
             onClick={() => setSelectedId(null)}
           >
-            Close pharmacy management
+            {t('Close pharmacy management')}
           </button>
           <OwnerPharmacyManagement
             key={selectedId}
@@ -276,18 +296,25 @@ export function OwnerPharmaciesView({
         className="owner-panel"
         aria-labelledby="create-pharmacy-heading"
       >
-        <h3 id="create-pharmacy-heading">Add pharmacy</h3>
-        <p>New pharmacies start without a subscription.</p>
+        <h3 id="create-pharmacy-heading">{t('Add pharmacy')}</h3>
+        <p>{t('New pharmacies start without a subscription.')}</p>
         <form className="owner-create-form" onSubmit={createPharmacy}>
           <fieldset disabled={creating}>
             <legend className="owner-visually-hidden">
-              New pharmacy details
+              {t('New pharmacy details')}
             </legend>
             {(['name', 'area', 'address', 'phone'] as const).map((field) => (
               <label key={field} htmlFor={`new-pharmacy-${field}`}>
-                {field === 'name'
-                  ? 'Pharmacy name'
-                  : field.charAt(0).toUpperCase() + field.slice(1)}
+                {t(
+                  (
+                    {
+                      name: 'Pharmacy name',
+                      area: 'Area',
+                      address: 'Address',
+                      phone: 'Phone',
+                    } as const
+                  )[field],
+                )}
                 <input
                   id={`new-pharmacy-${field}`}
                   name={field}
@@ -304,15 +331,15 @@ export function OwnerPharmaciesView({
           </fieldset>
           {formError && (
             <p className="form-error" role="alert">
-              {formError}
+              {translateMessage(formError)}
             </p>
           )}
           <button type="submit" disabled={creating}>
-            {creating ? 'Creating…' : 'Create pharmacy'}
+            {creating ? t('Creating…') : t('Create pharmacy')}
           </button>
           {success && (
             <p className="owner-success" role="status">
-              {success}
+              {translateMessage(success)}
             </p>
           )}
         </form>

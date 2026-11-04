@@ -1,3 +1,4 @@
+import { useLanguage } from '../preferences/LanguageProvider';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import type { OwnerPharmacy } from '@smartshelf/contracts';
@@ -14,6 +15,7 @@ export function OwnerPharmacyManagement({
   service: OwnerPharmacyService;
   onChanged?: () => void;
 }) {
+  const { t, translateMessage } = useLanguage();
   const [pharmacy, setPharmacy] = useState<OwnerPharmacy | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -64,53 +66,56 @@ export function OwnerPharmacyManagement({
       aria-busy={loading}
     >
       <h3 id="management-heading" ref={heading} tabIndex={-1}>
-        Manage pharmacy{pharmacy ? ` — ${pharmacy.name}` : ''}
+        {t('Manage pharmacy')}
+        {pharmacy ? ` — ${pharmacy.name}` : ''}
       </h3>
       {notice && (
         <p role="status" className="owner-success">
-          {notice}
+          {translateMessage(notice)}
         </p>
       )}
-      {loading && <p role="status">Loading pharmacy details…</p>}
+      {loading && <p role="status">{t('Loading pharmacy details…')}</p>}
       {error && (
         <div role="alert" className="form-error">
-          <p>{error}</p>
+          <p>{translateMessage(error)}</p>
           <button
             className="owner-secondary"
             type="button"
             onClick={() => setRevision((value) => value + 1)}
           >
-            Retry details
+            {t('Retry details')}
           </button>
         </div>
       )}
       {!loading && !error && pharmacy && (
         <>
           <p>
-            Current subscription status:{' '}
+            {t('Current subscription status:')}{' '}
             <strong>
               {pharmacy.subscriptionStatus === 'NONE'
-                ? 'No subscription'
-                : pharmacy.subscriptionStatus}
+                ? t('No subscription')
+                : translateMessage(pharmacy.subscriptionStatus)}
             </strong>
           </p>
-          <PharmacistAccountForm
-            key={pharmacy.id}
-            pharmacy={pharmacy}
-            service={service}
-          />
-          <SubscriptionForm
-            key={[
-              pharmacy.id,
-              pharmacy.subscription?.id,
-              pharmacy.subscription?.startDate,
-              pharmacy.subscription?.endDate,
-              pharmacy.subscription?.suspended,
-            ].join(':')}
-            pharmacy={pharmacy}
-            service={service}
-            onSaved={saved}
-          />
+          <div className="owner-management-grid">
+            <PharmacistAccountForm
+              key={pharmacy.id}
+              pharmacy={pharmacy}
+              service={service}
+            />
+            <SubscriptionForm
+              key={[
+                pharmacy.id,
+                pharmacy.subscription?.id,
+                pharmacy.subscription?.startDate,
+                pharmacy.subscription?.endDate,
+                pharmacy.subscription?.suspended,
+              ].join(':')}
+              pharmacy={pharmacy}
+              service={service}
+              onSaved={saved}
+            />
+          </div>
         </>
       )}
     </section>
@@ -123,10 +128,11 @@ export function OwnerSubscriptionRoute({
 }: {
   service: OwnerPharmacyService;
 }) {
+  const { t, translateMessage } = useLanguage();
   const { pharmacyId } = useParams();
   return (
     <div className="owner-page">
-      <Link to="/owner">Back to pharmacies</Link>
+      <Link to="/owner">{t('Back to pharmacies')}</Link>
       {pharmacyId && (
         <OwnerPharmacyManagement
           key={pharmacyId}
