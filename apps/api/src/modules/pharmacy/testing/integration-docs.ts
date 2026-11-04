@@ -131,7 +131,9 @@ export function assertGuideIsCurrent(path: string, generated: string): void {
       `First difference at line ${firstDifference + 1}:`,
       `  file: ${onDiskLines[firstDifference]}`,
       `  code: ${generatedLines[firstDifference]}`,
-      'If the change is intended, run UPDATE_INTEGRATION_DOCS=1 npm test and commit the result.',
+      'If the change is intended, regenerate the guide and commit the result:',
+      '  bash: UPDATE_INTEGRATION_DOCS=1 npm test',
+      "  PowerShell: $env:UPDATE_INTEGRATION_DOCS='1'; npm test; Remove-Item Env:UPDATE_INTEGRATION_DOCS",
     ].join('\n'),
   );
 }
