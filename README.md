@@ -6,9 +6,11 @@ Pharmacy Management & Public Medicine Search - Weekly Mini Project 04, Team 2.
 
 The frontend includes shared routing/navigation, staff sign-in requests, owner pharmacy/account/subscription forms, and inventory browsing plus medicine/batch create/edit forms. Real routes send requests using the agreed API contracts. Development-only owner/inventory previews use explicitly synthetic in-memory data and reset on refresh; they never replace failed API responses.
 
-The backend includes process health, Swagger, and Hamid's Day 1-2 profile read/update implementation, merged through PR #9 (`9d406f9`). It also includes profile/duty DTOs, test fixtures, a public response mapper, and API tests. The registered profile endpoints still use temporary adapters: authentication rejects requests, while persistence and subscription-status adapters report unavailable dependencies. Prisma has no models, migrations or seed script yet. Real sign-in and persisted workflows therefore remain pending. Public search/directory and duty endpoints, dashboard/profile/duty frontend screens, and Preferences are not integrated yet.
+The backend now implements Mustafa's PostgreSQL/Prisma schema, initial migration and repeatable demo seed, JWT login/me, shared guards, and persisted medicine/batch APIs. Authentication and inventory are connected to the existing frontend request client. See [Mustafa's implementation and handoff](docs/MUSTAFA-IMPLEMENTATION.md).
 
-See [Alaa's day-by-day progress and dependencies](docs/ALAA-PROGRESS.md) and the [English demo/rehearsal plan](docs/DEMO-REHEARSAL.md). The Figma layout implementation is deferred until the functional work and team integration are ready. After Hamid's merge, owner flows, inventory forms, focus-based session checks, expiry notices and role redirects passed browser checks using development fixtures or simulated API responses. Real-API acceptance remains pending.
+Team integration remains: owner and dashboard modules are empty in this checkout; Hamid's profile/duty/public modules still use their temporary adapters. Their real end-to-end workflows are not claimed complete by this change.
+
+See [Alaa's day-by-day progress and dependencies](docs/ALAA-PROGRESS.md) and the [English demo/rehearsal plan](docs/DEMO-REHEARSAL.md). The Figma layout implementation is deferred until the functional work and team integration are ready. After Hamid's merge, owner flows, inventory forms, focus-based session checks, expiry notices and role redirects passed browser checks using development fixtures or simulated API responses. Real login/inventory request-client acceptance now passes against PostgreSQL; the remaining team workflows still need integration.
 
 ## Start locally - PowerShell
 
@@ -16,22 +18,27 @@ Node 24 LTS is recommended (minimum 22.12). From the repository root:
 
 ```powershell
 npm ci
-Copy-Item apps/api/.env.example apps/api/.env
-Copy-Item apps/web/.env.example apps/web/.env
+# First setup only: copy .env.example files if .env does not exist.
+# Configure DATABASE_URL and a random JWT_SECRET; start PostgreSQL first.
+npm run db:generate
+npm run db:deploy
+$env:ALLOW_DEMO_SEED = 'true'
+npm run db:seed
+Remove-Item Env:ALLOW_DEMO_SEED
 npm run dev
 ```
 
-Copy environment files only on first setup; keep your existing local settings on later pulls. Never commit .env files. No database is required to run the current frontend and API health endpoint.
+Copy environment files only on first setup; keep your existing local settings on later pulls. Never commit .env files. The API now requires a working PostgreSQL connection. On Mustafa's configured checkout, run `npm run db:local:start` before `npm run dev`; the migration and demo seed are already applied.
 
 - React frontend: <http://localhost:5173>
 - Synthetic owner preview (development only): <http://localhost:5173/dev/owner>
 - Synthetic inventory/forms preview (development only): <http://localhost:5173/dev/inventory>
 - API process health: <http://localhost:3000/api/health>
-- Swagger, including health and profile routes: <http://localhost:3000/api/docs>
+- Swagger, including authentication and inventory routes: <http://localhost:3000/api/docs>
 
 `GET` and `PATCH /api/pharmacist/profile` are registered but currently return 401 through the temporary authentication guard. This is expected until shared authentication is integrated. Profile Swagger schemas still need the documentation improvements planned for Hamid's Day 7.
 
-See [local setup](docs/LOCAL-SETUP.md). Database commands become useful after Mustafa creates the models and initial migration. Seed scripts and accounts must be authored by the team; no demo credentials/data are supplied.
+See [local setup](docs/LOCAL-SETUP.md) for database setup on another computer. Demo sign-in: `active@smartshelf.test` / `DemoPass123!`; the other seed account states are documented there.
 
 ## Team responsibilities
 
@@ -65,7 +72,7 @@ npm run smoke
 npm run format:check
 ```
 
-`npm test` currently runs 108 API tests and five frontend request/validation tests; all passed in the combined local checkout on 4 November 2026. API tests cover profile validation, ownership and subscription restrictions using test actors/stores, plus DTOs, public mapping and fixtures. They do not prove real JWT or PostgreSQL integration. Typecheck, production build, foundation smoke checks, and owner/inventory/session browser checks also passed after the merge. Smoke checks verify health, Swagger and the built frontend; full CORE acceptance still requires the real backend and persisted data.
+`npm test` runs the pure/helper, feature-adapter and frontend request tests. Database acceptance is explicit: run `npm run test:integration` with a dedicated `TEST_DATABASE_URL` (Mustafa's checkout reads its ignored `.local/test.env`). It migrates that test database and verifies real JWT/HTTP requests, scoping, validation, rollback, frontend client compatibility and API restart persistence. `npm run smoke` needs the configured database and checks startup, Swagger routes, authentication protection and built frontend assets. Full owner-to-public acceptance remains a team integration task.
 
 ## Scope and requirements
 
