@@ -6,9 +6,9 @@ Pharmacy Management & Public Medicine Search - Weekly Mini Project 04, Team 2.
 
 The frontend includes shared routing/navigation, staff sign-in requests, owner pharmacy/account/subscription forms, and inventory browsing plus medicine/batch create/edit forms. Real routes send requests using the agreed API contracts. Development-only owner/inventory previews use explicitly synthetic in-memory data and reset on refresh; they never replace failed API responses.
 
-The backend now includes Mustafa's PostgreSQL schema/migration, repeatable demo seed, JWT login/session endpoints, shared role/ownership/subscription guards, and pharmacy-scoped inventory APIs. Hamid's profile/duty/public routes remain registered, but their temporary guard and persistence adapters still need connection to these shared foundations. Owner administration, dashboard/profile/duty screens, public frontend features and dark mode remain team integration work.
+The backend now includes Mustafa's PostgreSQL schema/migration, repeatable demo seed, JWT login/session endpoints, shared role/ownership/subscription guards, and pharmacy-scoped inventory APIs. Mohammad's dashboard now returns all agreed metrics and attention items from the signed-in pharmacy's persisted stock. Profile and duty endpoints use shared JWT authentication and Prisma stores, including database locking for concurrent duty writes. Owner administration, public medicine-stock persistence, public frontend features and dark mode remain team integration work.
 
-The Figma styling and English/Arabic language selector cover the shared shell, sign-in, owner and inventory screens, including forms and feedback. See [interface handoff](DESIGN.md), [language guide](docs/LANGUAGE.md), [Alaa's progress](docs/ALAA-PROGRESS.md) and [demo plan](docs/DEMO-REHEARSAL.md). Development previews never replace real API failures.
+The Figma styling and English/Arabic language selector cover the shared shell, sign-in, owner and inventory screens, including forms and feedback. The dashboard/profile/duty pages use the same design and EN/AR controls. See [interface handoff](DESIGN.md), [language guide](docs/LANGUAGE.md), [Alaa's progress](docs/ALAA-PROGRESS.md) and [demo plan](docs/DEMO-REHEARSAL.md). Development previews never replace real API failures.
 
 ## Start locally - PowerShell
 
@@ -33,7 +33,7 @@ Seed only a dedicated demo database. It creates owner/pharmacist demo accounts, 
 - API health: <http://localhost:3000/api/health>
 - Swagger, including authentication, inventory and Hamid's routes: <http://localhost:3000/api/docs>
 
-`POST /api/auth/login` and `GET /api/auth/me` use the real database. Inventory requests use shared authentication and pharmacy scoping. Hamid's profile/duty guard still returns 401; valid public-data requests can return 503 until those adapters are integrated. Owner login alone does not implement owner administration.
+`POST /api/auth/login` and `GET /api/auth/me` use the real database. Inventory requests use shared authentication and pharmacy scoping. The dashboard and profile/duty pages at `/pharmacist` and `/pharmacist/profile` use real API data. Profile and duty writes require an active subscription; inactive users retain read access. Public medicine searches can still return 503 until stock persistence is integrated. Owner login alone does not implement owner administration.
 
 The optional `db:local:start/stop/status` commands only work on a checkout with its own configured `.local/postgres` cluster. Mustafa's machine-local database, credentials and test configuration are not supplied by cloning the repository.
 
@@ -69,13 +69,13 @@ npm run smoke
 npm run format:check
 ```
 
-The reviewed combined backend/frontend has 432 API tests passing (the PostgreSQL acceptance group is skipped in ordinary `npm test`) and eight frontend tests. Run the database acceptance separately:
+The reviewed combined backend/frontend has 435 API tests passing (the PostgreSQL acceptance group is skipped in ordinary `npm test`) and eleven frontend tests. Run the database acceptance separately:
 
 ```powershell
 npm run test:integration
 ```
 
-Set `TEST_DATABASE_URL` to a separate database named `smartshelf_test` or `smartshelf_test_<suffix>`. The runner applies migrations and cleans up its own test fixtures; it never falls back to the development database. Ten PostgreSQL/HTTP acceptance tests passed during review, covering authentication, ownership, inactive reads/write restrictions, validation, atomic rollback, API restart persistence and Alaa's request client. Fresh migration, repeat seed, typecheck, build and smoke checks also passed. Smoke now requires a configured database. Full owner-to-public acceptance still needs team integration. Security rejection logs include only reason codes and relevant IDs, never request bodies, credentials or tokens.
+Set `TEST_DATABASE_URL` to a separate database named `smartshelf_test` or `smartshelf_test_<suffix>`. The runner applies migrations and cleans up its own test fixtures; it never falls back to the development database. Fifteen PostgreSQL/HTTP acceptance tests passed during review, covering authentication, ownership, inactive reads/write restrictions, validation, atomic rollback, API restart persistence and Alaa's request client. Fresh migration, repeat seed, typecheck, build and smoke checks also passed. Smoke now requires a configured database. Dashboard/profile/duty acceptance also covers exact totals, empty/inactive reads, real saves, UTC conversion, overlap rejection and concurrent writes across two API instances. See [Mohammad implementation notes](docs/MOHAMMAD-IMPLEMENTATION.md). Full owner-to-public acceptance still needs team integration. Security rejection logs include only reason codes and relevant IDs, never request bodies, credentials or tokens.
 
 ## Scope and requirements
 

@@ -1,9 +1,7 @@
-# Frontend ownership
+# Pharmacist dashboard
 
-Mohammad - dashboard and attention items.
+The protected /pharmacist route fetches Dashboard through dashboard-api.ts and the shared authenticated request client. All metrics are calculated by the backend. DashboardPreview.tsx contains only a historical fixture; production does not import it.
 
-Build this feature from scratch: design, components, request handling and screen
-states. No page, card, form, adapter or sample dataset has been implemented.
-Agree API response fields on Day 1. Create your own small feature-local test data
-while endpoints are in progress; replace it with real API requests for integration.
-Coordinate shared routing/components with Alaa. See your guide in docs/tasks.
+Shows pharmacy name, subscription state, seven metrics and an attention list with simultaneous badges. Supports loading, error/retry, honest empty/zero data, inactive reads and 401 session expiry. Refetches on navigation, window focus and inventory mutation notifications through useInventoryRevision. Aborted/stale requests cannot overwrite current state.
+
+Uses the existing Figma tokens and language provider, with EN/AR and responsive layouts. See docs/MOHAMMAD-IMPLEMENTATION.md for verification.

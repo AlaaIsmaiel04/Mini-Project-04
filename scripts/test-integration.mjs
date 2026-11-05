@@ -49,4 +49,13 @@ run([prisma, 'generate'], api);
 run([prisma, 'migrate', 'deploy'], api);
 run([tsc, '-p', 'packages/contracts/tsconfig.json']);
 run([tsc, '-p', 'apps/api/tsconfig.json']);
-run(['--import', 'tsx', '--test', 'src/inventory.integration.spec.ts'], api);
+run(
+  [
+    '--import',
+    'tsx',
+    '--test',
+    'src/inventory.integration.spec.ts',
+    'src/dashboard-pharmacy.integration.spec.ts',
+  ],
+  api,
+);

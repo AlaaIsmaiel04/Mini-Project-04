@@ -1,15 +1,21 @@
 import {
+  JwtAuthGuard,
+  requirePharmacy,
+  type ActorRequest,
+} from '../../../common/security';
+import {
   type CanActivate,
   createParamDecorator,
   type ExecutionContext,
   ForbiddenException,
   Injectable,
+  Inject,
+  Optional,
   UnauthorizedException,
 } from '@nestjs/common';
 
-// TEMPORARY: replace when Mustafa/Shiam merge.
-// Mustafa owns JWT verification and the role guards. Until they are merged,
-// no request can authenticate here: there is no header, token or default user.
+// Compatibility token for existing isolated tests. In production this delegates to
+// Mustafa's JWT guard and adapts id -> userId without trusting request-supplied actors.
 
 export interface PharmacistActor {
   userId: string;
@@ -19,8 +25,24 @@ export interface PharmacistActor {
 
 @Injectable()
 export class TemporaryPharmacistGuard implements CanActivate {
-  canActivate(): boolean {
-    throw new UnauthorizedException('Authentication is not available yet');
+  constructor(
+    @Optional() @Inject(JwtAuthGuard) private readonly jwt?: JwtAuthGuard,
+  ) {}
+  canActivate(context?: ExecutionContext): boolean | Promise<boolean> {
+    if (!this.jwt || !context)
+      throw new UnauthorizedException('Authentication is not available yet');
+    return this.authenticate(context);
+  }
+  private async authenticate(context: ExecutionContext): Promise<boolean> {
+    await this.jwt!.canActivate(context);
+    const request = context
+      .switchToHttp()
+      .getRequest<
+        ActorRequest & { actor: ActorRequest['actor'] & { userId?: string } }
+      >();
+    requirePharmacy(request.actor);
+    request.actor.userId = request.actor.id;
+    return true;
   }
 }
 

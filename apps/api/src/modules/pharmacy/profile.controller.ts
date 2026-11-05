@@ -40,7 +40,7 @@ const PROFILE_NOT_FOUND: DocumentedError = {
 
 @ApiTags('pharmacist')
 @ApiBearerAuth()
-// TEMPORARY: replace when Mustafa/Shiam merge.
+// Compatibility guard delegates authentication to the shared JWT guard.
 @UseGuards(TemporaryPharmacistGuard)
 @Controller('pharmacist/profile')
 export class ProfileController {

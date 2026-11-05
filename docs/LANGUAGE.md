@@ -21,7 +21,7 @@ Use `translateMessage` only for known application messages; unknown server detai
 
 Owner/inventory labels, forms, help text, statuses, counts, confirmation dialogs, local validation, success feedback and development-preview controls now translate on selection. Messages stored in component state stay in their canonical form so they also translate when the language changes after an error or successful save. Dynamic pharmacy/account success messages store a key and parameters instead of a sentence in the previous language.
 
-User-entered values, pharmacy names/addresses, medicine names/categories and batch data stay exactly as supplied. Unknown server error details remain visible in their original language; a translation cannot safely be invented for an arbitrary backend message. Native browser validation messages follow the browser's own language. Public/profile/dashboard screens still await their assigned members. Real public/profile Arabic acceptance and dark mode remain separate work.
+User-entered values, pharmacy names/addresses, medicine names/categories and batch data stay exactly as supplied. Unknown server error details remain visible in their original language; a translation cannot safely be invented for an arbitrary backend message. Native browser validation messages follow the browser's own language. Dashboard/profile/duty screens now translate labels, validation and feedback through pharmacist-messages.ts, preserving drafts. Their real API browser flows and RTL layouts passed at 320/390/768/1440px. Public screens and dark mode remain separate work.
 
 ## Checks
 

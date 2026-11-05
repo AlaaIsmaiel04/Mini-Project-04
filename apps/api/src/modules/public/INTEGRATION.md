@@ -6,7 +6,7 @@ For Yousef: the Public Search and Pharmacy Directory pages.
 
 **This guide cannot drift from the code.** Every request and response below was produced by the real controller, validation, service and privacy mapper, using fixed test data. `npm test` produces them again and fails if this file differs. After an intended change, run `UPDATE_INTEGRATION_DOCS=1 npm test` (in PowerShell: `$env:UPDATE_INTEGRATION_DOCS='1'; npm test; Remove-Item Env:UPDATE_INTEGRATION_DOCS`) and commit the result.
 
-**Where things stand:** until Mustafa's database and Shiam's subscription status merge, the running API answers every valid public request with 503. These examples show what it answers once they are in place, so you can build against them now.
+**Where things stand:** the directory now uses shared Prisma pharmacy/duty stores and effective subscription status. Public medicine-stock persistence is still pending, so valid medicine searches can return 503. These fixed-fixture examples demonstrate wire shapes and do not prove the remaining public stock integration.
 
 ## Basics
 

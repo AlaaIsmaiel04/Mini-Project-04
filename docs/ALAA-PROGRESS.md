@@ -1,3 +1,17 @@
+# Current integration update - 5 November 2026
+
+This update supersedes the dependency and test counts in the historical notes below. Mustafa's schema/authentication/inventory foundation is integrated. Mohammad's repaired dashboard/profile/duty implementation is locally combined with current main on branch Mohammad, pending Alaa's review and commit.
+
+- Dashboard reads persisted own-pharmacy stock, all seven metrics and attention badges; refreshes on focus/navigation/inventory changes.
+- Profile and duty screens now use live JWT/Prisma APIs, with inactive reads and restricted writes. Duty writes use a PostgreSQL row lock across API instances.
+- Dashboard/profile/duty share the existing visual design and EN/AR language controls.
+- Typecheck/build pass; 435 API and 11 frontend tests pass; 15 separate PostgreSQL acceptance tests pass. Real API browser checks cover these pages, including drafts, errors/retries, timezone conversion, overlap, session expiry and mobile/RTL layouts.
+- Shiam's owner administration and subscription flows, public medicine-stock persistence, Yousef's public frontend, dark mode and full team rehearsal remain dependencies. Days 8-14 are not all complete merely because the frontend exists.
+
+See [Mohammad implementation](MOHAMMAD-IMPLEMENTATION.md) for scope and validation. The original records below describe earlier checkpoints.
+
+---
+
 # Alaa's implementation and integration status
 
 Updated 4 November 2026. Scope: the current local `alaa` checkout. The existing shell, sign-in, owner and inventory screens now use the saved Figma design, adapted to English. See `DESIGN.md` for reusable styling and scope. Real backend integration remains pending.

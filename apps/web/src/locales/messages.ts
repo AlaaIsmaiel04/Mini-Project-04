@@ -1,8 +1,10 @@
 import { featureArabic } from './feature-messages';
+import { pharmacistArabic } from './pharmacist-messages';
 
 // English keys are also the default copy. Add matching Arabic copy here.
 export const arabic = {
   ...featureArabic,
+  ...pharmacistArabic,
   'SmartShelf home': 'الصفحة الرئيسية لسمارت شيلف',
   'Owner dashboard': 'لوحة المالك',
   Dashboard: 'لوحة التحكم',

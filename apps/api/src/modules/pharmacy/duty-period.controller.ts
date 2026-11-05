@@ -71,7 +71,7 @@ const PERIOD_ID = {
 
 @ApiTags('pharmacist')
 @ApiBearerAuth()
-// TEMPORARY: replace when Mustafa/Shiam merge.
+// Compatibility guard delegates authentication to the shared JWT guard.
 @UseGuards(TemporaryPharmacistGuard)
 @UseFilters(RejectedChangeFilter)
 @Controller('pharmacist/duty-periods')

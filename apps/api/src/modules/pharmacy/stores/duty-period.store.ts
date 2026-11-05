@@ -33,5 +33,8 @@ export interface DutyPeriodStore {
    * Runs work so that a check and the write that depends on it commit together, using
    * the store it is given. The database version is planned in ../README.md.
    */
-  transaction<T>(work: (store: DutyPeriodStore) => Promise<T>): Promise<T>;
+  transaction<T>(
+    work: (store: DutyPeriodStore) => Promise<T>,
+    pharmacyId?: string,
+  ): Promise<T>;
 }

@@ -127,7 +127,7 @@ export class DutyPeriodService {
     work: (store: DutyPeriodStore) => Promise<T>,
   ): Promise<T> {
     return this.lock.runExclusive(pharmacyId, () =>
-      this.periods.transaction(work),
+      this.periods.transaction(work, pharmacyId),
     );
   }
 

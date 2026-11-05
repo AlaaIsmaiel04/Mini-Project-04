@@ -6,7 +6,7 @@ For Mohammad: the Pharmacy Profile & Duty page.
 
 **This guide cannot drift from the code.** Every request and response below was produced by the real controllers, validation, services and response mappers, using fixed test data. `npm test` produces them again and fails if this file differs. After an intended change, run `UPDATE_INTEGRATION_DOCS=1 npm test` (in PowerShell: `$env:UPDATE_INTEGRATION_DOCS='1'; npm test; Remove-Item Env:UPDATE_INTEGRATION_DOCS`) and commit the result.
 
-**Where things stand:** until Mustafa's guards and database merge, the running API answers every pharmacist request with 401. These examples show what it answers once they are in place, so you can build against them now. Statuses and shapes stay the same, but the 401, 403 and 503 messages come from temporary adapters and may change, so decide from `statusCode`.
+**Where things stand:** the full application now uses shared JWT authentication and Prisma stores for profile/duty requests. The examples below use fixed test fixtures to demonstrate wire shapes. PostgreSQL persistence, inactive reads/write restrictions and cross-instance duty locking are checked separately in dashboard-pharmacy.integration.spec.ts. Decide from `statusCode`, not exact adapter error text.
 
 ## Basics
 

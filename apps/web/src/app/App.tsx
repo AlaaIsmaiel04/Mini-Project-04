@@ -1,3 +1,5 @@
+import DashboardPage from '../features/dashboard/DashboardPage';
+import { PharmacyProfilePage } from '../features/pharmacy/PharmacyProfilePage';
 import { useLanguage } from '../features/preferences/LanguageProvider';
 import { Link, Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import type { Role } from '@smartshelf/contracts';
@@ -68,15 +70,9 @@ export function App() {
         </Route>
 
         <Route element={<RequireRole role="PHARMACIST" />}>
-          <Route
-            path="/pharmacist"
-            element={<h2>{t('Pharmacist dashboard')}</h2>}
-          />
+          <Route path="/pharmacist" element={<DashboardPage />} />
           <Route path="/pharmacist/inventory" element={<InventoryPage />} />
-          <Route
-            path="/pharmacist/profile"
-            element={<h2>{t('Pharmacy profile & duty')}</h2>}
-          />
+          <Route path="/pharmacist/profile" element={<PharmacyProfilePage />} />
         </Route>
 
         {InventoryPreviewPage && (

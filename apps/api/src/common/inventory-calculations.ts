@@ -103,3 +103,52 @@ export function calculateDashboard(
     attentionItems,
   };
 }
+
+// Public helper shared with inventory consumers; monetary values remain Decimal.
+export function calculateMedicine(
+  batches: Batch[],
+  threshold: number,
+  today: Date,
+) {
+  return calculateMedicineInventory({ batches, threshold }, today);
+}
+
+export function calculateDashboardDetails(
+  medicines: (Medicine & { id: string; displayName: string })[],
+  today: Date,
+) {
+  const totals = calculateDashboard(medicines, today);
+  const attentionItems = medicines.flatMap((medicine) => {
+    const result = calculateMedicine(
+      medicine.batches,
+      medicine.threshold,
+      today,
+    );
+    return result.indicators.includes('HEALTHY')
+      ? []
+      : [
+          {
+            medicineId: medicine.id,
+            displayName: medicine.displayName,
+            indicators: result.indicators,
+          },
+        ];
+  });
+  const batches = medicines.flatMap((m) => m.batches);
+  return {
+    totalMedicines: totals.totalMedicines,
+    totalUnits: totals.totalAvailableUnits,
+    inventoryValue: totals.totalValue,
+    expectedWaste: totals.wasteValue,
+    expiringSoonBatchCount: batches.filter((b) =>
+      calculateBatchIndicators(b, today).includes('EXPIRING_SOON'),
+    ).length,
+    expiredBatchCount: batches.filter((b) =>
+      calculateBatchIndicators(b, today).includes('EXPIRED'),
+    ).length,
+    lowStockMedicineCount: attentionItems.filter((m) =>
+      m.indicators.includes('LOW_STOCK'),
+    ).length,
+    attentionItems,
+  };
+}

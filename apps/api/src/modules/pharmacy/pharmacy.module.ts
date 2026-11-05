@@ -1,12 +1,10 @@
+import {
+  PrismaPharmacyStore,
+  PrismaDutyPeriodStore,
+  PrismaSubscriptionStatus,
+} from './adapters/prisma-stores';
 import { Module } from '@nestjs/common';
-import {
-  SUBSCRIPTION_STATUS,
-  TemporarySubscriptionStatusAdapter,
-} from './adapters/temporary-subscription-status.adapter';
-import {
-  TemporaryUnavailableDutyPeriodStore,
-  TemporaryUnavailablePharmacyStore,
-} from './adapters/temporary-unavailable-stores';
+import { SUBSCRIPTION_STATUS } from './adapters/temporary-subscription-status.adapter';
 import { CLOCK, SystemClock } from './clock';
 import { DutyPeriodController } from './duty-period.controller';
 import { DutyPeriodService } from './duty-period.service';
@@ -24,15 +22,15 @@ import { PHARMACY_STORE } from './stores/pharmacy.store';
     DutyPeriodService,
     PharmacyLock,
     { provide: CLOCK, useClass: SystemClock },
-    // TEMPORARY: replace when Mustafa/Shiam merge.
-    { provide: PHARMACY_STORE, useClass: TemporaryUnavailablePharmacyStore },
+    // Live Prisma stores use the shared database and subscription rules.
+    { provide: PHARMACY_STORE, useClass: PrismaPharmacyStore },
     {
       provide: DUTY_PERIOD_STORE,
-      useClass: TemporaryUnavailableDutyPeriodStore,
+      useClass: PrismaDutyPeriodStore,
     },
     {
       provide: SUBSCRIPTION_STATUS,
-      useClass: TemporarySubscriptionStatusAdapter,
+      useClass: PrismaSubscriptionStatus,
     },
   ],
   exports: [CLOCK, PHARMACY_STORE, DUTY_PERIOD_STORE, SUBSCRIPTION_STATUS],
