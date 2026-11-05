@@ -26,6 +26,7 @@
     "format": "prettier --write \"{apps,packages}/**/*.{ts,tsx,css,json}\" \"docs/**/*.md\" README.md",
     "format:check": "prettier --check \"{apps,packages}/**/*.{ts,tsx,css,json}\" \"docs/**/*.md\" README.md",
     "db:seed": "npm run db:seed -w @smartshelf/api",
+    "test:integration": "node scripts/test-integration.mjs",
     "db:local:start": "node scripts/local-postgres.mjs start",
     "db:local:stop": "node scripts/local-postgres.mjs stop",
     "db:local:status": "node scripts/local-postgres.mjs status"
