@@ -91,3 +91,9 @@ import { effectiveSubscriptionStatus } from '../../common/subscription-status';
 - علاء: اختُبرت دوال طلباته الفعلية لتسجيل الدخول والمخزون مع السيرفر الحقيقي دون تغيير أشكال الردود. الاختبار لا يساوي مراجعة بصرية لجميع صفحات المتصفح.
 
 بالتالي تجربة owner → pharmacist → public كاملة، مراجعة PR ودمجه، وتجربة المشروع على جهاز زميل والتقديم الجماعي تبقى خطوات مع الفريق. التغييرات مخصصة لفرع `mustafa`؛ دمج `main` والمراجعة الجماعية يبقيان مع الفريق.
+
+## العرض
+
+مقطع إنجليزي جاهز للتدريب:
+
+> My part connects NestJS to PostgreSQL through Prisma. The controller validates the request, the guards check authentication and pharmacy access, and the service saves the data. A medicine describes the product; a batch stores its quantity, expiry date, location and purchase cost. Medicine names are unique within each pharmacy. Each inventory change and its update timestamp are saved in one transaction, so either both succeed or neither is saved. I will show a successful login, a rejected cross-pharmacy request, and the same saved inventory after restarting the API.
