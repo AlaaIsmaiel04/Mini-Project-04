@@ -6,20 +6,17 @@ Pharmacy Management & Public Medicine Search - Weekly Mini Project 04, Team 2.
 
 The frontend includes shared routing/navigation, staff sign-in requests, owner pharmacy/account/subscription forms, and inventory browsing plus medicine/batch create/edit forms. Real routes send requests using the agreed API contracts. Development-only owner/inventory previews use explicitly synthetic in-memory data and reset on refresh; they never replace failed API responses.
 
-The backend now implements Mustafa's PostgreSQL/Prisma schema, initial migration and repeatable demo seed, JWT login/me, shared guards, and persisted medicine/batch APIs. Authentication and inventory are connected to the existing frontend request client. See [Mustafa's implementation and handoff](docs/MUSTAFA-IMPLEMENTATION.md).
+The backend now includes Mustafa's PostgreSQL schema/migration, repeatable demo seed, JWT login/session endpoints, shared role/ownership/subscription guards, and pharmacy-scoped inventory APIs. Hamid's profile/duty/public routes remain registered, but their temporary guard and persistence adapters still need connection to these shared foundations. Owner administration, dashboard/profile/duty screens, public frontend features and dark mode remain team integration work.
 
-Team integration remains: owner and dashboard modules are empty in this checkout; Hamid's profile/duty/public modules still use their temporary adapters. Their real end-to-end workflows are not claimed complete by this change.
-
-See [Alaa's day-by-day progress and dependencies](docs/ALAA-PROGRESS.md) and the [English demo/rehearsal plan](docs/DEMO-REHEARSAL.md). The Figma layout implementation is deferred until the functional work and team integration are ready. After Hamid's merge, owner flows, inventory forms, focus-based session checks, expiry notices and role redirects passed browser checks using development fixtures or simulated API responses. Real login/inventory request-client acceptance now passes against PostgreSQL; the remaining team workflows still need integration.
+The Figma styling and English/Arabic language selector cover the shared shell, sign-in, owner and inventory screens, including forms and feedback. See [interface handoff](DESIGN.md), [language guide](docs/LANGUAGE.md), [Alaa's progress](docs/ALAA-PROGRESS.md) and [demo plan](docs/DEMO-REHEARSAL.md). Development previews never replace real API failures.
 
 ## Start locally - PowerShell
 
-Node 24 LTS is recommended (minimum 22.12). From the repository root:
+Use Node 24 LTS (minimum 22.12), npm and PostgreSQL. On first setup run `npm ci`, then copy `apps/api/.env.example` and `apps/web/.env.example` to neighboring `.env` files only if they do not already exist. Preserve existing local settings; never commit environment files.
+
+Create a dedicated local PostgreSQL database and set `DATABASE_URL` in `apps/api/.env`. Generate a random JWT secret of at least 32 characters and replace the example `JWT_SECRET`. Keep `BUSINESS_TIME_ZONE=Asia/Amman`. Then run:
 
 ```powershell
-npm ci
-# First setup only: copy .env.example files if .env does not exist.
-# Configure DATABASE_URL and a random JWT_SECRET; start PostgreSQL first.
 npm run db:generate
 npm run db:deploy
 $env:ALLOW_DEMO_SEED = 'true'
@@ -28,17 +25,17 @@ Remove-Item Env:ALLOW_DEMO_SEED
 npm run dev
 ```
 
-Copy environment files only on first setup; keep your existing local settings on later pulls. Never commit .env files. The API now requires a working PostgreSQL connection. On Mustafa's configured checkout, run `npm run db:local:start` before `npm run dev`; the migration and demo seed are already applied.
+Seed only a dedicated demo database. It creates owner/pharmacist demo accounts, four pharmacies, sixteen medicines, twenty-four batches and an overnight duty period. Re-running preserves existing records and edits. Account details and complete setup instructions are in [LOCAL-SETUP.md](docs/LOCAL-SETUP.md). The backend now requires a working database and configured JWT secret at startup.
 
 - React frontend: <http://localhost:5173>
 - Synthetic owner preview (development only): <http://localhost:5173/dev/owner>
 - Synthetic inventory/forms preview (development only): <http://localhost:5173/dev/inventory>
-- API process health: <http://localhost:3000/api/health>
-- Swagger, including authentication and inventory routes: <http://localhost:3000/api/docs>
+- API health: <http://localhost:3000/api/health>
+- Swagger, including authentication, inventory and Hamid's routes: <http://localhost:3000/api/docs>
 
-`GET` and `PATCH /api/pharmacist/profile` are registered but currently return 401 through the temporary authentication guard. This is expected until shared authentication is integrated. Profile Swagger schemas still need the documentation improvements planned for Hamid's Day 7.
+`POST /api/auth/login` and `GET /api/auth/me` use the real database. Inventory requests use shared authentication and pharmacy scoping. Hamid's profile/duty guard still returns 401; valid public-data requests can return 503 until those adapters are integrated. Owner login alone does not implement owner administration.
 
-See [local setup](docs/LOCAL-SETUP.md) for database setup on another computer. Demo sign-in: `active@smartshelf.test` / `DemoPass123!`; the other seed account states are documented there.
+The optional `db:local:start/stop/status` commands only work on a checkout with its own configured `.local/postgres` cluster. Mustafa's machine-local database, credentials and test configuration are not supplied by cloning the repository.
 
 ## Team responsibilities
 
@@ -72,7 +69,13 @@ npm run smoke
 npm run format:check
 ```
 
-`npm test` runs the pure/helper, feature-adapter and frontend request tests. Database acceptance is explicit: run `npm run test:integration` with a dedicated `TEST_DATABASE_URL` (Mustafa's checkout reads its ignored `.local/test.env`). It migrates that test database and verifies real JWT/HTTP requests, scoping, validation, rollback, frontend client compatibility and API restart persistence. `npm run smoke` needs the configured database and checks startup, Swagger routes, authentication protection and built frontend assets. Full owner-to-public acceptance remains a team integration task.
+The reviewed combined backend/frontend has 432 API tests passing (the PostgreSQL acceptance group is skipped in ordinary `npm test`) and eight frontend tests. Run the database acceptance separately:
+
+```powershell
+npm run test:integration
+```
+
+Set `TEST_DATABASE_URL` to a separate database named `smartshelf_test` or `smartshelf_test_<suffix>`. The runner applies migrations and cleans up its own test fixtures; it never falls back to the development database. Ten PostgreSQL/HTTP acceptance tests passed during review, covering authentication, ownership, inactive reads/write restrictions, validation, atomic rollback, API restart persistence and Alaa's request client. Fresh migration, repeat seed, typecheck, build and smoke checks also passed. Smoke now requires a configured database. Full owner-to-public acceptance still needs team integration. Security rejection logs include only reason codes and relevant IDs, never request bodies, credentials or tokens.
 
 ## Scope and requirements
 

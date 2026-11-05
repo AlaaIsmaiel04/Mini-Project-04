@@ -1,3 +1,4 @@
+import { useLanguage } from '../preferences/LanguageProvider';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import type { OwnerPharmacy, SubscriptionInput } from '@smartshelf/contracts';
@@ -20,6 +21,7 @@ export function SubscriptionForm({
   service: OwnerPharmacyService;
   onSaved: (message: string) => void;
 }) {
+  const { t, translateMessage } = useLanguage();
   const subscription = pharmacy.subscription;
   const [input, setInput] = useState<SubscriptionInput>({
     startDate: subscription?.startDate ?? '',
@@ -59,7 +61,10 @@ export function SubscriptionForm({
     if (pending || !subscription) return;
     if (
       !window.confirm(
-        `Delete the subscription for ${pharmacy.name}? The pharmacy, pharmacist accounts, inventory and duty records will be kept.`,
+        t(
+          'Delete the subscription for {name}? The pharmacy, pharmacist accounts, inventory and duty records will be kept.',
+          { name: pharmacy.name },
+        ),
       )
     )
       return;
@@ -84,12 +89,12 @@ export function SubscriptionForm({
   return (
     <section aria-labelledby="subscription-heading">
       <h4 id="subscription-heading">
-        {subscription ? 'Edit subscription' : 'Create subscription'}
+        {subscription ? t('Edit subscription') : t('Create subscription')}
       </h4>
       <p>
-        Dates include both the start and end day. Reactivating removes
-        suspension; expired or future dates may still prevent an active
-        subscription.
+        {t(
+          'Dates include both the start and end day. Reactivating removes suspension; expired or future dates may still prevent an active subscription.',
+        )}
       </p>
       <form
         className="owner-create-form"
@@ -100,10 +105,10 @@ export function SubscriptionForm({
       >
         <fieldset disabled={pending}>
           <legend className="owner-visually-hidden">
-            Subscription details
+            {t('Subscription details')}
           </legend>
           <label htmlFor="subscription-start">
-            Start date
+            {t('Start date')}
             <input
               id="subscription-start"
               type="date"
@@ -115,7 +120,7 @@ export function SubscriptionForm({
             />
           </label>
           <label htmlFor="subscription-end">
-            End date
+            {t('End date')}
             <input
               id="subscription-end"
               type="date"
@@ -135,21 +140,21 @@ export function SubscriptionForm({
                 setInput({ ...input, suspended: event.target.checked })
               }
             />
-            Suspended
+            {t('Suspended')}
           </label>
         </fieldset>
         {error && (
           <p role="alert" className="form-error">
-            {error}
+            {translateMessage(error)}
           </p>
         )}
         <div className="owner-actions">
           <button type="submit" disabled={pending}>
             {pending
-              ? 'Saving…'
+              ? t('Saving…')
               : subscription
-                ? 'Save subscription'
-                : 'Create subscription'}
+                ? t('Save subscription')
+                : t('Create subscription')}
           </button>
           {subscription && (
             <>
@@ -171,8 +176,8 @@ export function SubscriptionForm({
                 }
               >
                 {subscription.suspended
-                  ? 'Reactivate subscription'
-                  : 'Suspend subscription'}
+                  ? t('Reactivate subscription')
+                  : t('Suspend subscription')}
               </button>
               <button
                 type="button"
@@ -180,15 +185,16 @@ export function SubscriptionForm({
                 disabled={pending}
                 onClick={() => void remove()}
               >
-                Delete subscription
+                {t('Delete subscription')}
               </button>
             </>
           )}
         </div>
         {subscription && (
           <p>
-            Quick suspend/reactivate uses the saved dates. Use Save subscription
-            to apply edited dates.
+            {t(
+              'Quick suspend/reactivate uses the saved dates. Use Save subscription to apply edited dates.',
+            )}
           </p>
         )}
       </form>

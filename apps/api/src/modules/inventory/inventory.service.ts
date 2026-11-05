@@ -12,7 +12,7 @@ import type {
   InventoryResponse,
 } from '@smartshelf/contracts';
 import type { Actor } from '../../common/security';
-import { requirePharmacy } from '../../common/security';
+import { logAccessRejection, requirePharmacy } from '../../common/security';
 import { businessDate, parseCalendarDate } from '../../common/business-date';
 import { toBatch, toMedicine } from '../../common/inventory-mapper';
 import { effectiveSubscriptionStatus } from '../../common/subscription-status';
@@ -89,10 +89,14 @@ export class InventoryService {
           pharmacy.subscription,
           today,
         );
-        if (status !== 'ACTIVE')
+        if (status !== 'ACTIVE') {
+          logAccessRejection('inactive_subscription', actor, {
+            subscriptionStatus: status,
+          });
           throw new ForbiddenException(
             `Subscription is ${status}; inventory is read-only.`,
           );
+        }
         const saved = await action(tx, pharmacyId, today);
         await tx.pharmacy.update({
           where: { id: pharmacyId },
@@ -141,8 +145,13 @@ export class InventoryService {
         where: { id, pharmacyId },
         select: { id: true },
       });
-      if (!existing)
+      if (!existing) {
+        logAccessRejection('resource_not_owned_or_missing', actor, {
+          resourceKind: 'medicine',
+          resourceId: id,
+        });
         throw new NotFoundException('Medicine not found in your pharmacy.');
+      }
       const medicine = await tx.medicine.update({
         where: { id },
         data: { ...dto, normalizedName: dto.displayName.toLowerCase() },
@@ -162,8 +171,13 @@ export class InventoryService {
         where: { id: medicineId, pharmacyId },
         select: { id: true },
       });
-      if (!medicine)
+      if (!medicine) {
+        logAccessRejection('resource_not_owned_or_missing', actor, {
+          resourceKind: 'medicine',
+          resourceId: medicineId,
+        });
         throw new NotFoundException('Medicine not found in your pharmacy.');
+      }
       const batch = await tx.batch.create({
         data: {
           medicineId,
@@ -185,8 +199,13 @@ export class InventoryService {
         where: { id, medicine: { pharmacyId } },
         select: { id: true },
       });
-      if (!existing)
+      if (!existing) {
+        logAccessRejection('resource_not_owned_or_missing', actor, {
+          resourceKind: 'batch',
+          resourceId: id,
+        });
         throw new NotFoundException('Batch not found in your pharmacy.');
+      }
       const batch = await tx.batch.update({
         where: { id },
         data: {

@@ -4,6 +4,7 @@ import {
   ExecutionContext,
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
   SetMetadata,
   UnauthorizedException,
@@ -26,11 +27,44 @@ export interface JwtClaims {
 }
 export const Roles = (...roles: Role[]) => SetMetadata('staff-roles', roles);
 type ResourceKind = 'medicine' | 'batch' | 'duty';
+const rejectionLogger = new Logger('AccessControl');
+
+// Deliberate allowlist: never pass requests, headers, bodies, emails or tokens.
+export function logAccessRejection(
+  reason:
+    | 'wrong_role'
+    | 'invalid_pharmacy_link'
+    | 'resource_not_owned_or_missing'
+    | 'inactive_subscription',
+  actor: Actor,
+  details: {
+    resourceKind?: ResourceKind;
+    resourceId?: string;
+    subscriptionStatus?: string;
+  } = {},
+) {
+  rejectionLogger.warn(
+    JSON.stringify({
+      event: 'access_rejected',
+      reason,
+      actorId: actor.id,
+      role: actor.role,
+      pharmacyId: actor.pharmacyId,
+      resourceKind: details.resourceKind,
+      resourceId:
+        details.resourceId && isUUID(details.resourceId)
+          ? details.resourceId
+          : undefined,
+      subscriptionStatus: details.subscriptionStatus,
+    }),
+  );
+}
 export const OwnResource = (kind: ResourceKind) =>
   SetMetadata('owned-resource', kind);
 
 export function requirePharmacy(actor: Actor): string {
   if (actor.role !== 'PHARMACIST' || !actor.pharmacyId) {
+    logAccessRejection('invalid_pharmacy_link', actor);
     throw new ForbiddenException(
       'Requires a pharmacist linked to one pharmacy.',
     );
@@ -92,8 +126,10 @@ export class RolesGuard implements CanActivate {
     ]);
     const actor = context.switchToHttp().getRequest<ActorRequest>().actor;
     if (!actor) throw new UnauthorizedException('Sign in first.');
-    if (roles && !roles.includes(actor.role))
+    if (roles && !roles.includes(actor.role)) {
+      logAccessRejection('wrong_role', actor);
       throw new ForbiddenException('This role cannot access this endpoint.');
+    }
     return true;
   }
 }
@@ -133,8 +169,13 @@ export class OwnershipGuard implements CanActivate {
         select: { id: true },
       });
     }
-    if (!exists)
+    if (!exists) {
+      logAccessRejection('resource_not_owned_or_missing', request.actor, {
+        resourceKind: kind,
+        resourceId: id,
+      });
       throw new NotFoundException('Record not found in your pharmacy.');
+    }
     return true;
   }
 }
@@ -153,10 +194,14 @@ export class ActiveSubscriptionGuard implements CanActivate {
       pharmacy.subscription,
       businessDate(),
     );
-    if (status !== 'ACTIVE')
+    if (status !== 'ACTIVE') {
+      logAccessRejection('inactive_subscription', actor, {
+        subscriptionStatus: status,
+      });
       throw new ForbiddenException(
         `Subscription is ${status}; inventory is read-only.`,
       );
+    }
     return true;
   }
 }

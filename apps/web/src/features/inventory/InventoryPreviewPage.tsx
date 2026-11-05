@@ -1,3 +1,4 @@
+import { useLanguage } from '../preferences/LanguageProvider';
 import { useMemo, useRef, useState } from 'react';
 import type {
   InventoryMedicine,
@@ -136,6 +137,7 @@ const medicines: InventoryMedicine[] = [
 ];
 
 export function InventoryPreviewPage() {
+  const { t, translateMessage } = useLanguage();
   const data = useRef(structuredClone(medicines));
   const currentStatus = useRef<SubscriptionStatus>('ACTIVE');
   const nextSave = useRef('normal');
@@ -304,14 +306,14 @@ export function InventoryPreviewPage() {
   return (
     <>
       <aside className="inventory-preview-notice">
-        <strong>Local development preview</strong>
+        <strong>{t('Local development preview')}</strong>
         <p>
-          Synthetic inventory using 3 November 2026 as the fixed date. No login
-          or database requests. Controls below simulate subscription and save
-          responses. Changes are in memory only and reset on refresh.
+          {t(
+            'Synthetic inventory using 3 November 2026 as the fixed date. No login or database requests. Controls below simulate subscription and save responses. Changes are in memory only and reset on refresh.',
+          )}
         </p>
         <label htmlFor="preview-inventory-subscription">
-          Sample subscription
+          {t('Sample subscription')}
           <select
             id="preview-inventory-subscription"
             value={subscriptionStatus}
@@ -320,14 +322,14 @@ export function InventoryPreviewPage() {
               setSubscriptionStatus(currentStatus.current);
             }}
           >
-            <option value="ACTIVE">Active</option>
-            <option value="EXPIRED">Expired</option>
-            <option value="SUSPENDED">Suspended</option>
-            <option value="NONE">No active subscription</option>
+            <option value="ACTIVE">{t('Active')}</option>
+            <option value="EXPIRED">{t('Expired')}</option>
+            <option value="SUSPENDED">{t('Suspended')}</option>
+            <option value="NONE">{t('No active subscription')}</option>
           </select>
         </label>
         <label htmlFor="preview-save-scenario">
-          Next save response
+          {t('Next save response')}
           <select
             id="preview-save-scenario"
             value={saveScenario}
@@ -336,13 +338,17 @@ export function InventoryPreviewPage() {
               setSaveScenario(event.target.value);
             }}
           >
-            <option value="normal">Normal save</option>
-            <option value="slow">Slow save (2 seconds)</option>
-            <option value="validation">Validation rejection (400)</option>
-            <option value="forbidden">Permission rejection (403)</option>
-            <option value="not-found">Missing record (404)</option>
-            <option value="network">Network failure</option>
-            <option value="refresh-error">Save succeeds, refresh fails</option>
+            <option value="normal">{t('Normal save')}</option>
+            <option value="slow">{t('Slow save (2 seconds)')}</option>
+            <option value="validation">
+              {t('Validation rejection (400)')}
+            </option>
+            <option value="forbidden">{t('Permission rejection (403)')}</option>
+            <option value="not-found">{t('Missing record (404)')}</option>
+            <option value="network">{t('Network failure')}</option>
+            <option value="refresh-error">
+              {t('Save succeeds, refresh fails')}
+            </option>
           </select>
         </label>
       </aside>
