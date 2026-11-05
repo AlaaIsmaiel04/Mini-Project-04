@@ -8,5 +8,6 @@ coverage/
 __pycache__/
 *.pyc
 tmp/
+.local/
 .DS_Store
 apps/api/tsconfig.tsbuildinfo

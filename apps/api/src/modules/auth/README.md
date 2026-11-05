@@ -1,8 +1,5 @@
-# Module ownership
+# Authentication — Mustafa
 
-Mustafa: JWT login/me, roles and authorization.
+POST `/api/auth/login`: normalized email, bcrypt verification, HS256 JWT valid for one hour. GET `/api/auth/me`: reloads the current account through JwtAuthGuard. Responses allowlist id/email/role/pharmacyId; passwords and hashes are never returned. Global AuthModule exports the shared guards and JwtModule. Requires a random JWT_SECRET of at least 32 characters.
 
-The module declaration is empty NestJS boilerplate only. Create the controllers,
-services, DTOs, response mapping, tests and Swagger documentation yourself.
-Authentication guards, Prisma access and business helpers are also team tasks;
-none are supplied. Coordinate their signatures early using docs/TEAM-PLAN.md.
+See [implementation and guard handoff](../../../../../docs/MUSTAFA-IMPLEMENTATION.md).

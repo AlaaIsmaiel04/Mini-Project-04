@@ -1,10 +1,29 @@
 name: Starter checks
 on: [push, pull_request]
+permissions:
+  contents: read
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: smartshelf
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: smartshelf_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U smartshelf -d smartshelf_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
     env:
-      DATABASE_URL: postgresql://smartshelf:local@localhost:5432/smartshelf
+      DATABASE_URL: postgresql://smartshelf:ci-only-password@localhost:5432/smartshelf_ci?schema=public
+      TEST_DATABASE_URL: postgresql://smartshelf:ci-only-password@localhost:5432/smartshelf_test_ci?schema=public
+      BUSINESS_TIME_ZONE: Asia/Amman
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -12,7 +31,25 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - name: Generate Prisma client before TypeScript checks
+        run: npm run db:generate
+      - name: Generate an ephemeral CI signing secret
+        run: node -e "require('node:fs').appendFileSync(process.env.GITHUB_ENV, 'JWT_SECRET=' + require('node:crypto').randomBytes(48).toString('hex') + '\n')"
+      - name: Create the dedicated acceptance-test database
+        env:
+          PGPASSWORD: ci-only-password
+        run: psql -h localhost -U smartshelf -d postgres -v ON_ERROR_STOP=1 -c 'CREATE DATABASE smartshelf_test_ci;'
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      - name: Apply migrations to the CI application database
+        run: npm run db:deploy
+      - name: Seed the disposable demo database twice
+        env:
+          ALLOW_DEMO_SEED: 'true'
+        run: |
+          npm run db:seed
+          npm run db:seed
       - run: npm run smoke
+      - name: PostgreSQL and HTTP acceptance tests
+        run: npm run test:integration

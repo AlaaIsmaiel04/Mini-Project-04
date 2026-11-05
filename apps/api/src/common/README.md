@@ -1,7 +1,5 @@
-# Shared backend workspace
+# Shared backend helpers
 
-Mustafa: authentication/role/ownership/subscription-write guards, actor types and
-agreed business-date utility. Shiam: effective-subscription-status function.
-Mohammad: inventory/date/quantity/value calculations. None is implemented here.
-Agree small interfaces first, then review/merge shared helpers early so feature
-owners can integrate. Keep feature services inside their own modules.
+`security.ts` exports Actor/ActorRequest, JwtAuthGuard, Roles/RolesGuard, OwnResource/OwnershipGuard and ActiveSubscriptionGuard. Use JWT then Roles guards; apply subscription checks only to writes. The actor is `{ id, email, role, pharmacyId }`, loaded from the current Account row. HTTP examples and handoff notes: [Mustafa implementation](../../../../docs/MUSTAFA-IMPLEMENTATION.md).
+
+`business-date.ts` handles Asia/Amman calendar days and strict date parsing. `subscription-status.ts` reuses Shiam's helper from the supplied guide. `inventory-calculations.ts` extends Mohammad's pure helper, preserving calculateDashboard and sharing batch/medicine indicators. `inventory-mapper.ts` adapts Prisma records to the approved wire contract. Feature services remain in their modules.
