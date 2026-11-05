@@ -21,7 +21,7 @@ async function bootstrap() {
     .setTitle('SmartShelf API')
     .setVersion('0.1.0')
     .setDescription(
-      'Starter: health only. Feature endpoints are assigned in docs/API-CONTRACT.md.',
+      'Authentication and pharmacy-scoped inventory backed by Prisma and PostgreSQL. See docs/API-CONTRACT.md for the team contract.',
     )
     .addBearerAuth()
     .build();

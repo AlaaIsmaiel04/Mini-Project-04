@@ -1,8 +1,13 @@
-# Module ownership
+# Profile and duty API
 
-Hamid: own profile and duty APIs.
+Hamid owns the profile/duty rules and controllers. The integration now binds them to shared JWT authentication, effective subscription status and Prisma persistence. The compatibility guard retains its existing injection token for isolated tests but delegates production authentication to JwtAuthGuard; it never accepts a supplied actor/header as authentication.
 
-The module declaration is empty NestJS boilerplate only. Create the controllers,
-services, DTOs, response mapping, tests and Swagger documentation yourself.
-Authentication guards, Prisma access and business helpers are also team tasks;
-none are supplied. Coordinate their signatures early using docs/TEAM-PLAN.md.
+Profile updates allow only area/address/phone. Pharmacy IDs always come from the authenticated account. Inactive subscriptions retain reads and reject writes. Unknown or other-pharmacy duty IDs return the same 404. Existing DTOs, rejection logs and Swagger remain in place.
+
+## Overlap and concurrency
+
+Intervals are half-open [startsAt, endsAt). Adjacent/overnight periods are allowed, editing excludes the period itself, and different pharmacies are independent. End must follow start and duration cannot exceed 24 hours.
+
+Every duty mutation runs through DutyPeriodStore.transaction. PrismaDutyPeriodStore locks the owning Pharmacy row with SELECT FOR UPDATE before reading overlaps, then performs all reads/writes using that transaction's client. This serializes writers across separate API processes. PharmacyLock also queues same-process requests. Profile writes take the same pharmacy lock and recheck subscription status inside the transaction.
+
+The PostgreSQL integration suite starts two independent Nest applications and races matching writes; exactly one succeeds (201), the other returns 409. Fixture tests remain available without a database and fail closed without shared authentication/persistence. The generated INTEGRATION.md demonstrates wire shapes using fixed fixtures; real database evidence is in dashboard-pharmacy.integration.spec.ts.

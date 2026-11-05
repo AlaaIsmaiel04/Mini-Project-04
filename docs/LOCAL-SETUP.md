@@ -1,28 +1,65 @@
-# Foundation setup
+# Local setup
 
-Install Node 24 LTS, npm and Git. Pull the reviewed foundation, then work on your own branch.
+Use Node 24 (minimum 22.12), npm, and PostgreSQL. Prisma and its client stay pinned to 6.19.0. There is no Mongoose dependency.
+
+## Mustafa's configured Windows checkout
+
+The project uses a separate PostgreSQL 18 cluster in `.local/postgres`, listening only on `127.0.0.1:55433`. The database is `smartshelf_mustafa_local`. `apps/api/.env` already contains its generated credentials; the previous file is saved at `.local/api.env.before-local-db`. Both are ignored by Git. `.local/admin.env` holds cluster administration credentials; `.local/test.env` points to the separate test database.
+
+The migration and seed are already applied. From the repository root:
 
 ```powershell
-npm ci
-Copy-Item apps/api/.env.example apps/api/.env
-Copy-Item apps/web/.env.example apps/web/.env
+npm run db:local:start
 npm run dev
 ```
 
-Copy examples once only. No database generation, migration or seed step is needed now: there are no models or seed script yet. The web entry supports the shared layout work; product pages remain assigned to members. API /api/health confirms only that NestJS starts. No product routes, sign-in, accounts, mock-mode behavior or business endpoints are supplied.
+Open <http://localhost:5173/login>, sign in, then open <http://localhost:5173/pharmacist/inventory>. Swagger: <http://localhost:3000/api/docs>. After stopping the app, `npm run db:local:stop` stops this cluster. `npm run db:local:status` shows its status. Restart it with `db:local:start` after a computer restart. These commands default to PostgreSQL 18 in `C:/Program Files/PostgreSQL/18/bin`; set `PG_BIN` if installed elsewhere.
 
-## When the database work is ready
+## First setup on another computer
 
-Mustafa designs the Prisma schema, adds the Prisma module/service, creates the initial migration and writes the demo seed with instructions. Follow his merged instructions at that point. Set DATABASE_URL in apps/api/.env to your own dedicated local development database. Never reuse or reset an important database.
+1. Run `npm ci`.
+2. Copy `apps/api/.env.example` and `apps/web/.env.example` to their neighboring `.env` files only if those files do not exist.
+3. Create a dedicated PostgreSQL database and user; set `DATABASE_URL` accordingly. Alternatively, if port 5432 is free, `docker compose up -d db` starts the supplied local database using the example connection values. The `.local` cluster is machine-local and is not part of the repository.
+4. Generate a JWT secret with `node -e "console.log(require('node:crypto').randomBytes(48).toString('hex'))"` and put it in `apps/api/.env` as `JWT_SECRET`. Keep `BUSINESS_TIME_ZONE=Asia/Amman`.
+5. Run:
 
-Docker Desktop is optional. The supplied compose.yaml can start a local PostgreSQL instance with `docker compose up -d db` if port 5432 is available. An installed PostgreSQL server is also fine; create a dedicated database/user and adjust DATABASE_URL. Starting the database does not create project tables or records.
+```powershell
+npm run db:generate
+npm run db:deploy
+$env:ALLOW_DEMO_SEED = 'true'
+npm run db:seed
+Remove-Item Env:ALLOW_DEMO_SEED
+npm run dev
+```
 
-Generation/migrate/deploy/Studio commands are prepared in package.json for use after models/migrations exist. Mustafa adds a seed command when he writes the seed. Other members apply his committed migrations; they should not create competing migration histories.
+`db:deploy` applies the checked-in migration, including SQL constraints. Other members should use this migration history. `db:migrate` is for authoring subsequent schema changes; no reset is needed for setup.
 
-## Development boundaries
+## Demo accounts
 
-Frontend members author pages, routing, styles, request handling, fixtures and UI states. Backend members author guards, DTOs, services, response mapping, calculations and tests. Dependencies are installed as tools, not completed implementations.
+All seed accounts use the local demonstration password `DemoPass123!`.
 
-The Vite /api proxy is configured to localhost:3000. Alaa implements the request client and session behavior. Use the Day 1 shared types in packages/contracts approved by Alaa; coordinate later changes with the affected owners. After editing them, run `npm run build -w @smartshelf/contracts` to update declarations before checking consumers.
+| Email                       | Role / subscription    |
+| --------------------------- | ---------------------- |
+| `owner@smartshelf.test`     | OWNER, no pharmacy     |
+| `active@smartshelf.test`    | PHARMACIST / ACTIVE    |
+| `expired@smartshelf.test`   | PHARMACIST / EXPIRED   |
+| `suspended@smartshelf.test` | PHARMACIST / SUSPENDED |
+| `none@smartshelf.test`      | PHARMACIST / NONE      |
 
-Run typecheck, test, build and smoke before a PR. With no feature tests yet, npm test prints that none exist; this is not a completed test suite. Smoke validates foundation startup only.
+The seed creates four pharmacies in two areas, 16 medicines, 24 batches (including expired stock and zero quantity), and one overnight duty period. It uses stable IDs and upserts without updates: rerunning preserves existing edits. Dates are relative to the first seed run; reruns do not refresh them. An expired subscription may still sign in and read inventory, but every inventory mutation returns 403.
+
+Owner and dashboard feature APIs and Hamid's live persistence/guard adapters still need team integration. Owner login works; this does not make owner administration or public search complete.
+
+## Verification
+
+```powershell
+npm run typecheck
+npm test
+npm run build
+npm run smoke
+npm run test:integration
+```
+
+Smoke uses ports 3301 and 5317 and does not change records. Integration tests require an existing, separate database named `smartshelf_test` or `smartshelf_test_<suffix>` owned by the test user. They apply migrations, create their own UUID fixtures and clean those fixtures up; they never reset a database. On Mustafa's checkout `.local/test.env` is configured. Elsewhere set `TEST_DATABASE_URL` before running the command. The runner generates a temporary signing secret internally and never falls back to the development database.
+
+React development proxies `/api` to port 3000. Database acceptance exercises Alaa's actual request client against the real server; a browser visual walkthrough is a separate manual check.

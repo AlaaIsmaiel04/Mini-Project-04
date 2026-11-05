@@ -1,0 +1,307 @@
+.owner-page {
+  display: grid;
+  gap: 24px;
+}
+.owner-heading {
+  margin-bottom: 12px;
+}
+.owner-heading p {
+  color: var(--muted);
+  margin: 8px 0 0;
+}
+.owner-directory {
+  min-width: 0;
+}
+.owner-filters {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 12px 0 28px;
+}
+.owner-filters label {
+  flex: 1 1 240px;
+}
+.owner-pharmacy-list {
+  list-style: none;
+  padding: 24px;
+  margin: 24px 0 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+.owner-table-head,
+.owner-pharmacy {
+  display: grid;
+  grid-template-columns:
+    minmax(150px, 1.2fr) minmax(80px, 0.6fr) minmax(120px, 1fr)
+    minmax(110px, 0.9fr) minmax(105px, 0.8fr) minmax(120px, 0.9fr);
+  gap: 16px;
+  align-items: center;
+}
+.owner-table-head {
+  padding: 14px 16px;
+  background: var(--background);
+  font-size: 11px;
+  color: var(--muted);
+}
+.owner-pharmacy {
+  padding: 24px 16px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.owner-pharmacy:nth-child(odd) {
+  background: var(--background);
+}
+.owner-pharmacy-heading,
+.owner-pharmacy dl {
+  display: contents;
+}
+.owner-pharmacy h4 {
+  grid-column: 1;
+  grid-row: 1;
+  font-size: 14px;
+  margin: 0;
+}
+.owner-pharmacy .owner-badge {
+  grid-column: 5;
+  grid-row: 1;
+  justify-self: start;
+}
+.owner-pharmacy dl > div {
+  grid-row: 1;
+  font-size: 13px;
+  min-width: 0;
+}
+.owner-pharmacy dl > div:nth-child(1) {
+  grid-column: 2;
+}
+.owner-pharmacy dl > div:nth-child(2) {
+  grid-column: 3;
+}
+.owner-pharmacy dl > div:nth-child(3) {
+  grid-column: 4;
+  font-variant-numeric: tabular-nums;
+}
+.owner-pharmacy dt {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.owner-pharmacy dd {
+  margin: 0;
+}
+.owner-pharmacy > button {
+  grid-column: 6;
+  grid-row: 1;
+  padding: 8px 12px;
+  min-height: 40px;
+  font-size: 12px;
+}
+.owner-badge {
+  display: inline-flex;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--background);
+  color: var(--muted);
+}
+.owner-badge-active {
+  background: var(--success-soft);
+  color: var(--success);
+}
+.owner-badge-expired {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+.owner-badge-suspended {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.owner-panel h3 {
+  margin-top: 0;
+}
+.owner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+.owner-page .owner-danger {
+  background: var(--danger);
+  border-color: var(--danger);
+}
+.owner-page .owner-danger:hover {
+  background: #973c2c;
+}
+.owner-page .owner-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.owner-checkbox input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+}
+.owner-create-form {
+  display: grid;
+  gap: 20px;
+}
+.owner-create-form fieldset {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.owner-create-form > button {
+  justify-self: start;
+  min-width: 220px;
+}
+.owner-management-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 24px;
+}
+.owner-management-grid > section {
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  min-width: 0;
+}
+.owner-management-grid fieldset {
+  grid-template-columns: 1fr;
+}
+.owner-management-grid > section > p {
+  font-size: 13px;
+  color: var(--muted);
+}
+.owner-management > p {
+  color: var(--muted);
+}
+.owner-success {
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: var(--success-soft);
+  color: var(--success);
+}
+.owner-preview-notice {
+  padding: 16px 20px;
+  margin-bottom: 28px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.owner-preview-notice p {
+  margin: 4px 0 0;
+}
+@media (max-width: 1180px) {
+  .owner-table-head,
+  .owner-pharmacy {
+    grid-template-columns:
+      minmax(130px, 1.2fr) minmax(70px, 0.7fr) minmax(100px, 1fr)
+      minmax(100px, 0.9fr) minmax(100px, 0.8fr);
+  }
+  .owner-table-head > :nth-child(3) {
+    display: none;
+  }
+  .owner-pharmacy dl > div:nth-child(2) {
+    display: none;
+  }
+  .owner-pharmacy dl > div:nth-child(3) {
+    grid-column: 3;
+  }
+  .owner-pharmacy .owner-badge {
+    grid-column: 4;
+  }
+  .owner-pharmacy > button {
+    grid-column: 5;
+  }
+  .owner-pharmacy-list {
+    padding: 20px;
+  }
+}
+@media (max-width: 1050px) {
+  .owner-management-grid {
+    grid-template-columns: 1fr;
+  }
+  .owner-table-head {
+    display: none;
+  }
+  .owner-pharmacy-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: 20px;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+  .owner-pharmacy {
+    display: block;
+    border: 1px solid var(--border);
+    background: var(--surface) !important;
+    border-radius: 20px;
+    padding: 24px;
+  }
+  .owner-pharmacy-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .owner-pharmacy h4 {
+    font-size: 16px;
+  }
+  .owner-pharmacy dl {
+    display: grid;
+    gap: 16px;
+    margin-block: 24px;
+  }
+  .owner-pharmacy dl > div {
+    display: block !important;
+    grid-column: auto !important;
+    grid-row: auto;
+  }
+  .owner-pharmacy dt {
+    position: static;
+    width: auto;
+    height: auto;
+    clip-path: none;
+    color: var(--muted);
+    font-size: 11px;
+    margin-bottom: 4px;
+  }
+  .owner-pharmacy > button {
+    width: 100%;
+  }
+}
+@media (max-width: 760px) {
+  .owner-create-form fieldset {
+    grid-template-columns: 1fr;
+  }
+  .owner-filters label {
+    flex-basis: 100%;
+  }
+  .owner-management-grid > section {
+    padding: 20px;
+  }
+  .owner-actions {
+    flex-direction: column;
+  }
+  .owner-actions button {
+    width: 100%;
+  }
+  .owner-create-form > button {
+    width: 100%;
+    min-width: 0;
+  }
+}

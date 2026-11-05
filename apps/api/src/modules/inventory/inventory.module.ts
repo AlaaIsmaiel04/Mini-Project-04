@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
-/** Mustafa: pharmacy-scoped medicines and batches. */
-@Module({})
+import { InventoryController } from './inventory.controller';
+import { InventoryService } from './inventory.service';
+
+@Module({ controllers: [InventoryController], providers: [InventoryService] })
 export class InventoryModule {}

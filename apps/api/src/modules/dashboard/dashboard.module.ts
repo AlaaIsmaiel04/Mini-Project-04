@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
 import { DashboardController } from './dashboard.controller';
 import { DashboardService } from './dashboard.service';
-import { UnavailableDataAdapter } from './unavailable-data.adapter';
-
+import { CLOCK, SystemClock } from '../pharmacy/clock';
 @Module({
   controllers: [DashboardController],
-  providers: [DashboardService, UnavailableDataAdapter],
+  providers: [DashboardService, { provide: CLOCK, useClass: SystemClock }],
 })
 export class DashboardModule {}

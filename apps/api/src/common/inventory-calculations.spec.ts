@@ -1,3 +1,4 @@
+// اختبارات بواسطة Codex: تجميع وتشغيل؛ الاختبار الأصلي للحسابات من محمد.
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { Prisma } from '@prisma/client';
@@ -18,26 +19,52 @@ describe('Inventory Calculations', () => {
       {
         threshold: 10,
         batches: [
-          { quantity: 5, cost: new Prisma.Decimal('10.00'), expiryDate: yesterday },
-          { quantity: 0, cost: new Prisma.Decimal('100.00'), expiryDate: plus91 },
+          {
+            quantity: 5,
+            cost: new Prisma.Decimal('10.00'),
+            expiryDate: yesterday,
+          },
+          {
+            quantity: 0,
+            cost: new Prisma.Decimal('100.00'),
+            expiryDate: plus91,
+          },
         ],
       },
       {
         threshold: 20,
         batches: [
           { quantity: 10, cost: new Prisma.Decimal('5.00'), expiryDate: today },
-          { quantity: 10, cost: new Prisma.Decimal('5.00'), expiryDate: plus90 },
+          {
+            quantity: 10,
+            cost: new Prisma.Decimal('5.00'),
+            expiryDate: plus90,
+          },
         ],
       },
       {
         threshold: 5,
-        batches: [{ quantity: 10, cost: new Prisma.Decimal('2.00'), expiryDate: plus91 }],
+        batches: [
+          {
+            quantity: 10,
+            cost: new Prisma.Decimal('2.00'),
+            expiryDate: plus91,
+          },
+        ],
       },
       {
         threshold: 50,
         batches: [
-          { quantity: 10, cost: new Prisma.Decimal('1.00'), expiryDate: yesterday },
-          { quantity: 10, cost: new Prisma.Decimal('1.00'), expiryDate: plus90 },
+          {
+            quantity: 10,
+            cost: new Prisma.Decimal('1.00'),
+            expiryDate: yesterday,
+          },
+          {
+            quantity: 10,
+            cost: new Prisma.Decimal('1.00'),
+            expiryDate: plus90,
+          },
         ],
       },
     ];

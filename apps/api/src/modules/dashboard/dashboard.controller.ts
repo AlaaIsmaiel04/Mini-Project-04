@@ -1,24 +1,43 @@
-import { Controller, Get, Req, UseGuards, UnauthorizedException } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiUnauthorizedResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiInternalServerErrorResponse,
+} from '@nestjs/swagger';
+import {
+  JwtAuthGuard,
+  RolesGuard,
+  Roles,
+  type ActorRequest,
+} from '../../common/security';
 import { DashboardService } from './dashboard.service';
-import { TemporaryAuthGuard } from './temporary-auth.guard';
-
-@ApiTags('Pharmacist Dashboard')
+import { DashboardResponseDto } from './dashboard.dto';
+@ApiTags('dashboard')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('PHARMACIST')
 @Controller('pharmacist/dashboard')
-@UseGuards(TemporaryAuthGuard)
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
-
   @Get()
-  @ApiOperation({ summary: 'Get dashboard metrics for logged-in pharmacist' })
-  @ApiResponse({ status: 200, description: 'Dashboard metrics.' })
-  async getDashboard(@Req() req: any) {
-    const pharmacyId = req.user?.pharmacyId;
-
-    if (!pharmacyId) {
-      throw new UnauthorizedException('Pharmacy ID could not be derived from authenticated user.');
-    }
-
-    return this.dashboardService.getDashboardData(pharmacyId);
+  @ApiOperation({
+    summary: 'Own pharmacy dashboard; inactive subscriptions may read',
+  })
+  @ApiOkResponse({ type: DashboardResponseDto })
+  @ApiUnauthorizedResponse({
+    description: 'Missing, invalid or expired token.',
+  })
+  @ApiForbiddenResponse({ description: 'Requires a pharmacist account.' })
+  @ApiNotFoundResponse({ description: 'Pharmacy no longer exists.' })
+  @ApiInternalServerErrorResponse({
+    description: 'Database unavailable; never returns sample metrics.',
+  })
+  getDashboard(@Req() request: ActorRequest) {
+    return this.dashboardService.getDashboardData(request.actor);
   }
 }

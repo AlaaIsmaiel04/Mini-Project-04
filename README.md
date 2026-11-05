@@ -2,32 +2,40 @@
 
 Pharmacy Management & Public Medicine Search - Weekly Mini Project 04, Team 2.
 
-## Foundation and Day 1 baseline
+## Current implementation
 
-This repository supplies the development setup so the six members can build the project themselves. Alaa is building the shared frontend layout; product feature pages remain assigned work. The backend exposes only process health and Swagger. Feature folders contain ownership notes and empty NestJS module declarations.
+The frontend includes shared routing/navigation, staff sign-in requests, owner pharmacy/account/subscription forms, and inventory browsing plus medicine/batch create/edit forms. Real routes send requests using the agreed API contracts. Development-only owner/inventory previews use explicitly synthetic in-memory data and reset on refresh; they never replace failed API responses.
 
-Included: React/TypeScript/Vite and NestJS configuration, installed dependencies and lockfile, dev/build commands, environment examples, optional PostgreSQL Compose configuration, an empty Prisma datasource/generator, a shared API-types package, and the work plan.
+The backend now includes Mustafa's PostgreSQL schema/migration, repeatable demo seed, JWT login/session endpoints, shared role/ownership/subscription guards, and pharmacy-scoped inventory APIs. Mohammad's dashboard now returns all agreed metrics and attention items from the signed-in pharmacy's persisted stock. Profile and duty endpoints use shared JWT authentication and Prisma stores, including database locking for concurrent duty writes. Owner administration, public medicine-stock persistence, public frontend features and dark mode remain team integration work.
 
-The members implement all product pages, styling, routing, forms, API requests, test data, authentication/guards, database models/migrations/seed, business calculations, feature services/DTOs and tests. There are no ready-made product screens or prewritten business rules.
+The Figma styling and English/Arabic language selector cover the shared shell, sign-in, owner and inventory screens, including forms and feedback. The dashboard/profile/duty pages use the same design and EN/AR controls. See [interface handoff](DESIGN.md), [language guide](docs/LANGUAGE.md), [Alaa's progress](docs/ALAA-PROGRESS.md) and [demo plan](docs/DEMO-REHEARSAL.md). Development previews never replace real API failures.
 
 ## Start locally - PowerShell
 
-Node 24 LTS is recommended (minimum 22.12). From the repository root:
+Use Node 24 LTS (minimum 22.12), npm and PostgreSQL. On first setup run `npm ci`, then copy `apps/api/.env.example` and `apps/web/.env.example` to neighboring `.env` files only if they do not already exist. Preserve existing local settings; never commit environment files.
+
+Create a dedicated local PostgreSQL database and set `DATABASE_URL` in `apps/api/.env`. Generate a random JWT secret of at least 32 characters and replace the example `JWT_SECRET`. Keep `BUSINESS_TIME_ZONE=Asia/Amman`. Then run:
 
 ```powershell
-npm ci
-Copy-Item apps/api/.env.example apps/api/.env
-Copy-Item apps/web/.env.example apps/web/.env
+npm run db:generate
+npm run db:deploy
+$env:ALLOW_DEMO_SEED = 'true'
+npm run db:seed
+Remove-Item Env:ALLOW_DEMO_SEED
 npm run dev
 ```
 
-Copy environment files only on first setup; keep your existing local settings on later pulls. Never commit .env files. No database is required to run the current frontend and API health endpoint.
+Seed only a dedicated demo database. It creates owner/pharmacist demo accounts, four pharmacies, sixteen medicines, twenty-four batches and an overnight duty period. Re-running preserves existing records and edits. Account details and complete setup instructions are in [LOCAL-SETUP.md](docs/LOCAL-SETUP.md). The backend now requires a working database and configured JWT secret at startup.
 
-- React foundation: <http://localhost:5173>
-- API process health: <http://localhost:3000/api/health>
-- Swagger, currently health only: <http://localhost:3000/api/docs>
+- React frontend: <http://localhost:5173>
+- Synthetic owner preview (development only): <http://localhost:5173/dev/owner>
+- Synthetic inventory/forms preview (development only): <http://localhost:5173/dev/inventory>
+- API health: <http://localhost:3000/api/health>
+- Swagger, including authentication, inventory and Hamid's routes: <http://localhost:3000/api/docs>
 
-See [local setup](docs/LOCAL-SETUP.md). Database commands become useful after Mustafa creates the models and initial migration. Seed scripts and accounts must be authored by the team; no demo credentials/data are supplied.
+`POST /api/auth/login` and `GET /api/auth/me` use the real database. Inventory requests use shared authentication and pharmacy scoping. The dashboard and profile/duty pages at `/pharmacist` and `/pharmacist/profile` use real API data. Profile and duty writes require an active subscription; inactive users retain read access. Public medicine searches can still return 503 until stock persistence is integrated. Owner login alone does not implement owner administration.
+
+The optional `db:local:start/stop/status` commands only work on a checkout with its own configured `.local/postgres` cluster. Mustafa's machine-local database, credentials and test configuration are not supplied by cloning the repository.
 
 ## Team responsibilities
 
@@ -44,11 +52,11 @@ Each member builds their area from scratch. The [team plan](docs/TEAM-PLAN.md) a
 
 ## Work independently
 
-- Agree route names, response fields, shared helper signatures and database needs on Day 1. The [API proposal](docs/API-CONTRACT.md) is a planning document; the team writes the actual types and code.
-- Frontend members create their own small feature-local fixtures while APIs are in progress. No fixtures or adapters are prebuilt.
+- Use the approved [API contract baseline](docs/API-CONTRACT.md) and shared wire types. Coordinate changes to response fields, helper signatures and database needs with the affected members.
+- Frontend members maintain feature-local fixtures while APIs are in progress. The current owner/inventory previews use member-authored synthetic data; real routes never fall back to it.
 - Backend members create their own service tests/fake persistence inputs while shared authentication work proceeds.
 - Work mainly in your assigned folders. Alaa coordinates shared frontend/types changes; Mustafa authors migrations.
-- Existing branches: alaa, mustafa, hamid, Mohammad, Yousef, Sheam (Shiam). Branch names are case-sensitive conventions, not per-member access restrictions.
+- Team branches include alaa, mustafa, hamid, hamid-final, Mohammad, Yousef and Sheam (Shiam). Branch names are case-sensitive conventions, not per-member access restrictions.
 - Publish the reviewed foundation through a PR first. Then integrate small PRs into main throughout the two weeks.
 
 ## Checks
@@ -61,7 +69,13 @@ npm run smoke
 npm run format:check
 ```
 
-No feature tests exist yet; the test runner says so explicitly until members add .spec.ts files. Smoke checks only verify foundation startup/health and the built frontend. CI does not claim business features are implemented.
+The reviewed combined backend/frontend has 435 API tests passing (the PostgreSQL acceptance group is skipped in ordinary `npm test`) and eleven frontend tests. Run the database acceptance separately:
+
+```powershell
+npm run test:integration
+```
+
+Set `TEST_DATABASE_URL` to a separate database named `smartshelf_test` or `smartshelf_test_<suffix>`. The runner applies migrations and cleans up its own test fixtures; it never falls back to the development database. Fifteen PostgreSQL/HTTP acceptance tests passed during review, covering authentication, ownership, inactive reads/write restrictions, validation, atomic rollback, API restart persistence and Alaa's request client. Fresh migration, repeat seed, typecheck, build and smoke checks also passed. Smoke now requires a configured database. Dashboard/profile/duty acceptance also covers exact totals, empty/inactive reads, real saves, UTC conversion, overlap rejection and concurrent writes across two API instances. See [Mohammad implementation notes](docs/MOHAMMAD-IMPLEMENTATION.md). Full owner-to-public acceptance still needs team integration. Security rejection logs include only reason codes and relevant IDs, never request bodies, credentials or tokens.
 
 ## Scope and requirements
 

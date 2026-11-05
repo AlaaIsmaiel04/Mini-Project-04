@@ -4,13 +4,20 @@ import { BrowserRouter } from 'react-router-dom';
 import { App } from './app/App';
 import { AuthProvider } from './features/auth/AuthProvider';
 import './styles.css';
+import { LanguageProvider } from './features/preferences/LanguageProvider';
+import { applyDocumentLanguage, readLanguage } from './locales/messages';
+
+// Apply saved direction before React paints the first frame.
+applyDocumentLanguage(readLanguage());
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </LanguageProvider>
     </BrowserRouter>
   </StrictMode>,
 );

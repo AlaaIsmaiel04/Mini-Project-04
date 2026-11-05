@@ -25,21 +25,15 @@
     "db:studio": "npm run db:studio -w @smartshelf/api",
     "format": "prettier --write \"{apps,packages}/**/*.{ts,tsx,css,json}\" \"docs/**/*.md\" README.md",
     "format:check": "prettier --check \"{apps,packages}/**/*.{ts,tsx,css,json}\" \"docs/**/*.md\" README.md",
-   "pretypecheck": "npm run db:generate",
-   "pretest": "npm run db:generate"
-    },
+    "db:seed": "npm run db:seed -w @smartshelf/api",
+    "test:integration": "node scripts/test-integration.mjs",
+    "db:local:start": "node scripts/local-postgres.mjs start",
+    "db:local:stop": "node scripts/local-postgres.mjs stop",
+    "db:local:status": "node scripts/local-postgres.mjs status"
+  },
   "devDependencies": {
-    "@types/jest": "^30.0.0",
     "concurrently": "^9.2.1",
     "prettier": "^3.6.2",
     "typescript": "~5.9.3"
-  },
-  "dependencies": {
-    "@prisma/client": "^6.19.0"
-  },
-  "allowScripts": {
-    "@prisma/engines": true,
-    "prisma": true,
-    "@prisma/client": true
   }
 }
