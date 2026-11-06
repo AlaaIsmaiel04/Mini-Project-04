@@ -79,6 +79,12 @@ export function AppShell({ children }: { children: ReactNode }) {
       )}
       <li>
         <NavLink to="/" end>
+          <InterfaceIcon name="home" />
+          {t('Home')}
+        </NavLink>
+      </li>
+      <li>
+        <NavLink to="/search">
           <InterfaceIcon name="search" />
           {t('Medicine Search')}
         </NavLink>

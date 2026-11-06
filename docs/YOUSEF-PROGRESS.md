@@ -31,7 +31,7 @@ Evidence: `output/yousef/browser-checks.json`, `directory-desktop.png`,
 
 1. Use real seeded data: an active pharmacy with eligible stock, one expired-only,
    one zero-stock, and one inactive pharmacy. Include overlapping display/scientific names.
-2. At `/`, submit a partial name and then an uppercase scientific-name fragment.
+2. At `/search`, submit a partial name and then an uppercase scientific-name fragment.
    Eligible pharmacies should appear once each. No expired-only, zero-stock or
    inactive result should appear. Do not calculate availability in React.
 3. Combine area and on-duty filters; test a nonexistent area and a no-match name.

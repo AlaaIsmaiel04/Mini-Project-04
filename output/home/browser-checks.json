@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-11-06T15:41:09.651Z",
+  "checks": [
+    "home /; medicine search /search; directory /pharmacies; login /login",
+    "3 home destination links and active shared navigation",
+    "keyboard Enter to search; query submits to public endpoint",
+    "browser Back returns home; brand returns home",
+    "404 medicine link now goes to /search",
+    "private routes still require login",
+    "mobile workspace Home navigation",
+    "EN/AR persistence and RTL at 320/390/768/1024/1440",
+    "no horizontal overflow or browser exceptions; reduced motion respected"
+  ],
+  "publicData": "controlled test responses; no real-stock availability claimed"
+}
