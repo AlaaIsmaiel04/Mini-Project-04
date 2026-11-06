@@ -1,0 +1,151 @@
+/* The theme control sits beside the language control in both headers. */
+.theme-control {
+  flex-shrink: 0;
+}
+.theme-control select {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  padding: 9px 22px;
+  color: var(--foreground);
+  font-size: 12px;
+  min-height: 44px;
+  max-width: 100%;
+  font-family: inherit;
+  cursor: pointer;
+}
+.app-topbar > .language-control {
+  margin-inline-start: auto;
+}
+.app-topbar > .language-control + .theme-control {
+  margin-inline-start: -12px;
+}
+@media (max-width: 760px) {
+  .theme-control select {
+    padding: 5px 14px;
+  }
+  .app-topbar > .language-control + .theme-control {
+    margin-inline-start: -8px;
+  }
+}
+
+/*
+ * Dark theme: colors only, no layout. Alaa's rules pair --surface as text with --primary
+ * as background, so a light --primary and a dark --surface keep those pairs readable.
+ */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --background: #0f1c18;
+  --surface: #16261f;
+  --foreground: #e9efe4;
+  --primary: #93d4b4;
+  --primary-hover: #aee2c8;
+  --sidebar: #193f34;
+  --mint: #d8e9c5;
+  --gold: #e9d6a0;
+  --muted: #aebdb3;
+  --border: #33473c;
+  --danger: #ffa193;
+  --danger-soft: #4a211b;
+  --warning: #f0c56f;
+  --warning-soft: #3f2f10;
+  --success: #a3dfbd;
+  --success-soft: #1f3a2d;
+  --info: #a3cce4;
+  --info-soft: #1c3442;
+  --dark-on-sidebar: #f5f6e9;
+  --dark-on-light: #12211b;
+  --dark-input: #101e19;
+  --dark-input-border: #7a9082;
+  --dark-raised: #1b2e25;
+  --dark-raised-hover: #233a2f;
+}
+
+/* --sidebar stays green, so text that used --surface on it must stay light. */
+:root[data-theme='dark'] .workspace-sidebar,
+:root[data-theme='dark'] .workspace-sidebar .brand,
+:root[data-theme='dark'] .home-hero,
+:root[data-theme='dark'] .app-shell .public-intro,
+:root[data-theme='dark'] .app-shell .auth-story,
+:root[data-theme='dark'] .public-placeholder {
+  color: var(--dark-on-sidebar);
+}
+:root[data-theme='dark'] .public-placeholder {
+  background: var(--sidebar);
+}
+
+/* --foreground is light here, so text on the light gold must not use it. */
+:root[data-theme='dark'] ::selection,
+:root[data-theme='dark'] .skip-link {
+  color: var(--dark-on-light);
+}
+
+/* Colors Alaa wrote directly instead of as variables. */
+:root[data-theme='dark']
+  .app-shell
+  input:not([type='checkbox']):not([type='radio']),
+:root[data-theme='dark'] .app-shell textarea,
+:root[data-theme='dark'] .app-shell input:not(:read-only):focus,
+:root[data-theme='dark'] .app-shell textarea:focus {
+  background: var(--dark-input);
+}
+:root[data-theme='dark']
+  .app-shell
+  :is(input:not([type='checkbox']):not([type='radio']), textarea, select):not(
+    :focus
+  ) {
+  border-color: var(--dark-input-border);
+}
+:root[data-theme='dark']
+  .app-shell
+  :is(.inventory-table-head, .owner-table-head) {
+  background: var(--dark-raised-hover);
+  color: var(--foreground);
+}
+:root[data-theme='dark']
+  .app-shell
+  :is(.inventory-medicines, .owner-pharmacy-list)
+  > li:nth-child(odd) {
+  background: var(--dark-raised);
+}
+:root[data-theme='dark'] .app-shell .attention-list > li:hover {
+  background: var(--dark-raised);
+}
+:root[data-theme='dark']
+  .app-shell
+  :is(.inventory-preview-notice, .owner-preview-notice) {
+  border-color: var(--dark-input-border);
+  background: var(--dark-raised);
+}
+:root[data-theme='dark'] .form-error {
+  border-color: #8c4438;
+}
+:root[data-theme='dark'] .owner-page .owner-danger:hover {
+  background: #ffbcb1;
+}
+:root[data-theme='dark'] .app-shell .public-filters {
+  box-shadow: 0 12px 32px -16px #000000a6;
+}
+@media (hover: hover) {
+  :root[data-theme='dark']
+    .app-shell
+    :is(.inventory-row, .owner-pharmacy):hover {
+    background: var(--dark-raised-hover);
+  }
+}
+@media (max-width: 1050px) {
+  :root[data-theme='dark']
+    .app-shell
+    :is(.inventory-medicines, .owner-pharmacy-list)
+    > li:nth-child(odd) {
+    background: var(--surface);
+  }
+}
+@media (max-width: 760px) {
+  :root[data-theme='dark'] .workspace-sidebar {
+    color: var(--foreground);
+  }
+  :root[data-theme='dark'] .workspace-sidebar .brand {
+    color: var(--primary);
+  }
+}
