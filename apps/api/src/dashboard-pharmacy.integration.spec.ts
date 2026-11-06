@@ -196,6 +196,148 @@ test(
         },
       );
       await t.test(
+        'Day 10 inventory writes update dashboard totals and simultaneous indicators',
+        async () => {
+          const created = await call('POST', '/pharmacist/medicines', other, {
+            displayName: 'Day 10 medicine',
+            scientificName: 'Day 10 compound',
+            category: 'Test',
+            reorderThreshold: 10,
+          });
+          assert.equal(created.status, 201);
+          const id = created.body.id;
+          const soon = await call(
+            'POST',
+            `/pharmacist/medicines/${id}/batches`,
+            other,
+            {
+              batchNumber: 'SOON',
+              quantity: 10,
+              unitCost: '2.50',
+              expiryDate: addCalendarDays(today, 30),
+              storageLocation: 'A',
+            },
+          );
+          const expired = await call(
+            'POST',
+            `/pharmacist/medicines/${id}/batches`,
+            other,
+            {
+              batchNumber: 'EXPIRED',
+              quantity: 3,
+              unitCost: '4.00',
+              expiryDate: addCalendarDays(today, -1),
+              storageLocation: 'B',
+            },
+          );
+          assert.equal(soon.status, 201);
+          assert.equal(expired.status, 201);
+          async function verify(
+            units: number,
+            value: string,
+            waste: string,
+            soonCount: number,
+            flags: string[],
+          ) {
+            const dashboard = await call('GET', '/pharmacist/dashboard', other);
+            const inventory = await call('GET', '/pharmacist/medicines', other);
+            assert.equal(dashboard.status, 200);
+            assert.equal(inventory.status, 200);
+            const row = inventory.body.items.find(
+              (m: { id: string }) => m.id === id,
+            );
+            assert.equal(dashboard.body.totalMedicines, 2);
+            assert.equal(dashboard.body.totalUnits, units);
+            assert.equal(dashboard.body.inventoryValue, value);
+            assert.equal(dashboard.body.expectedWaste, waste);
+            assert.equal(dashboard.body.expiringSoonBatchCount, soonCount);
+            assert.equal(dashboard.body.expiredBatchCount, 1);
+            assert.equal(
+              dashboard.body.lowStockMedicineCount,
+              flags.includes('LOW_STOCK') ? 2 : 1,
+            );
+            assert.equal(row.availableQuantity, units);
+            assert.deepEqual(row.indicators, flags);
+            const attention = dashboard.body.attentionItems.find(
+              (m: { medicineId: string }) => m.medicineId === id,
+            );
+            if (flags.includes('HEALTHY')) assert.equal(attention, undefined);
+            else assert.deepEqual(attention.indicators, flags);
+          }
+          await verify(10, '25.00', '12.00', 1, [
+            'LOW_STOCK',
+            'EXPIRED',
+            'EXPIRING_SOON',
+          ]);
+          assert.equal(
+            (
+              await call(
+                'PATCH',
+                `/pharmacist/batches/${soon.body.id}`,
+                other,
+                {
+                  quantity: 11,
+                  expiryDate: addCalendarDays(today, 91),
+                  storageLocation: 'A',
+                },
+              )
+            ).status,
+            200,
+          );
+          await verify(11, '27.50', '12.00', 0, ['EXPIRED']);
+          assert.equal(
+            (
+              await call(
+                'PATCH',
+                `/pharmacist/batches/${expired.body.id}`,
+                other,
+                {
+                  quantity: 0,
+                  expiryDate: addCalendarDays(today, -1),
+                  storageLocation: 'B',
+                },
+              )
+            ).status,
+            200,
+          );
+          await verify(11, '27.50', '0.00', 0, ['HEALTHY']);
+          assert.equal(
+            (
+              await call('PATCH', `/pharmacist/medicines/${id}`, other, {
+                displayName: 'Day 10 renamed',
+                scientificName: 'Day 10 compound',
+                category: 'Test',
+                reorderThreshold: 11,
+              })
+            ).status,
+            200,
+          );
+          assert.equal(
+            (
+              await call(
+                'PATCH',
+                `/pharmacist/batches/${soon.body.id}`,
+                other,
+                {
+                  quantity: 11,
+                  expiryDate: addCalendarDays(today, 30),
+                  storageLocation: 'A',
+                },
+              )
+            ).status,
+            200,
+          );
+          await verify(11, '27.50', '0.00', 1, ['LOW_STOCK', 'EXPIRING_SOON']);
+          const filtered = await call(
+            'GET',
+            '/pharmacist/medicines?status=EXPIRING_SOON',
+            other,
+          );
+          assert.equal(filtered.body.total, 1);
+          assert.equal(filtered.body.items[0].id, id);
+        },
+      );
+      await t.test(
         'live profile uses current actor and subscription; immutable fields reject; saves persist',
         async () => {
           assert.equal((await call('GET', '/pharmacist/profile')).status, 401);
