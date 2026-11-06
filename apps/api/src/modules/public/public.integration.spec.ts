@@ -87,6 +87,7 @@ test(
     const AREA = `Area${tag}`;
     const OTHER_AREA = `Other${tag}`;
     const LITERAL_AREA = `Literal${tag}`;
+    const WILD_AREA = `100%_Zone\\${tag}`;
     const created: string[] = [];
     const secrets: string[] = [];
     let current = AT_2AM;
@@ -193,6 +194,11 @@ test(
       const kilo = await addPharmacy('Kilo', LITERAL_AREA, IN_DATE);
       const lima = await addPharmacy('Lima', LITERAL_AREA, IN_DATE);
       const mike = await addPharmacy('Mike', LITERAL_AREA, IN_DATE);
+      const north = await addPharmacy('North', 'North', IN_DATE);
+      await addPharmacy('Zone', WILD_AREA, IN_DATE);
+      await addMedicine(north, `Northcin${literal}`, 'Other compound', [
+        [5, FRESH],
+      ]);
 
       // Two good batches, an expired one and an empty one, plus a second matching medicine.
       await addMedicine(alpha, `Zolvax ${token} 500`, `Zolvacillin${token}`, [
@@ -337,6 +343,47 @@ test(
             await names(`pharmacies?area=${OTHER_AREA.slice(0, -1)}`),
             [],
           );
+        },
+      );
+
+      await t.test('%, _ and \\ in area are not wildcards', async () => {
+        const northcin = search(`Northcin${literal}`);
+
+        assert.equal(
+          (await names('pharmacies?area=North')).includes(nameOf('North')),
+          true,
+        );
+        assert.deepEqual(await names(`${northcin}&area=North`), [
+          nameOf('North'),
+        ]);
+
+        for (const pattern of ['Nort_', '%25', 'N%25', '_____', '%25orth']) {
+          assert.deepEqual(
+            await names(`pharmacies?area=${pattern}`),
+            [],
+            pattern,
+          );
+          assert.deepEqual(
+            await names(`${northcin}&area=${pattern}`),
+            [],
+            pattern,
+          );
+        }
+      });
+
+      await t.test(
+        'an area containing %, _ and \\ matches itself',
+        async () => {
+          const area = (value: string) =>
+            `pharmacies?area=${encodeURIComponent(value)}`;
+
+          assert.deepEqual(await names(area(WILD_AREA)), [nameOf('Zone')]);
+          assert.deepEqual(await names(area(WILD_AREA.toUpperCase())), [
+            nameOf('Zone'),
+          ]);
+          assert.deepEqual(await names(area(`100x_Zone\\${tag}`)), []);
+          assert.deepEqual(await names(area(`100%xZone\\${tag}`)), []);
+          assert.deepEqual(await names(area(`100%_Zone${tag}`)), []);
         },
       );
 
