@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-11-06T11:19:08.206Z",
+  "checks": [
+    "Real unauthenticated PostgreSQL directory lists active pharmacy, excludes suspended, handles null timestamps/duty",
+    "Real medicine API 503 is shown honestly with Retry; no sample fallback",
+    "Allowed public fields only, phone link, result count, current/next overnight duty and Jordan-time dates",
+    "Explicit submit only; scientific query and combined area/on-duty filters forwarded",
+    "Empty results, network error, retry preserve submitted query and filters",
+    "Loading state and cancelled stale request cannot overwrite latest search",
+    "Clear resets query/filters/results; empty query rejected with focus and labelled validation",
+    "Directory loads without query or sign-in; area filter and reset work",
+    "Keyboard Enter submits medicine search; desktop search, empty and error screenshots captured",
+    "320/390/768/1440 layouts, Arabic RTL, keyboard focus and no browser exceptions"
+  ],
+  "realApi": "directory and medicine 503 checked against isolated PostgreSQL; success/error/stale frontend scenarios use intercepted public responses",
+  "remaining": "Real stock search awaits Hamid public medicine availability persistence; dark mode unavailable; team rehearsal and individual presentation need team participation"
+}

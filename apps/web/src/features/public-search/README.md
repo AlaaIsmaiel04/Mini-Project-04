@@ -1,9 +1,15 @@
-# Frontend ownership
+# Public medicine search
 
-Yousef - citizen medicine search.
+Implemented at `/` with `PublicSearchPage`, `PharmacyCard` and `public-api.ts`.
+Requests are unauthenticated. Submit a nonempty display/scientific name with optional
+area and on-duty filters. Typing alone does not request results. Retry repeats the
+submitted filters; Clear resets inputs/results. Aborted or superseded requests
+cannot replace newer results. Loading, error, initial and no-match states are explicit.
 
-Build this feature from scratch: design, components, request handling and screen
-states. No page, card, form, adapter or sample dataset has been implemented.
-Agree API response fields on Day 1. Create your own small feature-local test data
-while endpoints are in progress; replace it with real API requests for integration.
-Coordinate shared routing/components with Alaa. See your guide in docs/tasks.
+Cards use a runtime public allowlist, Jordan duty times, safe phone links and null
+time messages. They never render quantities, costs, identifiers or private fields.
+All labels use the shared English/Arabic provider. Styles inherit SmartShelf tokens.
+No production fixtures or fallback results are supplied.
+
+The directory reuses the same view and cards. See `docs/YOUSEF-PROGRESS.md` for
+verification, remaining backend dependency and the English presentation script.

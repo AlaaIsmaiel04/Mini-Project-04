@@ -4,7 +4,7 @@
 
 Adapted from [SmartShelf Complete UI/UX](https://www.figma.com/design/08Fxp25B9QPT0iFPfSamGN/SmartShelf-Complete-UI-UX?node-id=5-5). The saved screen exports and handoff in `output/design/` were used with Alaa's approval because the live Figma connector was rate-limited. The initial English adaptation was approved; Alaa subsequently authorized the Day 11 English/Arabic language foundation and RTL layout. This is a responsive adaptation, not a claim of pixel-identical Arabic screens.
 
-The shared shell, sign-in, owner pharmacy/account/subscription screens, and medicine/batch screens use this design. Dashboard/profile/duty screens now reuse these tokens and responsive surfaces, with EN/AR labels and feedback. Public search/directory and theme features remain with their assigned members. Shared, sign-in, owner/inventory and pharmacist EN/AR translations and direction are implemented. Future public translations remain integration work. Existing placeholders receive the shared shell only.
+The shared shell, sign-in, owner pharmacy/account/subscription screens, and medicine/batch screens use this design. Dashboard/profile/duty screens now reuse these tokens and responsive surfaces, with EN/AR labels and feedback. Public search/directory now reuse the same tokens, responsive filters and pharmacy cards; theme remains pending. Shared, sign-in, owner/inventory and pharmacist EN/AR translations and direction are implemented. Public search/directory labels are also translated through the shared provider.
 
 ## Shared foundations
 
