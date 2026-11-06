@@ -30,7 +30,7 @@ import {
 import {
   ApiErrors,
   CHANGE_FORBIDDEN,
-  DATA_UNAVAILABLE,
+  SERVER_ERROR,
   type DocumentedError,
   NOT_A_PHARMACIST,
   NOT_SIGNED_IN,
@@ -87,7 +87,7 @@ export class DutyPeriodController {
     type: DutyPeriodListDto,
     description: 'Your duty periods in UTC, ordered by start.',
   })
-  @ApiErrors(NOT_SIGNED_IN, NOT_A_PHARMACIST, DATA_UNAVAILABLE)
+  @ApiErrors(NOT_SIGNED_IN, NOT_A_PHARMACIST, SERVER_ERROR)
   @Get()
   list(
     @CurrentPharmacist() actor: PharmacistActor,
@@ -113,7 +113,7 @@ export class DutyPeriodController {
     NOT_SIGNED_IN,
     CHANGE_FORBIDDEN,
     OVERLAPS_ANOTHER_PERIOD,
-    DATA_UNAVAILABLE,
+    SERVER_ERROR,
   )
   @Post()
   create(
@@ -143,7 +143,7 @@ export class DutyPeriodController {
     CHANGE_FORBIDDEN,
     NOT_YOUR_PERIOD,
     OVERLAPS_ANOTHER_PERIOD,
-    DATA_UNAVAILABLE,
+    SERVER_ERROR,
   )
   @Patch(':id')
   update(
@@ -168,7 +168,7 @@ export class DutyPeriodController {
     NOT_SIGNED_IN,
     CHANGE_FORBIDDEN,
     NOT_YOUR_PERIOD,
-    DATA_UNAVAILABLE,
+    SERVER_ERROR,
   )
   @HttpCode(204)
   @Delete(':id')

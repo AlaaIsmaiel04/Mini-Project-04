@@ -6,6 +6,7 @@ import { NestFactory } from '@nestjs/core';
 import { PrismaClient } from '@prisma/client';
 import { hash } from 'bcryptjs';
 import { parseCalendarDate } from '../../common/business-date';
+import { NOT_A_PHARMACIST, NOT_SIGNED_IN } from '../pharmacy/api-errors';
 import { keyPaths } from '../pharmacy/testing/response-allowlist';
 
 // Public routes through the real AppModule, Prisma stores and PostgreSQL. Fixtures carry a
@@ -646,6 +647,41 @@ test(
           assert.equal((await post(papaToken)).status, 201);
           assert.equal((await post(quebecToken)).status, 201);
           assert.equal((await post(papaToken)).status, 409);
+        },
+      );
+
+      await t.test(
+        'the documented 401 and owner 403 are what the running API answers',
+        async () => {
+          const email = `${randomUUID()}@test.local`;
+          await db.account.create({
+            data: {
+              email,
+              passwordHash: await hash(SIGN_IN_PASSWORD, 10),
+              role: 'OWNER',
+            },
+          });
+          try {
+            const signedIn = await fetch(`${url}/api/auth/login`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, password: SIGN_IN_PASSWORD }),
+            });
+            const { accessToken } = await signedIn.json();
+
+            const noToken = await fetch(`${url}/api/pharmacist/profile`);
+            const owner = await asPharmacist(accessToken, 'profile');
+
+            assert.equal(noToken.status, 401);
+            assert.equal((await noToken.json()).message, NOT_SIGNED_IN.message);
+            assert.equal(owner.status, 403);
+            assert.equal(
+              (await owner.json()).message,
+              NOT_A_PHARMACIST.message,
+            );
+          } finally {
+            await db.account.delete({ where: { email } });
+          }
         },
       );
 

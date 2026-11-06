@@ -1,7 +1,7 @@
 import { Controller, Get, Inject, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { ListResponse, PublicPharmacy } from '@smartshelf/contracts';
-import { ApiErrors, DATA_UNAVAILABLE } from '../pharmacy/api-errors';
+import { ApiErrors, SERVER_ERROR } from '../pharmacy/api-errors';
 import { MedicineSearchQueryDto } from './dto/medicine-search-query.dto';
 import { PublicPharmaciesQueryDto } from './dto/public-pharmacies-query.dto';
 import {
@@ -45,7 +45,7 @@ export class PublicController {
         'onDutyNow is not exactly true or false, area is repeated, or the query has an unknown field.',
       message: ['onDutyNow must be true or false'],
     },
-    DATA_UNAVAILABLE,
+    SERVER_ERROR,
   )
   @Get('pharmacies')
   listPharmacies(
@@ -68,7 +68,7 @@ export class PublicController {
         'q is missing or empty after trimming, onDutyNow is not exactly true or false, a filter is repeated, or the query has an unknown field.',
       message: ['q is required and cannot be empty'],
     },
-    DATA_UNAVAILABLE,
+    SERVER_ERROR,
   )
   @Get('medicines')
   searchMedicines(

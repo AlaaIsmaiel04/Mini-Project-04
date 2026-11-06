@@ -6,7 +6,7 @@ For Mohammad: the Pharmacy Profile & Duty page.
 
 **This guide cannot drift from the code.** Every request and response below was produced by the real controllers, validation, services and response mappers, using fixed test data. `npm test` produces them again and fails if this file differs. After an intended change, run `UPDATE_INTEGRATION_DOCS=1 npm test` (in PowerShell: `$env:UPDATE_INTEGRATION_DOCS='1'; npm test; Remove-Item Env:UPDATE_INTEGRATION_DOCS`) and commit the result.
 
-**Where things stand:** the full application now uses shared JWT authentication and Prisma stores for profile/duty requests. The examples below use fixed test fixtures to demonstrate wire shapes. PostgreSQL persistence, inactive reads/write restrictions and cross-instance duty locking are checked separately in dashboard-pharmacy.integration.spec.ts. Decide from `statusCode`, not exact adapter error text.
+**Where things stand:** the full application uses shared JWT authentication and Prisma stores for profile and duty requests. The 401, owner 403 and 500 examples come from the real JWT guard and Prisma stores; the others use fixed test data to show the wire shapes. PostgreSQL persistence, inactive reads and write restrictions, and duty locking across API instances are proven in `dashboard-pharmacy.integration.spec.ts`. Decide from `statusCode`, not the message text.
 
 ## Basics
 
@@ -295,7 +295,7 @@ This is what the two times of an overnight period look like at each step:
 
 ## Errors
 
-Every error has `statusCode` and `message`, and `error` is the status name. `message` can be **one string or a list of strings**, so handle both:
+Every error has `statusCode` and `message`, and `error` is the status name, except on a 500, which has no `error`. `message` can be **one string or a list of strings**, so handle both:
 
 ```js
 const reasons = Array.isArray(error.message) ? error.message : [error.message];
@@ -310,7 +310,7 @@ Decide what to do from `statusCode`, and show `message` to the user:
 | 403 | Not a pharmacist, or the subscription is not `ACTIVE` | Show the reason and keep the page read-only |
 | 404 | The record is not in your pharmacy | Show the message and reload the list |
 | 409 | The times overlap another period | Show the message and keep what the user typed |
-| 503 | The data cannot be read right now and nothing was saved | Show an error state with a retry |
+| 500 | The database is down or something else failed, and nothing was saved | Show an error state with a retry |
 
 ### 400 Bad Request
 
@@ -445,7 +445,7 @@ Response: **400**
 
 ### 401 Unauthorized
 
-This is what the running API answers today, for every pharmacist request. The status stays the same when Mustafa's guards merge, but the message will come from them.
+No token, and then a token that is invalid or expired:
 
 `GET /api/pharmacist/profile`
 
@@ -453,7 +453,19 @@ Response: **401**
 
 ```json
 {
-  "message": "Authentication is not available yet",
+  "message": "Missing or invalid token.",
+  "error": "Unauthorized",
+  "statusCode": 401
+}
+```
+
+`GET /api/pharmacist/profile`
+
+Response: **401**
+
+```json
+{
+  "message": "Missing, invalid or expired token.",
   "error": "Unauthorized",
   "statusCode": 401
 }
@@ -550,7 +562,7 @@ Response: **403**
 
 ```json
 {
-  "message": "Only pharmacists can use this endpoint",
+  "message": "Requires a pharmacist linked to one pharmacy.",
   "error": "Forbidden",
   "statusCode": 403
 }
@@ -649,38 +661,17 @@ Response: **201**
 }
 ```
 
-### 503 Service Unavailable
+### 500 Internal Server Error
 
-Nothing was changed. The messages below are the temporary ones, so rely on the status rather than the text.
+The database is down or something else failed on the server. Nothing was changed, and the answer never includes any detail:
 
 `GET /api/pharmacist/profile`
 
-Response: **503**
+Response: **500**
 
 ```json
 {
-  "message": "The database is not available yet",
-  "error": "Service Unavailable",
-  "statusCode": 503
-}
-```
-
-`PATCH /api/pharmacist/profile`
-
-```json
-{
-  "area": "Abdoun",
-  "address": "77 Garden Street, Amman",
-  "phone": "+962 6 555 0199"
-}
-```
-
-Response: **503**
-
-```json
-{
-  "message": "Subscription status is not available yet",
-  "error": "Service Unavailable",
-  "statusCode": 503
+  "statusCode": 500,
+  "message": "Internal server error"
 }
 ```

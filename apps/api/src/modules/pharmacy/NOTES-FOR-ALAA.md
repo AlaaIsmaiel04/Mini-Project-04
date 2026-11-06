@@ -8,7 +8,7 @@ Changes outside Hamid's folders that other members should make. Nothing here has
 - [ ] **`README.md`:** lines 9, 36 and 92 still say public medicine search can return 503. It is now live.
 - [ ] **`docs/YOUSEF-PROGRESS.md`:** the Day 8-9 row and the closing note say search returns 503 and needs Hamid's adapter. Yousef's "Manual acceptance" steps can now be run against the real API.
 - [ ] **`docs/ALAA-PROGRESS.md`:** line 53 still lists Hamid's temporary adapters as pending.
-- [ ] **`docs/API-CONTRACT.md`:** line 5 still says only `/health` is implemented.
+- [ ] **`docs/API-CONTRACT.md`:** line 5 still says only `/health` is implemented. The conventions on line 19 also list no 500, though an unexpected failure such as a database outage answers `{statusCode: 500, message: 'Internal server error'}`. Hamid's guides and Swagger now document it; the contract and any frontend error handling should agree.
 - [ ] **`docs/LOCAL-SETUP.md`:** line 51 says "Hamid's live persistence/guard adapters still need team integration" and that public search is not complete. Both are done, apart from Shiam's owner endpoints.
 - [ ] **`.prettierrc.json`:** on Windows with `core.autocrlf=true`, `npm run format:check` flags about 119 files for line endings alone. `"endOfLine": "auto"`, or a `.gitattributes` with `* text=auto eol=lf`, would stop this.
 - [ ] **`scripts/smoke.mjs`:** checks the auth and inventory routes in Swagger but none of Hamid's. Add `/api/pharmacist/profile`, `/api/pharmacist/duty-periods`, `/api/public/pharmacies` and `/api/public/medicines`.

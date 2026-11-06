@@ -20,15 +20,15 @@ export class ApiErrorDto implements ApiError {
   error?: string;
 }
 
-type ErrorStatus = 400 | 401 | 403 | 404 | 409 | 503;
+type ErrorStatus = 400 | 401 | 403 | 404 | 409 | 500;
 
-const STATUS_NAMES: Record<ErrorStatus, string> = {
+// Nest answers an unexpected failure with no status name.
+const STATUS_NAMES: Partial<Record<ErrorStatus, string>> = {
   400: 'Bad Request',
   401: 'Unauthorized',
   403: 'Forbidden',
   404: 'Not Found',
   409: 'Conflict',
-  503: 'Service Unavailable',
 };
 
 export interface DocumentedError {
@@ -47,7 +47,11 @@ export function ApiErrors(...errors: DocumentedError[]) {
         status,
         description,
         type: ApiErrorDto,
-        example: { statusCode: status, message, error: STATUS_NAMES[status] },
+        example: {
+          statusCode: status,
+          message,
+          ...(STATUS_NAMES[status] ? { error: STATUS_NAMES[status] } : {}),
+        },
       }),
     ),
   );
@@ -56,13 +60,13 @@ export function ApiErrors(...errors: DocumentedError[]) {
 export const NOT_SIGNED_IN: DocumentedError = {
   status: 401,
   description: 'The bearer token is missing, invalid or expired.',
-  message: 'Unauthorized',
+  message: 'Missing or invalid token.',
 };
 
 export const NOT_A_PHARMACIST: DocumentedError = {
   status: 403,
   description: 'The signed-in account is not a pharmacist.',
-  message: 'Only pharmacists can use this endpoint',
+  message: 'Requires a pharmacist linked to one pharmacy.',
 };
 
 export const CHANGE_FORBIDDEN: DocumentedError = {
@@ -72,9 +76,9 @@ export const CHANGE_FORBIDDEN: DocumentedError = {
   message: INACTIVE_SUBSCRIPTION_REASONS.EXPIRED,
 };
 
-export const DATA_UNAVAILABLE: DocumentedError = {
-  status: 503,
+export const SERVER_ERROR: DocumentedError = {
+  status: 500,
   description:
-    'Stored data or the subscription status cannot be read right now. Nothing is changed and no partial data is returned.',
-  message: 'The database is not available yet',
+    'The database is down or something else failed on the server. Nothing is changed, and neither partial data nor any detail is returned.',
+  message: 'Internal server error',
 };

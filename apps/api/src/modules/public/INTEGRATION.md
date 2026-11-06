@@ -262,7 +262,7 @@ Response: **200**
 
 ## Errors
 
-Every error has `statusCode` and `message`, and `error` is the status name. `message` is a list of reasons on a 400 and a single string on a 503.
+Every error has `statusCode` and `message`, and `error` is the status name. `message` is a list of reasons on a 400. A 500 has a single string and no `error`.
 
 ### 400 Bad Request
 
@@ -344,30 +344,28 @@ Response: **400**
 
 A blank `area` is not an error. It means no area filter.
 
-### 503 Service Unavailable
+### 500 Internal Server Error
 
-The data cannot be read right now, and there is never a partial list. Show an error state with a retry, not the empty state. The messages may change, so rely on the status rather than the text.
+The database is down or something else failed on the server. There is never a partial list and the answer includes no detail. Show an error state with a retry, not the empty state.
 
 `GET /api/public/pharmacies`
 
-Response: **503**
+Response: **500**
 
 ```json
 {
-  "message": "The database is not available yet",
-  "error": "Service Unavailable",
-  "statusCode": 503
+  "statusCode": 500,
+  "message": "Internal server error"
 }
 ```
 
 `GET /api/public/medicines?q=amox`
 
-Response: **503**
+Response: **500**
 
 ```json
 {
-  "message": "The database is not available yet",
-  "error": "Service Unavailable",
-  "statusCode": 503
+  "statusCode": 500,
+  "message": "Internal server error"
 }
 ```

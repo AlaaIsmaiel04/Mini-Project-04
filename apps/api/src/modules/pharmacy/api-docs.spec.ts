@@ -34,16 +34,16 @@ const PUBLIC_MEDICINES = '/api/public/medicines';
 
 // method, path, documented statuses
 const PRIVATE_ROUTES: [string, string, number[]][] = [
-  ['get', PROFILE, [200, 401, 403, 404, 503]],
-  ['patch', PROFILE, [200, 400, 401, 403, 404, 503]],
-  ['get', DUTY, [200, 401, 403, 503]],
-  ['post', DUTY, [201, 400, 401, 403, 409, 503]],
-  ['patch', DUTY_ID, [200, 400, 401, 403, 404, 409, 503]],
-  ['delete', DUTY_ID, [204, 400, 401, 403, 404, 503]],
+  ['get', PROFILE, [200, 401, 403, 404, 500]],
+  ['patch', PROFILE, [200, 400, 401, 403, 404, 500]],
+  ['get', DUTY, [200, 401, 403, 500]],
+  ['post', DUTY, [201, 400, 401, 403, 409, 500]],
+  ['patch', DUTY_ID, [200, 400, 401, 403, 404, 409, 500]],
+  ['delete', DUTY_ID, [204, 400, 401, 403, 404, 500]],
 ];
 const PUBLIC_ROUTES: [string, string, number[]][] = [
-  ['get', PUBLIC_PHARMACIES, [200, 400, 503]],
-  ['get', PUBLIC_MEDICINES, [200, 400, 503]],
+  ['get', PUBLIC_PHARMACIES, [200, 400, 500]],
+  ['get', PUBLIC_MEDICINES, [200, 400, 500]],
 ];
 
 const PHARMACY_ID = '11111111-1111-4111-8111-111111111111';
