@@ -8,7 +8,7 @@ The shared shell, sign-in, owner pharmacy/account/subscription screens, and medi
 
 ## Shared foundations
 
-- Theme variables live in `apps/web/src/styles.css`: warm cream background, off-white surfaces, deep green text/sidebar, green actions and gold active navigation.
+- Base theme variables live in `apps/web/src/styles.css`, with the cream/forest refinement layer in `apps/web/src/refresh.css`: warm cream background, off-white surfaces, deep green text/sidebar, green actions and pale mint active navigation. The gold token remains a restrained secondary accent.
 - Cairo is served locally from `apps/web/public/fonts/`; its SIL Open Font License is included there. The exports use Cairo as their Arabic font fallback. No external font request is required.
 - Controls use a 12px radius and at least 44px height; panels use a 20px radius. Spacing follows an 8px base.
 - Use textual status labels alongside color. Muted/error text is darker than the source swatches for readability.
@@ -29,3 +29,33 @@ Preserve loading/empty/error/success states, session handling, subscription rest
 Browser checks cover 320/390/768/1280/1440px layouts, local font loading, horizontal overflow, mobile menu, skip link and form layouts. Existing owner/inventory/session regression scripts cover functional behavior with fixtures and simulated API responses. These checks do not prove real authentication or PostgreSQL integration.
 
 Language implementation and extension guidance is in `docs/LANGUAGE.md`. Preserve explicit LTR identifiers and medicine names inside the RTL layout.
+
+## Cream and forest refinement - 6 November 2026
+
+Alaa requested a fresher, simpler, smoother interface while retaining cream and
+dark green. This is a refinement of the existing application, preserving content,
+routes, forms and backend behavior. Operate mode: the primary task stays obvious.
+
+- Cream canvas, forest-green public heading surfaces, pale mint selection and
+  off-white form surfaces. Local Cairo stays the shared English/Arabic typeface.
+- Public search pairs a prominent heading with a decorative capsule symbol and
+  a raised search form. No stock claims, sample results or unimplemented controls
+  were added. Directory and pharmacy cards use the same visual language.
+- Shared stroke icons distinguish navigation destinations. Sidebar navigation is
+  quieter, left/right aligned with the selected language, with a mint active state.
+- Larger staff headings, clearer table headers, 44px minimum staff button targets,
+  consistent status labels, and more comfortable login and profile forms.
+- A single 420ms arrival animation and short control feedback provide motion;
+  reduced-motion users receive neither animation nor transitions.
+- The refinement stylesheet is imported after base styles. It owns these visual
+  decisions; feature styles continue to own their functional layouts.
+
+Verification: seven pages at 320/390/768/1024/1440 pixels in both languages, local
+fonts, no horizontal overflow, menu/Escape/focus, retained medicine drafts during
+language switching, and reduced motion. Real isolated pharmacist authentication,
+dashboard and profile were checked; owner/inventory form regressions used their
+existing development fixtures. Impeccable's detector returned no findings.
+Typecheck, production build, smoke, 435 API tests and 14 frontend tests passed.
+Screenshots and detailed scope are in `output/refresh/visual-checks.json`.
+
+Dark mode and the known owner/public-stock backend dependencies remain separate.

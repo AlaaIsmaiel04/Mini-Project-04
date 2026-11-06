@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { App } from './app/App';
 import { AuthProvider } from './features/auth/AuthProvider';
 import './styles.css';
+import './refresh.css';
 import { LanguageProvider } from './features/preferences/LanguageProvider';
 import { applyDocumentLanguage, readLanguage } from './locales/messages';
 
