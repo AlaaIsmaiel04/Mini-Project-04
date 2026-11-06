@@ -9,6 +9,8 @@ import { lazy, Suspense } from 'react';
 import { OwnerPharmaciesPage } from '../features/owner/OwnerPharmaciesPage';
 import { InventoryPage } from '../features/inventory/InventoryPage';
 import { AppShell } from '../components/AppShell';
+import { PublicSearchPage } from '../features/public-search/PublicSearchPage';
+import { DirectoryPage } from '../features/directory/DirectoryPage';
 
 const InventoryPreviewPage = import.meta.env.DEV
   ? lazy(() =>
@@ -47,17 +49,8 @@ export function App() {
   return (
     <AppShell>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <>
-              <h2>{t('Medicine Search')}</h2>
-              <p>{t('The medicine search page will appear here.')}</p>
-            </>
-          }
-        />
-
-        <Route path="/pharmacies" element={<h2>{t('Pharmacies')}</h2>} />
+        <Route path="/" element={<PublicSearchPage key="search" />} />
+        <Route path="/pharmacies" element={<DirectoryPage />} />
 
         <Route path="/login" element={<LoginPage />} />
 

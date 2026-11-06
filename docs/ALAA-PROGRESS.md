@@ -6,7 +6,9 @@ This update supersedes the dependency and test counts in the historical notes be
 - Profile and duty screens now use live JWT/Prisma APIs, with inactive reads and restricted writes. Duty writes use a PostgreSQL row lock across API instances.
 - Dashboard/profile/duty share the existing visual design and EN/AR language controls.
 - Typecheck/build pass; 435 API and 11 frontend tests pass; 16 separate PostgreSQL acceptance tests pass, including the new Day 10 inventory-to-dashboard mutation scenario. Real API browser checks cover these pages, including drafts, errors/retries, timezone conversion, overlap, session expiry and mobile/RTL layouts.
-- Shiam's owner administration and subscription flows, public medicine-stock persistence, Yousef's public frontend, dark mode and full team rehearsal remain dependencies. Days 8-14 are not all complete merely because the frontend exists.
+- Shiam's owner administration and subscription flows, public medicine-stock persistence, dark mode and full team rehearsal remain dependencies. Days 8-14 are not all complete merely because the frontend exists.
+
+Yousef's public frontend is now implemented locally at Alaa's request, including real directory checks and simulated search-success checks. Real medicine availability still awaits backend persistence; see [Yousef progress](YOUSEF-PROGRESS.md).
 
 Day 10 is complete: real inventory form changes, dashboard metrics, simultaneous badges, empty inventory and focus refresh were verified against isolated PostgreSQL data. See [Day 10 verification](DAY-10-VERIFICATION.md) for the exact results. Days 8-9 still await Shiam for real owner administration.
 

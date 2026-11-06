@@ -1,9 +1,9 @@
-# Frontend ownership
+# Public pharmacy directory
 
-Yousef - pharmacy directory and public result cards.
+Implemented at `/pharmacies` with `DirectoryPage`. Reuses the public search view,
+PharmacyCard, styles and request adapter. Loads without authentication or a medicine
+query. Area/on-duty filters apply on submit; Clear reloads all active pharmacies.
+The directory adapter allowlists its own query fields, even if a caller passes q.
 
-Build this feature from scratch: design, components, request handling and screen
-states. No page, card, form, adapter or sample dataset has been implemented.
-Agree API response fields on Day 1. Create your own small feature-local test data
-while endpoints are in progress; replace it with real API requests for integration.
-Coordinate shared routing/components with Alaa. See your guide in docs/tasks.
+Real PostgreSQL directory integration is checked. Medicine-stock search remains a
+separate backend dependency. See `docs/YOUSEF-PROGRESS.md`.
