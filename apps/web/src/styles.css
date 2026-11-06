@@ -184,7 +184,7 @@ p {
 }
 .workspace-nav ul {
   flex-direction: column;
-  gap: 16px !important;
+  gap: 16px;
 }
 .app-shell nav a,
 .app-shell nav button {

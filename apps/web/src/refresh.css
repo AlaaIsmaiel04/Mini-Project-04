@@ -1,0 +1,599 @@
+/* SmartShelf's cream / forest refresh. Shared foundations precede page details. */
+:root {
+  --background: #f6f4eb;
+  --surface: #fffef9;
+  --foreground: #193c34;
+  --primary: #245b48;
+  --primary-hover: #174432;
+  --sidebar: #193f34;
+  --muted: #5a6e62;
+  --border: #dce2d6;
+  --success-soft: #e6efdf;
+  --success: #2b5942;
+  --mint: #d8e9c5;
+  --gold: #e9d6a0;
+  --radius-panel: 18px;
+  --radius-control: 10px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+body {
+  font-size: 15px;
+}
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
+}
+.interface-icon {
+  flex: 0 0 auto;
+  vertical-align: middle;
+}
+.brand {
+  gap: 10px;
+  letter-spacing: -0.035em;
+}
+.brand > svg {
+  width: 33px;
+  height: 33px;
+  padding: 7px;
+  border-radius: 10px;
+  background: var(--primary);
+  color: var(--surface);
+}
+.app-topbar {
+  min-height: 100px;
+  padding-block: 24px;
+}
+.public-shell .app-topbar {
+  max-width: 1360px;
+  width: 100%;
+  margin-inline: auto;
+}
+.app-shell nav a {
+  gap: 9px;
+  border-color: transparent;
+  background: transparent;
+  font-size: 13px;
+}
+.public-shell nav a.active {
+  background: var(--success-soft);
+  color: var(--primary);
+}
+.public-shell nav a[href='/login'] {
+  background: var(--primary);
+  color: var(--surface);
+  padding-inline: 22px;
+}
+.public-shell nav a[href='/login']:hover {
+  background: var(--primary-hover);
+}
+.language-control select {
+  background: transparent;
+  border-color: var(--border);
+}
+.app-shell .app-topbar button {
+  border-color: transparent;
+}
+.workspace-sidebar {
+  margin: 16px 0 16px 16px;
+  border-radius: 22px;
+  height: calc(100dvh - 32px);
+  top: 16px;
+  padding: 28px 20px;
+}
+[dir='rtl'] .workspace-sidebar {
+  margin: 16px 16px 16px 0;
+}
+.workspace-sidebar .brand {
+  font-size: 23px;
+}
+.workspace-sidebar .brand > svg {
+  background: var(--mint);
+  color: var(--sidebar);
+}
+.workspace-nav {
+  margin-top: 44px;
+}
+.app-shell .workspace-nav ul {
+  gap: 8px;
+}
+.app-shell .workspace-nav a {
+  justify-content: flex-start;
+  text-align: start;
+  min-height: 48px;
+  color: #e4eddf;
+}
+.app-shell .workspace-nav a:hover {
+  background: #2b5143;
+}
+.app-shell .workspace-nav a.active {
+  color: var(--sidebar);
+  background: var(--mint);
+  border-color: transparent;
+}
+.app-shell .workspace-nav a.active:hover {
+  background: #cbdcb8;
+}
+.nav-label {
+  color: #c4d4c7;
+  font-size: 11px;
+  padding-inline: 14px;
+}
+.sidebar-message {
+  background: #284c3c;
+  border-radius: 14px;
+  padding: 24px 18px;
+  margin-top: 36px;
+}
+.sidebar-message strong {
+  font-size: 24px;
+  color: #e8edda;
+}
+.sidebar-message p {
+  color: #d0ddcc;
+}
+.sidebar-identity {
+  padding-top: 24px;
+  border-top: 1px solid #456655;
+}
+.workspace-shell .app-topbar {
+  min-height: 82px;
+  padding-block: 22px;
+  border-bottom: 1px solid var(--border);
+  margin-inline: 32px;
+  padding-inline: 0;
+  font-size: 13px;
+}
+.app-main {
+  padding-top: 32px;
+  padding-bottom: 56px;
+}
+.app-footer {
+  padding-block: 22px;
+  font-size: 11px;
+}
+.workspace-shell
+  :is(.owner-heading, .inventory-page > header, .pharmacist-page > header)
+  h2 {
+  font-size: clamp(27px, 2.7vw, 36px);
+}
+.workspace-shell
+  :is(.owner-heading, .inventory-page > header, .pharmacist-page > header)
+  p {
+  max-width: 72ch;
+}
+.app-shell :is(button, .button, nav a, select) {
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
+    transform 220ms var(--ease-out);
+}
+.app-shell :is(input, textarea) {
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+.app-shell input:not([type='checkbox']):not([type='radio']),
+.app-shell textarea {
+  background: #fbfcf7;
+}
+.app-shell input:not(:read-only):focus,
+.app-shell textarea:focus {
+  background: var(--surface);
+}
+.app-shell :is(button, .button):active:not(:disabled) {
+  transform: translateY(1px);
+}
+.app-shell :is(button, .button):disabled {
+  transform: none;
+}
+.app-shell :is(.owner-page, .inventory-page, .pharmacist-page) button {
+  min-height: 44px;
+}
+.app-shell :is(.surface, .owner-panel, .inventory-panel) {
+  border-radius: var(--radius-panel);
+}
+.app-shell :is(.inventory-table-head, .owner-table-head) {
+  background: #eaf0e3;
+  color: #445d49;
+  border-radius: 8px;
+  padding-block: 16px;
+}
+.app-shell :is(.inventory-medicines, .owner-pharmacy-list) {
+  padding: 16px;
+  border-radius: var(--radius-panel);
+}
+.app-shell :is(.inventory-medicines, .owner-pharmacy-list) > li:nth-child(odd) {
+  background: #f5f7ef;
+}
+.app-shell :is(.inventory-row, .owner-pharmacy) {
+  transition: background-color 160ms ease;
+}
+@media (hover: hover) {
+  .app-shell :is(.inventory-row, .owner-pharmacy):hover {
+    background: #eef4e6;
+  }
+}
+.app-shell :is(.inventory-identity h3, .owner-pharmacy h4) {
+  font-size: 15px;
+}
+.app-shell :is(.inventory-scientific, .inventory-data dd, .owner-pharmacy dd) {
+  font-size: 12px;
+}
+.app-shell :is(.inventory-badge, .owner-badge, .pharmacist-badges li) {
+  border-radius: 6px;
+  font-weight: 700;
+}
+.app-shell :is(.inventory-preview-notice, .owner-preview-notice) {
+  border: 1px dashed #b8c9ad;
+  background: #edf2e4;
+  border-radius: 12px;
+}
+.dashboard-metrics {
+  gap: 16px;
+}
+.app-shell .dashboard-metrics > div {
+  border-radius: 14px;
+  padding: 24px;
+}
+.app-shell .dashboard-metrics dd {
+  font-size: 34px;
+  letter-spacing: -0.03em;
+  color: var(--primary);
+}
+.app-shell .dashboard-metrics dt {
+  font-size: 13px;
+}
+.app-shell .dashboard-metrics > div:first-child {
+  background: var(--sidebar);
+  border-color: transparent;
+}
+.app-shell .dashboard-metrics > div:first-child dt {
+  color: #d3dfcd;
+}
+.app-shell .dashboard-metrics > div:first-child dd {
+  color: #f5f6e9;
+}
+.app-shell .attention-list > li {
+  padding-block: 22px;
+}
+.app-shell .attention-list > li:hover {
+  background: #f7f9f1;
+}
+.public-shell .public-page {
+  max-width: 1240px;
+}
+.app-shell .public-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  padding: 48px 48px 64px;
+  background: var(--sidebar);
+  color: var(--surface);
+  border-radius: 26px;
+}
+.public-intro-copy {
+  max-width: 790px;
+}
+.app-shell .public-intro h2 {
+  font-size: clamp(34px, 4.3vw, 60px);
+  line-height: 1.3;
+  letter-spacing: -0.035em;
+  margin-bottom: 16px;
+}
+.app-shell .public-intro p {
+  color: #d7e4d0;
+  font-size: 16px;
+  max-width: 60ch;
+  margin: 0;
+}
+.care-symbol {
+  flex: 0 0 auto;
+  width: 170px;
+  height: 170px;
+  color: var(--mint);
+}
+.app-shell .public-filters {
+  position: relative;
+  margin: -24px 24px 0;
+  padding: 28px;
+  border: 0;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px -16px #193c3438;
+  gap: 18px;
+}
+.app-shell .public-filters > label:not(.public-checkbox) {
+  flex-basis: 210px;
+  font-size: 13px;
+}
+.app-shell .public-filters input:not([type='checkbox']) {
+  min-height: 50px;
+}
+.app-shell .public-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+}
+.app-shell .public-note {
+  margin: 24px 28px 36px;
+  font-size: 12px;
+  max-width: 95ch;
+}
+.app-shell .public-results {
+  gap: 20px;
+}
+.app-shell .public-result-count {
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+.app-shell .public-pharmacy {
+  border-radius: 16px;
+  padding: 28px;
+}
+.app-shell .public-card-heading h3 {
+  font-size: 22px;
+}
+.app-shell .public-duty {
+  border-radius: 6px;
+  font-size: 12px;
+}
+.public-duty.is-on-duty::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  margin-inline-end: 7px;
+  vertical-align: middle;
+}
+.app-shell .public-pharmacy dl {
+  font-size: 13px;
+}
+.app-shell .public-pharmacy dt {
+  font-size: 11px;
+}
+.app-shell .public-empty {
+  padding: 44px 24px;
+  margin-inline: auto;
+  text-align: center;
+}
+.public-empty > .interface-icon {
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  box-sizing: content-box;
+  background: var(--success-soft);
+  border-radius: 20px;
+  color: var(--primary);
+  margin-bottom: 20px;
+}
+.app-shell .public-empty h3 {
+  font-size: 23px;
+}
+.public-empty p {
+  font-size: 14px;
+  color: var(--muted);
+}
+.login-main {
+  max-width: 1240px;
+}
+.app-shell .login-welcome {
+  padding: 0;
+  background: transparent;
+  color: var(--foreground);
+  border-radius: 0;
+}
+.app-shell .login-welcome h2 {
+  font-size: clamp(28px, 3vw, 38px);
+}
+.app-shell .login-welcome p {
+  color: var(--muted);
+}
+.app-shell .auth-layout {
+  gap: 40px;
+  margin-top: 32px;
+}
+.app-shell .auth-story {
+  background: var(--sidebar);
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  border-radius: 22px;
+}
+.auth-story .care-symbol {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 32px;
+}
+.app-shell .auth-story h2 {
+  font-size: clamp(30px, 3vw, 40px);
+  line-height: 1.4;
+}
+.auth-story small {
+  margin-top: auto;
+  padding-top: 24px;
+}
+.app-shell .auth-card {
+  padding: 40px;
+  border-radius: 22px;
+}
+.app-shell .auth-card h2 {
+  font-size: 27px;
+}
+.app-shell .auth-form input {
+  min-height: 50px;
+}
+.app-shell .auth-form > button {
+  min-height: 50px;
+}
+/* One quiet arrival; interaction feedback stays local and interruptible. */
+@keyframes shelf-arrive {
+  from {
+    opacity: 0.65;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .app-main {
+    animation: shelf-arrive 420ms var(--ease-out) both;
+  }
+}
+@media (max-width: 1100px) {
+  .app-shell .public-intro {
+    padding-inline: 32px;
+  }
+  .public-intro .care-symbol {
+    width: 130px;
+    height: 130px;
+  }
+  .app-shell .auth-story,
+  .app-shell .auth-card {
+    padding: 28px;
+  }
+}
+@media (max-width: 1050px) {
+  .app-shell :is(.inventory-medicines, .owner-pharmacy-list) {
+    padding: 0;
+    background: none;
+  }
+  .app-shell
+    :is(.inventory-medicines, .owner-pharmacy-list)
+    > li:nth-child(odd) {
+    background: var(--surface);
+  }
+}
+@media (max-width: 760px) {
+  .workspace-sidebar,
+  [dir='rtl'] .workspace-sidebar {
+    margin: 0;
+    border-radius: 0;
+    height: auto;
+    top: auto;
+    padding: 22px 20px;
+    background: var(--background);
+  }
+  .workspace-sidebar .brand {
+    color: var(--primary);
+  }
+  .workspace-sidebar .brand > svg {
+    background: var(--primary);
+    color: var(--surface);
+  }
+  .workspace-nav {
+    margin-top: 24px;
+  }
+  .app-shell .workspace-nav a {
+    color: var(--foreground);
+  }
+  .app-shell .workspace-nav a:hover {
+    background: var(--success-soft);
+  }
+  .nav-label {
+    color: var(--muted);
+  }
+  .sidebar-identity {
+    border-color: var(--border);
+  }
+  .sidebar-message {
+    margin-top: 24px;
+  }
+  .workspace-shell .app-topbar {
+    margin-inline: 20px;
+    min-height: 44px;
+    padding-block: 0 16px;
+  }
+  .app-topbar {
+    min-height: auto;
+    gap: 16px;
+  }
+  .public-shell nav a {
+    font-size: 12px;
+    padding: 10px;
+  }
+  .public-shell nav a .interface-icon {
+    display: none;
+  }
+  .public-shell nav a[href='/login'] {
+    padding-inline: 12px;
+  }
+  .public-shell .app-main {
+    padding-top: 12px;
+  }
+  .app-shell .public-intro {
+    padding: 28px 24px 50px;
+    gap: 12px;
+    border-radius: 20px;
+  }
+  .app-shell .public-intro h2 {
+    font-size: clamp(30px, 7vw, 42px);
+  }
+  .app-shell .public-intro p {
+    font-size: 14px;
+  }
+  .public-intro .care-symbol {
+    display: none;
+  }
+  .app-shell .public-filters {
+    margin: -22px 12px 0;
+    padding: 20px;
+    gap: 16px;
+  }
+  .app-shell .public-note {
+    margin: 22px 12px 28px;
+  }
+  .app-shell .public-actions button {
+    padding-inline: 12px;
+  }
+  .app-shell .public-pharmacy {
+    padding: 22px;
+  }
+  .app-shell .auth-layout {
+    gap: 24px;
+  }
+  .app-shell .auth-story {
+    min-height: 0;
+  }
+  .auth-story .care-symbol {
+    width: 84px;
+    height: 84px;
+    margin-bottom: 20px;
+  }
+  .app-shell .auth-card,
+  .app-shell .auth-story {
+    padding: 24px;
+  }
+  .app-shell .dashboard-metrics > div {
+    padding: 22px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-shell *,
+  .app-shell *::before,
+  .app-shell *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1050px) {
+  .workspace-sidebar .brand {
+    font-size: 20px;
+    gap: 8px;
+  }
+  .workspace-sidebar .brand > svg {
+    width: 28px;
+    height: 28px;
+    padding: 6px;
+  }
+}

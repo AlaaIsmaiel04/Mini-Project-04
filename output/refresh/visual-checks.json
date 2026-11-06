@@ -1,0 +1,56 @@
+{
+  "checkedAt": "2026-11-06T14:22:39.944Z",
+  "surfaces": 7,
+  "languages": [
+    "en",
+    "ar"
+  ],
+  "widths": [
+    1440,
+    1024,
+    768,
+    390,
+    320
+  ],
+  "checks": [
+    "no horizontal overflow",
+    "local Cairo fonts",
+    "real pharmacist sign-in/dashboard/profile",
+    "owner/inventory development previews",
+    "mobile menu/Escape/focus",
+    "language switch preserves medicine draft",
+    "reduced motion disables arrival animation",
+    "no browser exceptions"
+  ],
+  "captures": [
+    "search-en-1440.png",
+    "directory-en-1440.png",
+    "login-en-1440.png",
+    "inventory-en-1440.png",
+    "owner-en-1440.png",
+    "search-en-390.png",
+    "directory-en-390.png",
+    "login-en-390.png",
+    "inventory-en-390.png",
+    "owner-en-390.png",
+    "search-ar-1440.png",
+    "directory-ar-1440.png",
+    "login-ar-1440.png",
+    "inventory-ar-1440.png",
+    "owner-ar-1440.png",
+    "search-ar-390.png",
+    "directory-ar-390.png",
+    "login-ar-390.png",
+    "inventory-ar-390.png",
+    "owner-ar-390.png",
+    "dashboard-en-1440.png",
+    "profile-en-1440.png",
+    "dashboard-en-390.png",
+    "profile-en-390.png",
+    "dashboard-ar-1440.png",
+    "profile-ar-1440.png",
+    "dashboard-ar-390.png",
+    "profile-ar-390.png"
+  ],
+  "data": "isolated empty active test pharmacy; public directory real API, search unavailable as documented; owner/inventory previews use synthetic fixtures"
+}

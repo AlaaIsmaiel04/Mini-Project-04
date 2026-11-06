@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../features/auth/AuthProvider';
 import { LanguageControl } from '../features/preferences/LanguageControl';
+import { InterfaceIcon } from './InterfaceIcon';
 
 export function Brand() {
   const { t } = useLanguage();
@@ -40,42 +41,60 @@ export function AppShell({ children }: { children: ReactNode }) {
     <>
       {user?.role === 'OWNER' && (
         <li>
-          <NavLink to="/owner">{t('Owner dashboard')}</NavLink>
+          <NavLink to="/owner">
+            <InterfaceIcon name="dashboard" />
+            {t('Owner dashboard')}
+          </NavLink>
         </li>
       )}
       {user?.role === 'PHARMACIST' && (
         <>
           <li>
             <NavLink to="/pharmacist" end>
+              <InterfaceIcon name="dashboard" />
               {t('Dashboard')}
             </NavLink>
           </li>
           <li>
-            <NavLink to="/pharmacist/inventory">{t('Inventory')}</NavLink>
+            <NavLink to="/pharmacist/inventory">
+              <InterfaceIcon name="inventory" />
+              {t('Inventory')}
+            </NavLink>
           </li>
           <li>
-            <NavLink to="/pharmacist/profile">{t('Profile & duty')}</NavLink>
+            <NavLink to="/pharmacist/profile">
+              <InterfaceIcon name="profile" />
+              {t('Profile & duty')}
+            </NavLink>
           </li>
         </>
       )}
       {preview && (
         <li>
           <NavLink to={pathname}>
+            <InterfaceIcon name={owner ? 'dashboard' : 'inventory'} />
             {owner ? t('Owner workspace') : t('Inventory')}
           </NavLink>
         </li>
       )}
       <li>
         <NavLink to="/" end>
+          <InterfaceIcon name="search" />
           {t('Medicine Search')}
         </NavLink>
       </li>
       <li>
-        <NavLink to="/pharmacies">{t('Pharmacies')}</NavLink>
+        <NavLink to="/pharmacies">
+          <InterfaceIcon name="pharmacy" />
+          {t('Pharmacies')}
+        </NavLink>
       </li>
       {!user && (
         <li>
-          <NavLink to="/login">{t('Sign in')}</NavLink>
+          <NavLink to="/login">
+            <InterfaceIcon name="signin" />
+            {t('Sign in')}
+          </NavLink>
         </li>
       )}
     </>
@@ -114,7 +133,6 @@ export function AppShell({ children }: { children: ReactNode }) {
               {t('Menu')}
             </button>
           </div>
-          <p className="sidebar-caption">{t('PHARMACY WORKSPACE')}</p>
           <nav
             id="workspace-navigation"
             aria-label={t('Main navigation')}

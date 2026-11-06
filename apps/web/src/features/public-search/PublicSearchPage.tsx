@@ -4,6 +4,7 @@ import { useLanguage } from '../preferences/LanguageProvider';
 import { ApiRequestError } from '../../lib/api';
 import { createPublicService } from './public-api';
 import { PharmacyCard } from './PharmacyCard';
+import { CareSymbol, InterfaceIcon } from '../../components/InterfaceIcon';
 import './public.css';
 
 export function PublicSearchPage({
@@ -79,16 +80,19 @@ export function PublicSearchPage({
   return (
     <section className="public-page" aria-labelledby="public-title">
       <header className="public-intro">
-        <h2 id="public-title">
-          {t(directory ? 'Find a pharmacy' : 'Find your medicine')}
-        </h2>
-        <p>
-          {t(
-            directory
-              ? 'Browse pharmacies and their duty schedules. No sign-in needed.'
-              : 'Search by medicine or scientific name to find pharmacies with available stock.',
-          )}
-        </p>
+        <div className="public-intro-copy">
+          <h2 id="public-title">
+            {t(directory ? 'Find a pharmacy' : 'Find your medicine')}
+          </h2>
+          <p>
+            {t(
+              directory
+                ? 'Browse pharmacies and their duty schedules. No sign-in needed.'
+                : 'Search by medicine or scientific name to find pharmacies with available stock.',
+            )}
+          </p>
+        </div>
+        <CareSymbol />
       </header>
       <form
         className="public-filters"
@@ -138,6 +142,7 @@ export function PublicSearchPage({
         </label>
         <div className="public-actions">
           <button type="submit">
+            <InterfaceIcon name={directory ? 'pharmacy' : 'search'} />
             {t(directory ? 'Apply filters' : 'Search pharmacies')}
           </button>
           <button type="button" className="secondary" onClick={clear}>
@@ -177,6 +182,7 @@ export function PublicSearchPage({
       )}
       {!loading && !error && !submitted && (
         <div className="public-empty">
+          <InterfaceIcon name="search" />
           <h3>{t('Start with a medicine name')}</h3>
           <p>
             {t(

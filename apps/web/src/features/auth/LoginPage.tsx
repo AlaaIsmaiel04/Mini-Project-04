@@ -3,6 +3,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './AuthProvider';
+import { CareSymbol } from '../../components/InterfaceIcon';
 
 export function LoginPage() {
   const { t, translateMessage } = useLanguage();
@@ -52,6 +53,7 @@ export function LoginPage() {
       </section>
       <div className="auth-layout">
         <aside className="auth-story">
+          <CareSymbol />
           <h2>
             {t('Safer shelves.')}
             <br />
