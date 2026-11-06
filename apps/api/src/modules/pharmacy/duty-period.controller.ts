@@ -25,8 +25,8 @@ import type { DutyPeriod, ListResponse } from '@smartshelf/contracts';
 import {
   CurrentPharmacist,
   type PharmacistActor,
-  TemporaryPharmacistGuard,
-} from './adapters/temporary-auth.adapter';
+  JwtPharmacistGuard,
+} from './adapters/jwt-pharmacist.guard';
 import {
   ApiErrors,
   CHANGE_FORBIDDEN,
@@ -72,7 +72,7 @@ const PERIOD_ID = {
 @ApiTags('pharmacist')
 @ApiBearerAuth()
 // Compatibility guard delegates authentication to the shared JWT guard.
-@UseGuards(TemporaryPharmacistGuard)
+@UseGuards(JwtPharmacistGuard)
 @UseFilters(RejectedChangeFilter)
 @Controller('pharmacist/duty-periods')
 export class DutyPeriodController {

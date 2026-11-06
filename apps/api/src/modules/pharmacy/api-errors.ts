@@ -1,7 +1,7 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional, ApiResponse } from '@nestjs/swagger';
 import type { ApiError } from '@smartshelf/contracts';
-import { INACTIVE_SUBSCRIPTION_REASONS } from './adapters/temporary-subscription-status.adapter';
+import { INACTIVE_SUBSCRIPTION_REASONS } from './adapters/subscription-status-reader';
 
 export class ApiErrorDto implements ApiError {
   @ApiProperty({ type: Number, description: 'HTTP status code' })

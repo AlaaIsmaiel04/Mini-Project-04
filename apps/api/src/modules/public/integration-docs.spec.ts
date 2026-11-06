@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { join } from 'node:path';
 import { before, describe, it } from 'node:test';
 import { Module } from '@nestjs/common';
-import { SUBSCRIPTION_STATUS } from '../pharmacy/adapters/temporary-subscription-status.adapter';
+import { SUBSCRIPTION_STATUS } from '../pharmacy/adapters/subscription-status-reader';
 import { CLOCK } from '../pharmacy/clock';
 import { DUTY_PERIOD_STORE } from '../pharmacy/stores/duty-period.store';
 import { PHARMACY_STORE } from '../pharmacy/stores/pharmacy.store';
@@ -95,7 +95,7 @@ const amoxil = (pharmacyId: string, quantity: number, expiryDate = FRESH) => ({
 });
 
 async function captureExamples() {
-  // First the real temporary adapters, which is what the running API answers today.
+  // First the real module with no database bound, which refuses instead of inventing data.
   const answersToday = await withRunningApp(PublicModule, async (real) => ({
     directoryUnavailable: await real(503, 'GET', PHARMACIES),
     searchUnavailable: await real(503, 'GET', `${MEDICINES}?q=amox`),
@@ -222,7 +222,7 @@ function renderGuide(x: Examples): string {
     '# Public search and directory: integration guide',
     'For Yousef: the Public Search and Pharmacy Directory pages.',
     "**This guide cannot drift from the code.** Every request and response below was produced by the real controller, validation, service and privacy mapper, using fixed test data. `npm test` produces them again and fails if this file differs. After an intended change, run `UPDATE_INTEGRATION_DOCS=1 npm test` (in PowerShell: `$env:UPDATE_INTEGRATION_DOCS='1'; npm test; Remove-Item Env:UPDATE_INTEGRATION_DOCS`) and commit the result.",
-    "**Where things stand:** the directory now uses shared Prisma pharmacy/duty stores and effective subscription status. Public medicine-stock persistence is still pending, so valid medicine searches can return 503. These fixed-fixture examples demonstrate wire shapes and do not prove the remaining public stock integration.",
+    '**Where things stand:** the directory and medicine search use the shared Prisma stores and effective subscription status. These fixed-fixture examples show the wire shapes; `public.integration.spec.ts` proves the same routes against real PostgreSQL.',
 
     '## Basics',
     [

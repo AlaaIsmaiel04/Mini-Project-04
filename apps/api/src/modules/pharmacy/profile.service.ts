@@ -3,12 +3,12 @@ import type {
   ProfileResponse,
   SubscriptionStatus,
 } from '@smartshelf/contracts';
-import type { PharmacistActor } from './adapters/temporary-auth.adapter';
+import type { PharmacistActor } from './adapters/jwt-pharmacist.guard';
 import {
   assertSubscriptionActive,
   SUBSCRIPTION_STATUS,
   type SubscriptionStatusReader,
-} from './adapters/temporary-subscription-status.adapter';
+} from './adapters/subscription-status-reader';
 import type { UpdateProfileDto } from './dto/update-profile.dto';
 import {
   PHARMACY_STORE,

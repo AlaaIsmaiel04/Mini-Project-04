@@ -14,8 +14,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
-// Compatibility token for existing isolated tests. In production this delegates to
-// Mustafa's JWT guard and adapts id -> userId without trusting request-supplied actors.
+// Mustafa's JwtAuthGuard authenticates every request. This adds the pharmacist-only rule
+// and adapts id -> userId, trusting nothing the caller supplies. A module booted without
+// the shared guard refuses every request.
 
 export interface PharmacistActor {
   userId: string;
@@ -24,7 +25,7 @@ export interface PharmacistActor {
 }
 
 @Injectable()
-export class TemporaryPharmacistGuard implements CanActivate {
+export class JwtPharmacistGuard implements CanActivate {
   constructor(
     @Optional() @Inject(JwtAuthGuard) private readonly jwt?: JwtAuthGuard,
   ) {}

@@ -4,7 +4,7 @@ import {
   PrismaSubscriptionStatus,
 } from './adapters/prisma-stores';
 import { Module } from '@nestjs/common';
-import { SUBSCRIPTION_STATUS } from './adapters/temporary-subscription-status.adapter';
+import { SUBSCRIPTION_STATUS } from './adapters/subscription-status-reader';
 import { CLOCK, SystemClock } from './clock';
 import { DutyPeriodController } from './duty-period.controller';
 import { DutyPeriodService } from './duty-period.service';

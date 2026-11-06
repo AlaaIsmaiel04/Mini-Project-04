@@ -17,8 +17,8 @@ import type { ProfileResponse } from '@smartshelf/contracts';
 import {
   CurrentPharmacist,
   type PharmacistActor,
-  TemporaryPharmacistGuard,
-} from './adapters/temporary-auth.adapter';
+  JwtPharmacistGuard,
+} from './adapters/jwt-pharmacist.guard';
 import {
   ApiErrors,
   CHANGE_FORBIDDEN,
@@ -41,7 +41,7 @@ const PROFILE_NOT_FOUND: DocumentedError = {
 @ApiTags('pharmacist')
 @ApiBearerAuth()
 // Compatibility guard delegates authentication to the shared JWT guard.
-@UseGuards(TemporaryPharmacistGuard)
+@UseGuards(JwtPharmacistGuard)
 @Controller('pharmacist/profile')
 export class ProfileController {
   constructor(

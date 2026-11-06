@@ -1,6 +1,6 @@
 # Profile and duty API
 
-Hamid owns the profile/duty rules and controllers. The integration now binds them to shared JWT authentication, effective subscription status and Prisma persistence. The compatibility guard retains its existing injection token for isolated tests but delegates production authentication to JwtAuthGuard; it never accepts a supplied actor/header as authentication.
+Hamid owns the profile/duty rules and controllers. The integration now binds them to shared JWT authentication, effective subscription status and Prisma persistence. JwtPharmacistGuard delegates authentication to Mustafa's JwtAuthGuard and adds the pharmacist-only rule; it never accepts a supplied actor/header as authentication.
 
 Profile updates allow only area/address/phone. Pharmacy IDs always come from the authenticated account. Inactive subscriptions retain reads and reject writes. Unknown or other-pharmacy duty IDs return the same 404. Existing DTOs, rejection logs and Swagger remain in place.
 

@@ -10,8 +10,8 @@ import {
 } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { SubscriptionStatus } from '@smartshelf/contracts';
-import { TemporaryPharmacistGuard } from './adapters/temporary-auth.adapter';
-import { SUBSCRIPTION_STATUS } from './adapters/temporary-subscription-status.adapter';
+import { JwtPharmacistGuard } from './adapters/jwt-pharmacist.guard';
+import { SUBSCRIPTION_STATUS } from './adapters/subscription-status-reader';
 import { DutyInputDto } from './dto/duty-input.dto';
 import { DutyPeriodController } from './duty-period.controller';
 import { DutyPeriodService } from './duty-period.service';
@@ -113,7 +113,7 @@ describe('duty period endpoints for a signed-in pharmacist', () => {
 
   before(async () => {
     // Test only: stands in for sign-in so the rules behind the guard can run.
-    mock.method(TemporaryPharmacistGuard.prototype, 'canActivate', ((
+    mock.method(JwtPharmacistGuard.prototype, 'canActivate', ((
       context: ExecutionContext,
     ) => {
       context.switchToHttp().getRequest().actor = signedIn;
@@ -800,7 +800,7 @@ describe('duty period endpoints for a signed-in pharmacist', () => {
   });
 });
 
-describe('duty period endpoints with the real temporary adapters', () => {
+describe('duty period endpoints alone, with no database or sign-in bound', () => {
   let app: INestApplication;
   let path: string;
 

@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import { join } from 'node:path';
 import { before, describe, it, mock } from 'node:test';
 import { type ExecutionContext, Module } from '@nestjs/common';
-import { toBusinessDate } from '../public/adapters/temporary-business-date.adapter';
-import { TemporaryPharmacistGuard } from './adapters/temporary-auth.adapter';
-import { SUBSCRIPTION_STATUS } from './adapters/temporary-subscription-status.adapter';
+import { businessDate } from '../../common/business-date';
+import { JwtPharmacistGuard } from './adapters/jwt-pharmacist.guard';
+import { SUBSCRIPTION_STATUS } from './adapters/subscription-status-reader';
 import { DutyInputDto } from './dto/duty-input.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { DutyPeriodController } from './duty-period.controller';
@@ -108,7 +108,7 @@ async function captureExamples() {
     const notSignedIn = await real(401, 'GET', PROFILE);
 
     // Test only: from here on this stands in for sign-in, so the rules behind the guard can run.
-    mock.method(TemporaryPharmacistGuard.prototype, 'canActivate', ((
+    mock.method(JwtPharmacistGuard.prototype, 'canActivate', ((
       context: ExecutionContext,
     ) => {
       context.switchToHttp().getRequest().actor = signedIn;
@@ -524,9 +524,9 @@ describe('pharmacist integration guide', () => {
         const lastMinute = new Date(toApiInstant(`${date}T23:59`));
         const minuteBefore = new Date(firstMinute.getTime() - 60_000);
 
-        assert.equal(toBusinessDate(firstMinute), date);
-        assert.equal(toBusinessDate(lastMinute), date);
-        assert.notEqual(toBusinessDate(minuteBefore), date);
+        assert.equal(businessDate(firstMinute), date);
+        assert.equal(businessDate(lastMinute), date);
+        assert.notEqual(businessDate(minuteBefore), date);
       });
     }
   });

@@ -1,6 +1,3 @@
-import { Injectable } from '@nestjs/common';
-import { dataUnavailable } from '../../pharmacy/adapters/temporary-unavailable-stores';
-
 export const MEDICINE_AVAILABILITY_STORE = Symbol(
   'MEDICINE_AVAILABILITY_STORE',
 );
@@ -21,10 +18,4 @@ export interface MedicineAvailabilityStore {
    * q is plain text, not a pattern, so % and _ must match literally.
    */
   listBatchesOfMatchingMedicines(q: string): Promise<MedicineBatchStock[]>;
-}
-
-// TEMPORARY: replace when Mustafa/Shiam merge.
-@Injectable()
-export class TemporaryUnavailableMedicineAvailabilityStore implements MedicineAvailabilityStore {
-  listBatchesOfMatchingMedicines = dataUnavailable;
 }

@@ -14,7 +14,7 @@ import { effectiveSubscriptionStatus } from '../../../common/subscription-status
 import {
   INACTIVE_SUBSCRIPTION_REASONS,
   type SubscriptionStatusReader,
-} from './temporary-subscription-status.adapter';
+} from './subscription-status-reader';
 import type { PharmacyStore, PharmacyFilter } from '../stores/pharmacy.store';
 import type { DutyPeriodStore, DutyTimes } from '../stores/duty-period.store';
 import { CLOCK, type Clock } from '../clock';

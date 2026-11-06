@@ -6,7 +6,7 @@ For Yousef: the Public Search and Pharmacy Directory pages.
 
 **This guide cannot drift from the code.** Every request and response below was produced by the real controller, validation, service and privacy mapper, using fixed test data. `npm test` produces them again and fails if this file differs. After an intended change, run `UPDATE_INTEGRATION_DOCS=1 npm test` (in PowerShell: `$env:UPDATE_INTEGRATION_DOCS='1'; npm test; Remove-Item Env:UPDATE_INTEGRATION_DOCS`) and commit the result.
 
-**Where things stand:** the directory now uses shared Prisma pharmacy/duty stores and effective subscription status. Public medicine-stock persistence is still pending, so valid medicine searches can return 503. These fixed-fixture examples demonstrate wire shapes and do not prove the remaining public stock integration.
+**Where things stand:** the directory and medicine search use the shared Prisma stores and effective subscription status. These fixed-fixture examples show the wire shapes; `public.integration.spec.ts` proves the same routes against real PostgreSQL.
 
 ## Basics
 

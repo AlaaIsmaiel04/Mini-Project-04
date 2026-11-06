@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { after, before, describe, it } from 'node:test';
 import { type INestApplication, Module, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { SUBSCRIPTION_STATUS } from '../pharmacy/adapters/temporary-subscription-status.adapter';
+import { SUBSCRIPTION_STATUS } from '../pharmacy/adapters/subscription-status-reader';
 import { CLOCK } from '../pharmacy/clock';
 import { DUTY_PERIOD_STORE } from '../pharmacy/stores/duty-period.store';
 import { PHARMACY_STORE } from '../pharmacy/stores/pharmacy.store';
