@@ -102,6 +102,11 @@ Found while checking the theme, in the light theme only and not caused by it:
 
 - [ ] **`apps/web/src/refresh.css`, line 10:** form control borders use `--border` at about 1.2:1 against the page and 1.3:1 against a card. WCAG asks for 3:1 on control boundaries. All text in the light theme passes. The dark theme already uses a stronger border for controls.
 
+### Found during Hamid's Day 13 rehearsal
+
+- [ ] **`apps/api/package.json`, `dev` script:** `tsc --watch` and `node --watch` start together, so the API prints its ready line and then restarts itself about a second later, refusing requests for a few seconds. In Swagger this shows as "Failed to fetch". Measured: one failed health check straight after start-up. Building once before starting `node --watch`, and using `tsc --watch --noEmit` or a delay, would stop it. `DEMO.md` uses `npm run build` and `npm start` to avoid this.
+- [ ] **`apps/api/src/main.ts`, optional:** responses carry the header `x-powered-by: Express`, visible in Swagger. It is not private data, but `app.getHttpAdapter().getInstance().disable('x-powered-by')` would remove it.
+
 ## Mustafa
 
 - [ ] **`apps/api/prisma/seed.ts`: add a second ACTIVE pharmacy in the South area.** Today only Demo Pharmacy 1 is ACTIVE, so the area filter has nothing to compare in a demo.

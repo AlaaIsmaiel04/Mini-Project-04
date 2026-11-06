@@ -14,12 +14,13 @@ const parseStrictBoolean = ({ value }: { value: unknown }) => {
   return value;
 };
 
+// No Swagger example on these two: Try it out fills examples in and sends them, so a search
+// with "empty" filters would really be limited to that area and to pharmacies on duty.
 export class PublicPharmaciesQueryDto implements PublicPharmacyFilters {
   @ApiPropertyOptional({
     type: String,
     description:
-      'Exact area, ignoring case and surrounding spaces. A blank value adds no filter.',
-    example: 'Downtown',
+      'Exact area such as Downtown, ignoring case and surrounding spaces. A blank value adds no filter.',
   })
   @IsOptional()
   @Transform(trim)
@@ -30,7 +31,6 @@ export class PublicPharmaciesQueryDto implements PublicPharmacyFilters {
     type: Boolean,
     description:
       'Exactly true or false. true lists only pharmacies on duty now; false adds no filter.',
-    example: true,
   })
   @IsOptional()
   @Transform(parseStrictBoolean)

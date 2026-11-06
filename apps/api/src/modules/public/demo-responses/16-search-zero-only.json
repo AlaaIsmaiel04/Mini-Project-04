@@ -1,0 +1,11 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/public/medicines?q=zerodol"
+  },
+  "status": 200,
+  "response": {
+    "items": [],
+    "total": 0
+  }
+}

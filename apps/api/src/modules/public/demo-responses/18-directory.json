@@ -1,0 +1,28 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/public/pharmacies"
+  },
+  "status": 200,
+  "response": {
+    "items": [
+      {
+        "name": "Demo Pharmacy 1",
+        "area": "North",
+        "address": "Demo Street 1",
+        "phone": "0900000001",
+        "onDutyNow": true,
+        "currentDuty": {
+          "startsAt": "2026-11-06T17:00:00.000Z",
+          "endsAt": "2026-11-07T05:00:00.000Z"
+        },
+        "nextDuty": {
+          "startsAt": "2026-12-20T17:00:00.000Z",
+          "endsAt": "2026-12-21T05:00:00.000Z"
+        },
+        "inventoryUpdatedAt": "2026-11-06T19:50:25.495Z"
+      }
+    ],
+    "total": 1
+  }
+}

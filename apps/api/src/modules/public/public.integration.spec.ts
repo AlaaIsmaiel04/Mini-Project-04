@@ -7,6 +7,7 @@ import { PrismaClient } from '@prisma/client';
 import { hash } from 'bcryptjs';
 import { parseCalendarDate } from '../../common/business-date';
 import { NOT_A_PHARMACIST, NOT_SIGNED_IN } from '../pharmacy/api-errors';
+import { PUBLIC_RESULT_EXAMPLE } from './dto/public-pharmacy.dto';
 import { keyPaths } from '../pharmacy/testing/response-allowlist';
 
 // Public routes through the real AppModule, Prisma stores and PostgreSQL. Fixtures carry a
@@ -344,6 +345,12 @@ test(
             return (await bodyOf(`pharmacies?area=${AREA}`)).items[0];
           };
           try {
+            // The two moments of the demo: inside the overnight period, then after it.
+            assert.equal((await alphaAt(AT_2AM)).onDutyNow, true);
+            assert.equal(
+              (await alphaAt('2026-11-05T09:00:00+03:00')).onDutyNow,
+              false,
+            );
             assert.equal(
               (await alphaAt('2026-11-04T19:59:59.999+03:00')).onDutyNow,
               false,
@@ -681,6 +688,32 @@ test(
             );
           } finally {
             await db.account.delete({ where: { email } });
+          }
+        },
+      );
+
+      await t.test(
+        'real public responses have the keys and value types of the Swagger privacy example',
+        async () => {
+          const shapeOf = (value: unknown): unknown => {
+            if (Array.isArray(value)) return value.map(shapeOf);
+            if (value === null || typeof value !== 'object') {
+              return typeof value;
+            }
+            return Object.fromEntries(
+              Object.entries(value)
+                .map(([key, child]) => [key, shapeOf(child)])
+                .sort(([a], [b]) => String(a).localeCompare(String(b))),
+            );
+          };
+          const example = shapeOf(PUBLIC_RESULT_EXAMPLE);
+
+          // Alpha has a current and a next period, like the example.
+          for (const path of [
+            `pharmacies?area=${AREA}&onDutyNow=true`,
+            search(token, '&onDutyNow=true'),
+          ]) {
+            assert.deepEqual(shapeOf(await bodyOf(path)), example, path);
           }
         },
       );

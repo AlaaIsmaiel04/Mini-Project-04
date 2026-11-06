@@ -1,0 +1,12 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/public/medicines"
+  },
+  "status": 400,
+  "response": {
+    "message": ["q is required and cannot be empty"],
+    "error": "Bad Request",
+    "statusCode": 400
+  }
+}

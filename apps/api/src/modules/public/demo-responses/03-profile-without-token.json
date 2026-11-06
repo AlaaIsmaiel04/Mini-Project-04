@@ -1,0 +1,12 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/pharmacist/profile"
+  },
+  "status": 401,
+  "response": {
+    "message": "Missing or invalid token.",
+    "error": "Unauthorized",
+    "statusCode": 401
+  }
+}

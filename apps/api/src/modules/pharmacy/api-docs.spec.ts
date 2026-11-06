@@ -241,13 +241,24 @@ describe('OpenAPI document', () => {
       assert.ok(q.description);
       assert.equal(area.required, false);
       assert.equal(area.schema.type, 'string');
-      assert.equal(area.schema.example, 'Downtown');
       assert.ok(area.description);
       assert.equal(onDutyNow.required, false);
       assert.equal(onDutyNow.schema.type, 'boolean');
-      assert.equal(onDutyNow.schema.example, true);
       assert.ok(onDutyNow.description);
     });
+
+    // Try it out fills in examples and sends them, which would silently narrow the results.
+    for (const path of [PUBLIC_MEDICINES, PUBLIC_PHARMACIES]) {
+      it(`${path} does not pre-fill its optional filters in Try it out`, () => {
+        for (const name of ['area', 'onDutyNow']) {
+          const [filter] = parameter('get', path, name);
+
+          assert.equal(filter.schema.example, undefined, name);
+          assert.equal(filter.schema.default, undefined, name);
+          assert.equal(filter.example, undefined, name);
+        }
+      });
+    }
 
     it('documents the directory without q', () => {
       const names = operation('get', PUBLIC_PHARMACIES)
@@ -495,19 +506,15 @@ describe('OpenAPI document', () => {
       });
     });
 
-    it('the documented query examples pass validation', async () => {
-      const example = (name: string) => [
-        name,
-        String(parameter('get', PUBLIC_MEDICINES, name)[0].schema.example),
-      ];
-      const query = Object.fromEntries(['q', 'area', 'onDutyNow'].map(example));
+    it('the documented q example passes validation', async () => {
+      const [{ schema: documented }] = parameter('get', PUBLIC_MEDICINES, 'q');
 
-      const result = await pipe.transform(query, {
-        type: 'query',
-        metatype: MedicineSearchQueryDto,
-      });
+      const result = await pipe.transform(
+        { q: documented.example },
+        { type: 'query', metatype: MedicineSearchQueryDto },
+      );
 
-      assert.equal(result.onDutyNow, true);
+      assert.equal(result.q, documented.example);
     });
 
     for (const field of ['area', 'address']) {

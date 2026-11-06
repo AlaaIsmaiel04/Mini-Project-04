@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/pharmacist/profile"
+  },
+  "status": 200,
+  "response": {
+    "pharmacy": {
+      "id": "00000002-0000-4000-8000-000000000001",
+      "name": "Demo Pharmacy 1",
+      "area": "North",
+      "address": "Demo Street 1",
+      "phone": "0900000001",
+      "inventoryUpdatedAt": "2026-11-06T19:50:19.458Z"
+    },
+    "subscriptionStatus": "ACTIVE"
+  }
+}
