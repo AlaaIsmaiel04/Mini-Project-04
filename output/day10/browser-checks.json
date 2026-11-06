@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-11-06T10:41:03.845Z",
+  "database": "isolated PostgreSQL review database",
+  "result": "passed",
+  "checks": [
+    "real sign-in and empty pharmacy: seven zero metrics and empty attention",
+    "UI medicine + batch creation: units 10 / value 25.00 / waste 12.00",
+    "simultaneous low-stock, expired and expiring-soon badges",
+    "UI batch edit: quantity 11 and +91 expiry, value 27.50 / soon count 0",
+    "zero expired quantity: waste 0.00, HEALTHY, no attention; expired batch count retained",
+    "UI reorder edit and +30 expiry: equality is low stock + expiring soon",
+    "inventory filter count matches dashboard metric",
+    "second workspace changes persisted stock; dashboard focus refresh value 30.00",
+    "Arabic mobile layout without overflow",
+    "no browser exceptions"
+  ],
+  "mutations": "all created fixture records cleaned in finally"
+}

@@ -64,8 +64,8 @@ Day 6 browser checks were completed with synthetic data on 4 November 2026; deta
 - Successful saves refetch the current filtered inventory. If the refresh fails,
   the success notice remains alongside the retryable read error. Filters remain
   applied, so an edited medicine can leave the current filtered list.
-- `notifyInventoryChanged()` also notifies dashboard consumers. Mohammad can use
-  `useInventoryRevision()` in the dashboard fetch effect when integrating it.
+- `notifyInventoryChanged()` also notifies the integrated dashboard. Its fetch
+  effect consumes `useInventoryRevision()` and refetches on navigation and focus.
 - Window focus refreshes inventory/subscription status. API authorization remains
   mandatory for every write; frontend controls cannot prevent a race on the server.
 - The development preview supports in-memory CRUD with a fixed demonstration date.
@@ -78,3 +78,17 @@ All four forms were exercised in the actual browser using the development servic
 The preview now has a **Next save response** selector for one-shot simulated 400/403/404/network failures, a two-second save and a successful save followed by a failed read. These controls only exercise frontend behavior; they do not implement backend authorization or persistence and are excluded from production.
 
 Evidence: `output/day6/browser-checks.json`, `desktop-batch-editor.png` and `mobile-medicine-form.png`. `npm test` passes all five request/validation tests; the final production build passes. Real persisted API flows and server-side rules still require Mustafa's backend. See `docs/ALAA-PROGRESS.md` for the dependency record. No commit or push was performed.
+
+## Day 10 persisted dashboard integration - 6 November 2026
+
+The refresh handoff is implemented and verified against the real JWT/Prisma APIs.
+Real inventory form saves update dashboard totals and simultaneous attention
+badges after navigation. Focus refresh also picks up a persisted edit from another
+browser tab. Empty inventory returns seven zero metrics and helpful empty states.
+Quantity, reorder-threshold and expiry edits were checked against exact API values;
+React continues to display server calculations.
+
+See `docs/DAY-10-VERIFICATION.md` and `output/day10/browser-checks.json` for results.
+Earlier Day 5-6 verification sections above describe historical fixture checks;
+Day 10 uses isolated PostgreSQL records and real requests. Owner administration
+remains dependent on Shiam and is not covered by this completion.
