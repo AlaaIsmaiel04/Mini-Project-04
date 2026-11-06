@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict';
-import { after, before, describe, it } from 'node:test';
-import { type INestApplication, Module, ValidationPipe } from '@nestjs/common';
+import { after, before, describe, it, mock } from 'node:test';
+import {
+  type INestApplication,
+  Module,
+  ServiceUnavailableException,
+  ValidationPipe,
+} from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SUBSCRIPTION_STATUS } from '../pharmacy/adapters/subscription-status-reader';
 import { CLOCK } from '../pharmacy/clock';
@@ -9,6 +14,10 @@ import { PHARMACY_STORE } from '../pharmacy/stores/pharmacy.store';
 import { FixedClock } from '../pharmacy/testing/fixed-clock';
 import { InMemoryPharmacyStore } from '../pharmacy/testing/in-memory-pharmacy.store';
 import { InMemorySubscriptionStatus } from '../pharmacy/testing/in-memory-subscription-status';
+import {
+  assertCleanError,
+  keyPaths,
+} from '../pharmacy/testing/response-allowlist';
 import { MedicineSearchQueryDto } from './dto/medicine-search-query.dto';
 import { PublicPharmaciesQueryDto } from './dto/public-pharmacies-query.dto';
 import {
@@ -25,6 +34,7 @@ const NORTHERN = '22222222-2222-4222-8222-222222222222';
 const PERIOD_ID = '44444444-4444-4444-8444-444444444444';
 const MEDICINE_ID = '55555555-5555-4555-8555-555555555555';
 const USER_ID = '66666666-6666-4666-8666-666666666666';
+const DATABASE_ERROR = 'connect failed: postgres://admin:secret-password@db';
 
 // Every key a public list may contain, at any depth.
 const ALLOWED_KEY_PATHS = [
@@ -47,21 +57,6 @@ const ALLOWED_KEY_PATHS = [
 const WITHOUT_NESTED_DUTY_KEYS = ALLOWED_KEY_PATHS.filter(
   (path) => !path.includes('Duty.'),
 );
-
-/** Every key in a JSON value, at any depth, once each and sorted. */
-function keyPaths(value: unknown): string[] {
-  const walk = (node: unknown, path: string): string[] => {
-    if (Array.isArray(node)) {
-      return node.flatMap((item) => walk(item, `${path}[]`));
-    }
-    if (node === null || typeof node !== 'object') return [];
-    return Object.entries(node).flatMap(([key, child]) => {
-      const childPath = path ? `${path}.${key}` : key;
-      return [childPath, ...walk(child, childPath)];
-    });
-  };
-  return [...new Set(walk(value, ''))].sort();
-}
 
 // Rows carry far more than the public may see, as database rows with relations would.
 const privateRelations = {
@@ -168,6 +163,8 @@ const SECRETS = [
   'staff@example.test',
   'passwordHash',
   'secret-hash',
+  'postgres',
+  'secret-password',
 ];
 
 // tsx does not emit decorator metadata, so add the parameter types tsc emits for
@@ -193,6 +190,7 @@ describe('public JSON contains only allowlisted keys', () => {
   });
   let app: INestApplication;
   let url: string;
+  let subscriptions: InMemorySubscriptionStatus;
 
   const getText = async (path: string) => {
     const response = await fetch(`${url}/api/public/${path}`);
@@ -201,7 +199,7 @@ describe('public JSON contains only allowlisted keys', () => {
   };
 
   before(async () => {
-    const subscriptions = new InMemorySubscriptionStatus();
+    subscriptions = new InMemorySubscriptionStatus();
     subscriptions.set(CENTRAL, 'ACTIVE');
     subscriptions.set(NORTHERN, 'ACTIVE');
 
@@ -324,6 +322,58 @@ describe('public JSON contains only allowlisted keys', () => {
       keyPaths(JSON.parse(JSON.stringify(PUBLIC_RESULT_EXAMPLE))),
       ALLOWED_KEY_PATHS,
     );
+  });
+
+  describe('error responses', () => {
+    const whileStatusFails = async (
+      failure: () => Promise<never>,
+      path: string,
+    ) => {
+      const reader = mock.method(subscriptions, 'getEffectiveStatus', failure);
+      try {
+        return await fetch(`${url}/api/public/${path}`);
+      } finally {
+        reader.mock.restore();
+      }
+    };
+
+    for (const [label, path] of [
+      ['pharmacies with an invalid filter', 'pharmacies?onDutyNow=maybe'],
+      ['medicines without q', 'medicines'],
+    ]) {
+      it(`400 for ${label} has only the error keys, no ID and no private value`, async () => {
+        await assertCleanError(
+          await fetch(`${url}/api/public/${path}`),
+          400,
+          SECRETS,
+        );
+      });
+    }
+
+    for (const path of ['pharmacies', 'medicines?q=amox']) {
+      it(`503 for ${path} has only the error keys, no ID and no private value`, async () => {
+        const response = await whileStatusFails(
+          () =>
+            Promise.reject(
+              new ServiceUnavailableException(
+                'Subscription status is not available yet',
+              ),
+            ),
+          path,
+        );
+
+        await assertCleanError(response, 503, SECRETS);
+      });
+
+      it(`500 for ${path} reveals nothing about an unexpected error`, async () => {
+        const response = await whileStatusFails(
+          () => Promise.reject(new Error(DATABASE_ERROR)),
+          path,
+        );
+
+        await assertCleanError(response, 500, SECRETS);
+      });
+    }
   });
 
   it('would notice a leaked key: the check itself', () => {

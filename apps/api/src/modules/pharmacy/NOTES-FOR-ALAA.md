@@ -9,6 +9,7 @@ Changes outside Hamid's folders that other members should make. Nothing here has
 - [ ] **`docs/YOUSEF-PROGRESS.md`:** the Day 8-9 row and the closing note say search returns 503 and needs Hamid's adapter. Yousef's "Manual acceptance" steps can now be run against the real API.
 - [ ] **`docs/ALAA-PROGRESS.md`:** line 53 still lists Hamid's temporary adapters as pending.
 - [ ] **`docs/API-CONTRACT.md`:** line 5 still says only `/health` is implemented.
+- [ ] **`docs/LOCAL-SETUP.md`:** line 51 says "Hamid's live persistence/guard adapters still need team integration" and that public search is not complete. Both are done, apart from Shiam's owner endpoints.
 - [ ] **`.prettierrc.json`:** on Windows with `core.autocrlf=true`, `npm run format:check` flags about 119 files for line endings alone. `"endOfLine": "auto"`, or a `.gitattributes` with `* text=auto eol=lf`, would stop this.
 - [ ] **`scripts/smoke.mjs`:** checks the auth and inventory routes in Swagger but none of Hamid's. Add `/api/pharmacist/profile`, `/api/pharmacist/duty-periods`, `/api/public/pharmacies` and `/api/public/medicines`.
 - [ ] **`apps/web/src/features/pharmacy/duty-time.ts` (Mohammad's page):** `datetime-local` values use the device's time zone. It is labelled and sends correct UTC, but a device outside Jordan enters times in its own zone. Decide whether duty times should always be entered in Jordan time.

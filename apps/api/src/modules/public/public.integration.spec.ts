@@ -4,7 +4,9 @@ import { mock, test } from 'node:test';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { PrismaClient } from '@prisma/client';
+import { hash } from 'bcryptjs';
 import { parseCalendarDate } from '../../common/business-date';
+import { keyPaths } from '../pharmacy/testing/response-allowlist';
 
 // Public routes through the real AppModule, Prisma stores and PostgreSQL. Fixtures carry a
 // unique tag, because other integration specs may share this database at the same time.
@@ -31,6 +33,13 @@ const FUTURE_START = {
   suspended: false,
 };
 const ENDED = { start: '2026-01-01', end: YESTERDAY, suspended: false };
+// Active for the frozen clock and for the real one, which duty writes check.
+const LONG_RUNNING = {
+  start: '2026-01-01',
+  end: '2099-01-01',
+  suspended: false,
+};
+const SIGN_IN_PASSWORD = 'TestPassword123!';
 
 const PUBLIC_KEY_PATHS = [
   'items',
@@ -48,20 +57,6 @@ const PUBLIC_KEY_PATHS = [
   'items[].phone',
   'total',
 ];
-
-function keyPaths(value: unknown, path = ''): string[] {
-  if (Array.isArray(value)) {
-    return [
-      ...new Set(value.flatMap((item) => keyPaths(item, `${path}[]`))),
-    ].sort();
-  }
-  if (value === null || typeof value !== 'object') return [];
-  const paths = Object.entries(value).flatMap(([key, child]) => {
-    const next = path ? `${path}.${key}` : key;
-    return [next, ...keyPaths(child, next)];
-  });
-  return [...new Set(paths)].sort();
-}
 
 interface SubscriptionFixture {
   start: string;
@@ -88,6 +83,7 @@ test(
     const OTHER_AREA = `Other${tag}`;
     const LITERAL_AREA = `Literal${tag}`;
     const WILD_AREA = `100%_Zone\\${tag}`;
+    const LIFECYCLE_AREA = `Lifecycle${tag}`;
     const created: string[] = [];
     const secrets: string[] = [];
     let current = AT_2AM;
@@ -180,6 +176,45 @@ test(
     const search = (q: string, filters = '') =>
       `medicines?q=${encodeURIComponent(q)}${filters}`;
 
+    async function addPharmacist(pharmacyId: string): Promise<string> {
+      const email = `${randomUUID()}@test.local`;
+      await db.account.create({
+        data: {
+          email,
+          passwordHash: await hash(SIGN_IN_PASSWORD, 10),
+          role: 'PHARMACIST',
+          pharmacyId,
+        },
+      });
+      const response = await fetch(`${url}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: SIGN_IN_PASSWORD }),
+      });
+      assert.equal(response.status, 200);
+      return (await response.json()).accessToken;
+    }
+
+    const asPharmacist = (
+      token: string,
+      path: string,
+      method = 'GET',
+      body?: unknown,
+    ) =>
+      fetch(`${url}/api/pharmacist/${path}`, {
+        method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: body === undefined ? undefined : JSON.stringify(body),
+      });
+    const readOwn = async (token: string, path: string) => {
+      const response = await asPharmacist(token, path);
+      assert.equal(response.status, 200, path);
+      return response.json();
+    };
+
     try {
       const alpha = await addPharmacy('Alpha', AREA, IN_DATE);
       const bravo = await addPharmacy('Bravo', OTHER_AREA, IN_DATE);
@@ -199,6 +234,12 @@ test(
       await addMedicine(north, `Northcin${literal}`, 'Other compound', [
         [5, FRESH],
       ]);
+      const papa = await addPharmacy('Papa', LIFECYCLE_AREA, LONG_RUNNING);
+      const quebec = await addPharmacy('Quebec', LIFECYCLE_AREA, LONG_RUNNING);
+      await addMedicine(papa, `Lifecin${literal}`, 'Other compound', [
+        [5, FRESH],
+      ]);
+      await addPeriod(papa, OVERNIGHT_UTC);
 
       // Two good batches, an expired one and an empty one, plus a second matching medicine.
       await addMedicine(alpha, `Zolvax ${token} 500`, `Zolvacillin${token}`, [
@@ -484,6 +525,130 @@ test(
         }
       });
 
+      await t.test('subscription changes', async (lifecycle) => {
+        const papaToken = await addPharmacist(papa);
+        const listing = `pharmacies?area=${LIFECYCLE_AREA}`;
+        const stock = search(`Lifecin${literal}`);
+        const papaName = nameOf('Papa');
+        const whereSubscription = { where: { pharmacyId: papa } };
+
+        const assertHidden = async () => {
+          assert.deepEqual(await names(listing), [nameOf('Quebec')]);
+          assert.deepEqual(await names(stock), []);
+        };
+        const assertListed = async () => {
+          assert.deepEqual(await names(listing), [papaName, nameOf('Quebec')]);
+          assert.deepEqual(await names(stock), [papaName]);
+        };
+
+        await lifecycle.test(
+          'deleting one hides the pharmacy from both public routes, while its pharmacist can still read',
+          async () => {
+            await assertListed();
+            const listed = (await bodyOf(listing)).items;
+            const profile = await readOwn(papaToken, 'profile');
+            const periods = await readOwn(papaToken, 'duty-periods');
+            const batches = await db.batch.count({
+              where: { medicine: { pharmacyId: papa } },
+            });
+            assert.equal(profile.subscriptionStatus, 'ACTIVE');
+            assert.equal(periods.total, 1);
+
+            await db.subscription.delete(whereSubscription);
+
+            await assertHidden();
+            const afterProfile = await readOwn(papaToken, 'profile');
+            assert.equal(afterProfile.subscriptionStatus, 'NONE');
+            assert.deepEqual(afterProfile.pharmacy, profile.pharmacy);
+            assert.deepEqual(await readOwn(papaToken, 'duty-periods'), periods);
+            assert.equal(
+              await db.batch.count({
+                where: { medicine: { pharmacyId: papa } },
+              }),
+              batches,
+            );
+
+            await db.subscription.create({
+              data: {
+                pharmacyId: papa,
+                startDate: parseCalendarDate(LONG_RUNNING.start),
+                endDate: parseCalendarDate(LONG_RUNNING.end),
+              },
+            });
+            assert.deepEqual((await bodyOf(listing)).items, listed);
+          },
+        );
+
+        await lifecycle.test(
+          'a future start stays hidden until midnight on its start date in Amman',
+          async () => {
+            await db.subscription.update({
+              ...whereSubscription,
+              data: { startDate: parseCalendarDate('2026-11-06') },
+            });
+            try {
+              await assertHidden();
+              assert.equal(
+                (await readOwn(papaToken, 'profile')).subscriptionStatus,
+                'NONE',
+              );
+
+              current = '2026-11-05T23:59:59.999+03:00';
+              await assertHidden();
+
+              current = '2026-11-06T00:00:00+03:00';
+              await assertListed();
+            } finally {
+              current = AT_2AM;
+              await db.subscription.update({
+                ...whereSubscription,
+                data: { startDate: parseCalendarDate(LONG_RUNNING.start) },
+              });
+            }
+          },
+        );
+
+        await lifecycle.test(
+          'a suspended subscription is hidden inside its dates until reactivated',
+          async () => {
+            await db.subscription.update({
+              ...whereSubscription,
+              data: { suspended: true },
+            });
+            await assertHidden();
+            assert.equal(
+              (await readOwn(papaToken, 'profile')).subscriptionStatus,
+              'SUSPENDED',
+            );
+
+            await db.subscription.update({
+              ...whereSubscription,
+              data: { suspended: false },
+            });
+            await assertListed();
+          },
+        );
+      });
+
+      await t.test(
+        'different pharmacies may have overlapping duty periods; the same pharmacy may not',
+        async () => {
+          const times = {
+            startsAt: '2090-01-10T20:00:00+03:00',
+            endsAt: '2090-01-11T08:00:00+03:00',
+          };
+          const papaToken = await addPharmacist(papa);
+          const quebecToken = await addPharmacist(quebec);
+
+          const post = (token: string) =>
+            asPharmacist(token, 'duty-periods', 'POST', times);
+
+          assert.equal((await post(papaToken)).status, 201);
+          assert.equal((await post(quebecToken)).status, 201);
+          assert.equal((await post(papaToken)).status, 409);
+        },
+      );
+
       await t.test(
         'public JSON has exactly the allowlisted keys and no private value',
         async () => {
@@ -521,6 +686,7 @@ test(
       await db.medicine.deleteMany({ where });
       await db.dutyPeriod.deleteMany({ where });
       await db.subscription.deleteMany({ where });
+      await db.account.deleteMany({ where });
       await db.pharmacy.deleteMany({ where: { id: { in: created } } });
       await db.$disconnect();
     }
