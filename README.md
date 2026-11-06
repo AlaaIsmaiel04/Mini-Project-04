@@ -88,3 +88,5 @@ React + TypeScript, NestJS, PostgreSQL/Prisma, JWT and Swagger. Prisma/client ar
 Shared types, browser routes and database needs are prepared and approved by Alaa as team leader. See [DAY-1-AGREEMENTS.md](docs/DAY-1-AGREEMENTS.md) for the review checklist and [FRONTEND-ROUTES.md](docs/FRONTEND-ROUTES.md) for browser paths. This records Alaa's approval of the baseline, not individual member confirmations. Coordinate later changes with the affected owners. No feature API or business logic is added by this contract work.
 
 Public frontend verification and remaining dependencies: [Yousef progress](docs/YOUSEF-PROGRESS.md).
+
+The public welcome page is `/`; medicine search is `/search`, the pharmacy directory is `/pharmacies`, and staff sign-in is `/login`. The brand and Home navigation link return to the welcome page. Public search remains dependent on the stock adapter described above.

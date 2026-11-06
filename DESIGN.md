@@ -59,3 +59,30 @@ Typecheck, production build, smoke, 435 API tests and 14 frontend tests passed.
 Screenshots and detailed scope are in `output/refresh/visual-checks.json`.
 
 Dark mode and the known owner/public-stock backend dependencies remain separate.
+
+## Public welcome page - 6 November 2026
+
+At Alaa's request, `/` now introduces SmartShelf with a primary medicine-search
+link, a pharmacy-directory row and a staff-sign-in section. Medicine search moved
+to `/search`. Brand and Home navigation return to `/`; the not-found recovery
+link targets `/search`. Existing role redirects and session guards stay in place.
+
+The welcome page reuses the cream/forest palette, mint action, local Cairo font,
+stroke icons, capsule symbol and reduced-motion behavior. English/Arabic copy
+uses the shared provider. Four public navigation destinations wrap onto a separate
+row on tablet widths to avoid overflow.
+
+Browser verification covers destination links, keyboard submission, search queries,
+browser Back, brand/Home navigation, 404 recovery, protected routes, both languages
+and 320/390/768/1024/1440 layouts. Public success responses in this check were
+controlled test data; the pending public stock adapter is not implemented by this
+page. Evidence is in `output/home/browser-checks.json`.
+
+Home motion: one brief arrival draws the capsule outline while it rotates into
+place; the small circular marker follows the surrounding ring and settles within
+1400ms. The heading reveals over 650ms and supporting copy follows by 80ms. All
+three destination links use arrows that move toward their destination on hover
+or keyboard focus, mirrored in Arabic. No motion loops and no new library is
+required. Reduced motion keeps the complete static artwork and directional arrows,
+without entrance animations or spatial feedback. Verification evidence is recorded
+in `output/home/motion-checks.json`.

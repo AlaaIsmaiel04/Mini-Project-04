@@ -1,0 +1,114 @@
+{
+  "checkedAt": "2026-11-06T15:55:37.753Z",
+  "checks": [
+    "Capsule outline, orientation and ring marker progress through real intermediate frames",
+    "One finite arrival; all motion ends within 1400ms",
+    "Three destination arrows respond to hover/keyboard focus and mirror in RTL",
+    "All three destinations reachable by keyboard during entrance animation",
+    "EN/AR at 320/390/768/1024/1440 without horizontal overflow",
+    "Reduced motion keeps complete static artwork; no moving arrows or animations",
+    "Motion preference updates without reload; no browser exceptions"
+  ],
+  "samples": [
+    {
+      "name": "home-title-reveal",
+      "start": {
+        "transform": "matrix(1, 0, 0, 1, 0, 6)",
+        "strokeDashoffset": "0px",
+        "opacity": "0.7"
+      },
+      "middle": {
+        "transform": "matrix(1, 0, 0, 1, 0, 0.0625438)",
+        "strokeDashoffset": "0px",
+        "opacity": "0.996873"
+      },
+      "end": {
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "strokeDashoffset": "0px",
+        "opacity": "1"
+      },
+      "iterations": 1,
+      "duration": 650
+    },
+    {
+      "name": "home-copy-arrive",
+      "start": {
+        "transform": "matrix(1, 0, 0, 1, 0, 5)",
+        "strokeDashoffset": "0px",
+        "opacity": "0.72"
+      },
+      "middle": {
+        "transform": "matrix(1, 0, 0, 1, 0, 0.149971)",
+        "strokeDashoffset": "0px",
+        "opacity": "0.991602"
+      },
+      "end": {
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "strokeDashoffset": "0px",
+        "opacity": "1"
+      },
+      "iterations": 1,
+      "duration": 730
+    },
+    {
+      "name": "home-capsule-settle",
+      "start": {
+        "transform": "matrix(0.978148, -0.207912, 0.207912, 0.978148, 0, 10)",
+        "strokeDashoffset": "0px",
+        "opacity": "1"
+      },
+      "middle": {
+        "transform": "matrix(0.999865, -0.016401, 0.016401, 0.999865, 0, 0.783127)",
+        "strokeDashoffset": "0px",
+        "opacity": "1"
+      },
+      "end": {
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "strokeDashoffset": "0px",
+        "opacity": "1"
+      },
+      "iterations": 1,
+      "duration": 1100
+    },
+    {
+      "name": "home-capsule-draw",
+      "start": {
+        "transform": "matrix(0.788011, 0.615661, -0.615661, 0.788011, 74.4886, -36.3305)",
+        "strokeDashoffset": "400px",
+        "opacity": "1"
+      },
+      "middle": {
+        "transform": "matrix(0.788011, 0.615661, -0.615661, 0.788011, 74.4886, -36.3305)",
+        "strokeDashoffset": "31.3251px",
+        "opacity": "1"
+      },
+      "end": {
+        "transform": "matrix(0.788011, 0.615661, -0.615661, 0.788011, 74.4886, -36.3305)",
+        "strokeDashoffset": "0px",
+        "opacity": "1"
+      },
+      "iterations": 1,
+      "duration": 1100
+    },
+    {
+      "name": "home-marker-arrive",
+      "start": {
+        "transform": "matrix(-0.939693, -0.34202, 0.34202, -0.939693, 0, 0)",
+        "strokeDashoffset": "0px",
+        "opacity": "1"
+      },
+      "middle": {
+        "transform": "matrix(0.928982, -0.370125, 0.370125, 0.928982, 0, 0)",
+        "strokeDashoffset": "0px",
+        "opacity": "1"
+      },
+      "end": {
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "strokeDashoffset": "0px",
+        "opacity": "1"
+      },
+      "iterations": 1,
+      "duration": 1400
+    }
+  ]
+}

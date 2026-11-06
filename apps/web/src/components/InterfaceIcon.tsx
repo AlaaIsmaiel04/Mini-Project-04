@@ -1,5 +1,11 @@
 export type InterfaceIconName =
-  'search' | 'pharmacy' | 'dashboard' | 'inventory' | 'profile' | 'signin';
+  | 'home'
+  | 'search'
+  | 'pharmacy'
+  | 'dashboard'
+  | 'inventory'
+  | 'profile'
+  | 'signin';
 
 // One shared stroke family. Icons decorate existing text labels.
 export function InterfaceIcon({ name }: { name: InterfaceIconName }) {
@@ -16,6 +22,7 @@ export function InterfaceIcon({ name }: { name: InterfaceIconName }) {
       strokeLinejoin="round"
       aria-hidden="true"
     >
+      {name === 'home' && <path d="m3 10 9-7 9 7M5 9v12h5v-7h4v7h5V9" />}
       {name === 'search' && (
         <>
           <circle cx="10.5" cy="10.5" r="6.5" />

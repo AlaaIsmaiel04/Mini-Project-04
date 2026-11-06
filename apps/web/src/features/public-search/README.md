@@ -1,6 +1,6 @@
 # Public medicine search
 
-Implemented at `/` with `PublicSearchPage`, `PharmacyCard` and `public-api.ts`.
+Implemented at `/search` with `PublicSearchPage`, `PharmacyCard` and `public-api.ts`.
 Requests are unauthenticated. Submit a nonempty display/scientific name with optional
 area and on-duty filters. Typing alone does not request results. Retry repeats the
 submitted filters; Clear resets inputs/results. Aborted or superseded requests

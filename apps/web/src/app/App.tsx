@@ -11,6 +11,7 @@ import { InventoryPage } from '../features/inventory/InventoryPage';
 import { AppShell } from '../components/AppShell';
 import { PublicSearchPage } from '../features/public-search/PublicSearchPage';
 import { DirectoryPage } from '../features/directory/DirectoryPage';
+import { HomePage } from '../features/home/HomePage';
 
 const InventoryPreviewPage = import.meta.env.DEV
   ? lazy(() =>
@@ -49,7 +50,8 @@ export function App() {
   return (
     <AppShell>
       <Routes>
-        <Route path="/" element={<PublicSearchPage key="search" />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/search" element={<PublicSearchPage key="search" />} />
         <Route path="/pharmacies" element={<DirectoryPage />} />
 
         <Route path="/login" element={<LoginPage />} />
@@ -95,7 +97,7 @@ export function App() {
           element={
             <>
               <h2>{t('Page not found')}</h2>
-              <Link to="/">{t('Return to medicine search')}</Link>
+              <Link to="/search">{t('Return to medicine search')}</Link>
             </>
           }
         />

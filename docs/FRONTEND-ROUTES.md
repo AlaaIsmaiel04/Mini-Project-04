@@ -1,19 +1,20 @@
-# Frontend routes - Day 1 baseline
+# Frontend routes
 
-**Status: Approved by Alaa as team leader on 1 November 2026. Router implementation belongs to Day 2.**
+**Day 1 baseline approved on 1 November 2026. Updated at Alaa's request on 6 November 2026: `/` is now the welcome page; medicine search moved to `/search`.**
 
 These are browser page URLs. Backend endpoints start with `/api` and are listed separately in API-CONTRACT.md.
 
-| Browser path                                 | Screen                                         | Frontend owner | Intended access          |
-| -------------------------------------------- | ---------------------------------------------- | -------------- | ------------------------ |
-| `/`                                          | Medicine search                                | Yousef         | Public, no sign-in       |
-| `/pharmacies`                                | Pharmacy directory                             | Yousef         | Public, no sign-in       |
-| `/login`                                     | Shared staff sign-in                           | Alaa           | Owner/pharmacist sign-in |
-| `/owner`                                     | Pharmacy list, onboarding and account creation | Alaa           | OWNER                    |
-| `/owner/pharmacies/:pharmacyId/subscription` | Subscription editor                            | Alaa           | OWNER                    |
-| `/pharmacist`                                | Dashboard and attention items                  | Mohammad       | PHARMACIST               |
-| `/pharmacist/inventory`                      | Medicine and batch management                  | Alaa           | PHARMACIST               |
-| `/pharmacist/profile`                        | Profile and duty-period management             | Mohammad       | PHARMACIST               |
+| Browser path                                 | Screen                                                   | Frontend owner | Intended access          |
+| -------------------------------------------- | -------------------------------------------------------- | -------------- | ------------------------ |
+| `/`                                          | Welcome page linking search, directory and staff sign-in | Alaa           | Public, no sign-in       |
+| `/search`                                    | Medicine search                                          | Yousef         | Public, no sign-in       |
+| `/pharmacies`                                | Pharmacy directory                                       | Yousef         | Public, no sign-in       |
+| `/login`                                     | Shared staff sign-in                                     | Alaa           | Owner/pharmacist sign-in |
+| `/owner`                                     | Pharmacy list, onboarding and account creation           | Alaa           | OWNER                    |
+| `/owner/pharmacies/:pharmacyId/subscription` | Subscription editor                                      | Alaa           | OWNER                    |
+| `/pharmacist`                                | Dashboard and attention items                            | Mohammad       | PHARMACIST               |
+| `/pharmacist/inventory`                      | Medicine and batch management                            | Alaa           | PHARMACIST               |
+| `/pharmacist/profile`                        | Profile and duty-period management                       | Mohammad       | PHARMACIST               |
 
 ## Navigation and session behavior
 
