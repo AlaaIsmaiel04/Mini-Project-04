@@ -1,0 +1,7 @@
+{
+  "checkedAt": "2026-11-07T08:38:05.972733+00:00",
+  "trackedFiles": 468,
+  "forbiddenTrackedPaths": [],
+  "privateKeyFiles": [],
+  "scope": "Tracked path hygiene and literal private-key header scan; not a full dependency/security audit. .env.example templates are allowed."
+}

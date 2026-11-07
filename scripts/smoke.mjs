@@ -71,15 +71,46 @@ try {
   assert.ok(swagger.paths['/api/pharmacist/medicines/{id}'].patch);
   assert.ok(swagger.paths['/api/pharmacist/medicines/{id}/batches'].post);
   assert.ok(swagger.paths['/api/pharmacist/batches/{id}'].patch);
+  assert.ok(swagger.paths['/api/pharmacist/dashboard'].get);
+  assert.ok(swagger.paths['/api/pharmacist/profile'].get);
+  assert.ok(swagger.paths['/api/pharmacist/profile'].patch);
+  assert.ok(swagger.paths['/api/pharmacist/duty-periods'].get);
+  assert.ok(swagger.paths['/api/pharmacist/duty-periods'].post);
+  assert.ok(swagger.paths['/api/pharmacist/duty-periods/{id}'].patch);
+  assert.ok(swagger.paths['/api/pharmacist/duty-periods/{id}'].delete);
+  assert.ok(swagger.paths['/api/public/pharmacies'].get);
+  assert.ok(swagger.paths['/api/public/medicines'].get);
   assert.equal(
     (await fetch('http://127.0.0.1:3301/api/pharmacist/medicines')).status,
     401,
+  );
+  for (const route of ['dashboard', 'profile', 'duty-periods']) {
+    assert.equal(
+      (await fetch(`http://127.0.0.1:3301/api/pharmacist/${route}`)).status,
+      401,
+      `${route} must require sign-in`,
+    );
+  }
+  assert.equal(
+    (await fetch('http://127.0.0.1:3301/api/public/pharmacies')).status,
+    200,
+  );
+  assert.equal(
+    (await fetch('http://127.0.0.1:3301/api/public/medicines')).status,
+    400,
+    'Public medicine search must require a query',
+  );
+  assert.equal(
+    (await fetch('http://127.0.0.1:3301/api/public/medicines?q=smoke-check'))
+      .status,
+    200,
+    'Public medicine search must use the live store',
   );
   const html = await (await waitFor('http://127.0.0.1:5317', webLog)).text();
   assert.ok(html.includes('<title>SmartShelf</title>'));
   assert.ok(html.includes('/assets/'));
   console.log(
-    'Smoke passed: API health, auth/inventory Swagger, unauthenticated protection and built frontend.',
+    'Smoke passed: API health, auth/inventory/dashboard/profile/duty/public Swagger, protected routes, live public reads and built frontend.',
   );
 } finally {
   for (const child of children) child.kill();

@@ -1,0 +1,47 @@
+{
+  "checkedAt": "2026-11-07T08:38:05.972733+00:00",
+  "baseCommit": "2a86c2ec17f65a0ba87ae30a4363c044bb96f016",
+  "typecheck": "passed",
+  "productionBuild": "passed",
+  "apiUnit": {
+    "passed": 485,
+    "failed": 0,
+    "databaseGroupsSkipped": 3
+  },
+  "frontendUnit": {
+    "passed": 23,
+    "failed": 0
+  },
+  "postgresAcceptance": {
+    "passed": 36,
+    "failed": 0,
+    "skipped": 0
+  },
+  "browserRegressionGroups": [
+    "public initial/empty/loading/error/retry/stale/privacy/keyboard",
+    "real dashboard/profile/duty plus selected injected errors",
+    "real inventory-to-dashboard mutations",
+    "inventory preview forms and controlled sessions",
+    "controlled owner API form states",
+    "Arabic owner/inventory preview flows"
+  ],
+  "freshDatabaseMigration": "passed",
+  "repeatSeed": "passed",
+  "expandedSwaggerAndRuntimeSmoke": "passed",
+  "trackedFileAudit": "passed",
+  "acceptanceSummary": {
+    "pass": 11,
+    "partial": 3,
+    "blocked": 3,
+    "pendingTeam": 1
+  },
+  "remaining": [
+    "Shiam owner APIs: A03/A04/A06 and owner portions of A08/A16/A17",
+    "Independent laptop setup",
+    "Actual team acceptance and English rehearsal"
+  ],
+  "productionFilesChanged": [
+    "scripts/smoke.mjs"
+  ],
+  "frontendDefectsFound": 0
+}
