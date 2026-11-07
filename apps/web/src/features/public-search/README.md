@@ -12,4 +12,6 @@ All labels use the shared English/Arabic provider. Styles inherit SmartShelf tok
 No production fixtures or fallback results are supplied.
 
 The directory reuses the same view and cards. See `docs/YOUSEF-PROGRESS.md` for
-verification, remaining backend dependency and the English presentation script.
+verification and the English presentation script. Hamid's Prisma stock adapter is
+merged: real search and directory requests now work against PostgreSQL. Both pages
+inherit the connected Light/Dark/System theme and English/Arabic preferences.

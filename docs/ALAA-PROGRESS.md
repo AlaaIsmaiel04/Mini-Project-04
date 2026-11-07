@@ -1,22 +1,23 @@
-# Current integration update - 6 November 2026
+# Current integration update - 7 November 2026
 
-This update supersedes the dependency and test counts in the historical notes below. Mustafa's schema/authentication/inventory foundation is integrated. Mohammad's repaired dashboard/profile/duty implementation is merged into main through PR #8 (`00d01af`) and included in Alaa's checkout.
+This update supersedes the dependency statements and test counts in the historical notes below. Mustafa's schema/authentication/inventory foundation and Mohammad's dashboard/profile/duty implementation are integrated. Hamid's latest work and the public PostgreSQL runner fix are merged through PR #18 (`50e1a79`).
 
-- Dashboard reads persisted own-pharmacy stock, all seven metrics and attention badges; refreshes on focus/navigation/inventory changes.
-- Profile and duty screens now use live JWT/Prisma APIs, with inactive reads and restricted writes. Duty writes use a PostgreSQL row lock across API instances.
-- Dashboard/profile/duty share the existing visual design and EN/AR language controls.
-- Typecheck/build pass; 435 API and 11 frontend tests pass; 16 separate PostgreSQL acceptance tests pass, including the new Day 10 inventory-to-dashboard mutation scenario. Real API browser checks cover these pages, including drafts, errors/retries, timezone conversion, overlap, session expiry and mobile/RTL layouts.
-- Shiam's owner administration and subscription flows, public medicine-stock persistence, dark mode and full team rehearsal remain dependencies. Days 8-14 are not all complete merely because the frontend exists.
+- Dashboard reads persisted own-pharmacy stock, all seven metrics and attention badges; it refreshes on focus, navigation and inventory changes.
+- Profile and duty screens use live JWT/Prisma APIs, inactive reads and restricted writes. Duty writes use a PostgreSQL row lock across API instances.
+- Public search now reads real stock. ACTIVE subscriptions, positive/nonexpired matching batches, combined filters, deduplication, literal query characters and exact public fields are covered by database tests. The real search and directory browser flows work.
+- Hamid's Light/Dark/System implementation is connected in public and workspace headers. It applies the saved/system theme before paint, follows live device preference changes and preserves drafts/authentication. Both themes support EN/AR and RTL.
+- Typecheck/build pass; 485 API unit tests and 23 frontend tests pass. All 36 separate PostgreSQL acceptance tests pass. Current theme evidence and screenshots are in `output/theme/browser-checks.json`; owner forms use development previews, while search/directory and pharmacist reads use an isolated real database.
+- Shiam's owner administration/subscription endpoints, full onboarding-to-public acceptance, another member's laptop setup and the actual six-member rehearsal remain pending. Days 8-14 are not all complete merely because the frontend exists.
 
-Yousef's public frontend is now implemented locally at Alaa's request, including real directory checks and simulated search-success checks. Real medicine availability still awaits backend persistence; see [Yousef progress](YOUSEF-PROGRESS.md).
+Yousef's public frontend is implemented at Alaa's request and connected to persisted search/directory. Its stock-adapter and theme dependencies are resolved; Yousef still needs to understand the delivered code and participate in the English presentation. See [Yousef progress](YOUSEF-PROGRESS.md).
 
-Day 10 is complete: real inventory form changes, dashboard metrics, simultaneous badges, empty inventory and focus refresh were verified against isolated PostgreSQL data. See [Day 10 verification](DAY-10-VERIFICATION.md) for the exact results. Days 8-9 still await Shiam for real owner administration.
+Day 10 is complete; see [Day 10 verification](DAY-10-VERIFICATION.md). Days 8-9 still await Shiam's owner APIs. See [Mohammad implementation](MOHAMMAD-IMPLEMENTATION.md) for the pharmacist workflows.
 
-See [Mohammad implementation](MOHAMMAD-IMPLEMENTATION.md) for its implementation record. Except for the Day 10 row, the original records below describe earlier checkpoints.
+The records below describe earlier checkpoints; pending-adapter/theme statements and older test counts are historical, not current blockers.
 
 ---
 
-# Alaa's implementation and integration status
+# Historical implementation and integration checkpoints
 
 Updated 4 November 2026. Scope: the current local `alaa` checkout. The existing shell, sign-in, owner and inventory screens now use the saved Figma design, adapted to English. See `DESIGN.md` for reusable styling and scope. Real backend integration remains pending.
 

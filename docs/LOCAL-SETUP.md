@@ -48,7 +48,7 @@ All seed accounts use the local demonstration password `DemoPass123!`.
 
 The seed creates four pharmacies in two areas, 16 medicines, 24 batches (including expired stock and zero quantity), and one overnight duty period. It uses stable IDs and upserts without updates: rerunning preserves existing edits. Dates are relative to the first seed run; reruns do not refresh them. An expired subscription may still sign in and read inventory, but every inventory mutation returns 403.
 
-Owner and dashboard feature APIs and Hamid's live persistence/guard adapters still need team integration. Owner login works; this does not make owner administration or public search complete.
+Dashboard, inventory, profile, duty, public directory and medicine search use the real JWT/Prisma/PostgreSQL foundation. Public search is connected to persisted stock. Owner login works, but owner administration still requires Shiam's endpoints. The Light/Dark/System selector is connected in both application headers.
 
 ## Verification
 

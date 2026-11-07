@@ -14,18 +14,23 @@
   font-family: inherit;
   cursor: pointer;
 }
-.app-topbar > .language-control {
+.display-preferences {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
   margin-inline-start: auto;
-}
-.app-topbar > .language-control + .theme-control {
-  margin-inline-start: -12px;
 }
 @media (max-width: 760px) {
   .theme-control select {
     padding: 5px 14px;
   }
-  .app-topbar > .language-control + .theme-control {
-    margin-inline-start: -8px;
+  .workspace-shell .app-topbar {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .workspace-shell .app-topbar > span {
+    flex-basis: 100%;
   }
 }
 

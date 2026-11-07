@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../features/auth/AuthProvider';
 import { LanguageControl } from '../features/preferences/LanguageControl';
+import { ThemeControl } from '../features/preferences/ThemeControl';
 import { InterfaceIcon } from './InterfaceIcon';
 
 export function Brand() {
@@ -193,12 +194,18 @@ export function AppShell({ children }: { children: ReactNode }) {
               <span>
                 {owner ? t('Platform management') : t('Pharmacy workspace')}
               </span>
-              <LanguageControl />
+              <div className="display-preferences">
+                <LanguageControl />
+                <ThemeControl />
+              </div>
             </>
           ) : (
             <>
               <Brand />
-              <LanguageControl />
+              <div className="display-preferences">
+                <LanguageControl />
+                <ThemeControl />
+              </div>
               <nav aria-label={t('Main navigation')}>
                 <ul>{navigation}</ul>
               </nav>

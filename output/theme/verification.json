@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-11-07T08:12:20.064Z",
+  "typecheck": "passed",
+  "build": "passed",
+  "apiUnitTests": 485,
+  "frontendTests": 23,
+  "postgresTests": 36,
+  "smoke": "passed",
+  "browser": {
+    "layoutIssues": 0,
+    "textContrastIssues": 0,
+    "checks": [
+      "Light/Dark/System in both headers",
+      "Saved preference survives reload; System follows device changes; manual override wins",
+      "Inline theme applied without React before first paint",
+      "Blocked storage does not prevent changing theme",
+      "Keyboard select and focus ring; drafts and signed-in session preserved",
+      "Real public search, directory, login and pharmacist read flows",
+      "EN/AR at 320/390/768/1024/1440; owner/inventory previews use synthetic data"
+    ]
+  },
+  "limits": [
+    "Owner forms use development previews; real owner endpoints remain pending",
+    "Responsive checks use headless Edge; physical device and full team rehearsal remain pending"
+  ]
+}

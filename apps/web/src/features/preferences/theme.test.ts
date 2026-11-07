@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { themeArabic, themeLabel } from '../../locales/theme-messages';
 import {
   applyDocumentTheme,
@@ -188,12 +188,13 @@ test('the boot script also works when matchMedia is missing', () => {
   assert.equal(documentElement.dataset.theme, 'light');
 });
 
-test('index.html inlines exactly the boot script, once it has been added', () => {
+test('index.html inlines the boot script before the app to apply the theme before paint', () => {
   const page = new URL('../../../index.html', import.meta.url);
-  const html = existsSync(page) ? readFileSync(page, 'utf8') : '';
-  if (html.includes(THEME_STORAGE_KEY)) {
-    assert.ok(html.includes(`<script>${THEME_BOOT_SCRIPT}</script>`));
-  }
+  const html = readFileSync(page, 'utf8');
+  const boot = html.indexOf(`<script>${THEME_BOOT_SCRIPT}</script>`);
+  assert.ok(boot >= 0, 'The theme boot script must be present');
+  assert.ok(boot < html.indexOf('</head>'));
+  assert.ok(boot < html.indexOf('type="module"'));
 });
 
 test('every theme label has Arabic copy, and English stays English', () => {
