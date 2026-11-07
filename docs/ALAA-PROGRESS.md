@@ -13,6 +13,8 @@ Yousef's public frontend is implemented at Alaa's request and connected to persi
 
 Day 10 is complete; see [Day 10 verification](DAY-10-VERIFICATION.md). Days 8-9 still await Shiam's owner APIs. See [Mohammad implementation](MOHAMMAD-IMPLEMENTATION.md) for the pharmacist workflows.
 
+Day 12's independent acceptance work is complete: current unit/API checks, fresh test-database migration, repeat seed, six frontend regression groups, expanded Swagger/runtime smoke coverage and a tracked-file audit. No frontend defect was found. See [Day 12 acceptance](DAY-12-ACCEPTANCE.md) for the A01-A18 matrix and verification limits. Full Day 12 stays open for Shiam's real owner workflows, [another laptop](SECOND-LAPTOP-CHECK.md) and the actual team acceptance session.
+
 The records below describe earlier checkpoints; pending-adapter/theme statements and older test counts are historical, not current blockers.
 
 ---

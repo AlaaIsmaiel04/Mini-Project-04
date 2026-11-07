@@ -5,7 +5,7 @@ Prepared for Days 13–14. This is a rehearsal plan, not evidence that the produ
 ## Before presenting
 
 - Freeze optional scope. Use the final teacher specification and `ACCEPTANCE.md`.
-- Run typecheck, tests, build and smoke; fix failures before the demo. Smoke checks foundation health only.
+- Run typecheck, tests, build, database acceptance and smoke; fix failures before the demo. Smoke checks implemented routes, Swagger, protected access and public reads. See `DAY-12-ACCEPTANCE.md` for current results and remaining gates.
 - Follow Mustafa's merged migration/seed instructions on a dedicated local PostgreSQL database. Confirm the seed's actual dates match the demo day in Asia/Amman, including active/expired subscriptions, expiry boundaries and overnight duty.
 - Use actual seeded credentials privately. Never put passwords or tokens in slides, screenshots, logs or this document.
 - Confirm the full flow with real requests. Development fixture routes do not demonstrate persistence or backend rules.

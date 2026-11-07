@@ -1,0 +1,106 @@
+{
+  "checkedAt": "2026-11-07T08:35:12.637Z",
+  "baseCommit": "2a86c2e",
+  "freshIsolatedDatabase": true,
+  "results": [
+    {
+      "name": "postgres-acceptance",
+      "passed": true,
+      "summary": [
+        "ℹ tests 36",
+        "ℹ pass 36",
+        "ℹ fail 0",
+        "ℹ skipped 0"
+      ],
+      "source": "scripts/test-integration.mjs"
+    },
+    {
+      "name": "check-yousef",
+      "passed": true,
+      "summary": [
+        "PASS 10 public UI scenario groups"
+      ],
+      "source": "tmp/day12/check-yousef.cjs"
+    },
+    {
+      "name": "check-mohammad-ui",
+      "passed": true,
+      "summary": [
+        "PASS browser: real dashboard and all metrics/badges, empty/inactive states, focus/inventory notifications, error/retry/401; profile validation/pending/preserved drafts/saves; duty timezone conversion/add/edit/delete/cancel/overlap/retry; EN/AR, 320/390/768/1440 layouts, no browser errors."
+      ],
+      "source": "tmp/day12/check-mohammad-ui.cjs"
+    },
+    {
+      "name": "check-day10",
+      "passed": true,
+      "summary": [
+        "PASS Day 10: real UI inventory writes -> persisted dashboard; exact decimals, simultaneous flags, expiry/threshold transitions, empty pharmacy, second-tab focus refresh and Arabic mobile."
+      ],
+      "source": "tmp/day12/check-day10.cjs"
+    },
+    {
+      "name": "check-combined",
+      "passed": true,
+      "summary": [
+        "PASS combined runtime: API starts; Hamid profile GET/PATCH registered and safely reject unauthenticated calls; Swagger available.",
+        "PASS local uncommitted inventory: all four forms, blank/fractional/duplicate rejection, historical/zero input, immutable batch fields, error drafts, slow/pending controls, refresh failure/retry, inactive restrictions, preserved filters, keyboard cancel and mobile width.",
+        "PASS current sessions: protected route notice, role redirects, focus /auth/me with bearer token, network recovery, 401 expiry notice, refreshed role navigation and logout; no browser errors."
+      ],
+      "source": "tmp/day12/check-combined.cjs"
+    },
+    {
+      "name": "check-day4",
+      "passed": true,
+      "summary": [
+        "PASS preview: account creation/duplicate/password clearing, equal/reversed dates rejected, subscription create/edit/suspend/reactivate/expired/delete/cancel, pharmacy retained, mobile width.",
+        "PASS mocked API: protected route, bearer token, account body/password unchanged, 409 and 400 feedback, pending controls, POST/PATCH contract fields, saved-date toggle, delete cancel/error/204, failed refresh/retry and direct subscription route; no browser errors."
+      ],
+      "source": "tmp/day12/check-day4.cjs"
+    },
+    {
+      "name": "check-arabic-features",
+      "passed": true,
+      "summary": [
+        "PASS full Arabic: owner search/create/account/subscription validation/save/toggle/delete confirmation; inventory filters/medicine/batch create/edit/read-only fields/inactive status; validation and success retranslate on switch; drafts/data preserved; RTL 320/390/768/1280/1440; no browser errors."
+      ],
+      "source": "tmp/day12/check-arabic-features.cjs"
+    },
+    {
+      "name": "seed-first",
+      "passed": true,
+      "summary": [],
+      "source": "--import tsx prisma/seed.ts"
+    },
+    {
+      "name": "seed-second",
+      "passed": true,
+      "summary": [],
+      "source": "--import tsx prisma/seed.ts"
+    },
+    {
+      "name": "repeat-seed",
+      "passed": true,
+      "counts": "5|4|16|24|1",
+      "order": [
+        "accounts",
+        "pharmacies",
+        "medicines",
+        "batches",
+        "dutyPeriods"
+      ]
+    },
+    {
+      "name": "expanded-smoke",
+      "passed": true,
+      "summary": [
+        "Smoke passed: API health, auth/inventory/dashboard/profile/duty/public Swagger, protected routes, live public reads and built frontend."
+      ],
+      "source": "scripts/smoke.mjs"
+    }
+  ],
+  "limits": [
+    "Owner UI tests use synthetic services or controlled API responses",
+    "Public error/loading/stale-response cases use controlled responses",
+    "No second laptop or team rehearsal is represented"
+  ]
+}

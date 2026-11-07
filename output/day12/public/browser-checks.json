@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-11-07T08:34:28.017Z",
+  "checks": [
+    "Real unauthenticated PostgreSQL directory lists active pharmacy, excludes suspended, handles null timestamps/duty",
+    "Real medicine API returns a normal empty result when matching stock is absent",
+    "Allowed public fields only, phone link, result count, current/next overnight duty and Jordan-time dates",
+    "Explicit submit only; scientific query and combined area/on-duty filters forwarded",
+    "Empty results, network error, retry preserve submitted query and filters",
+    "Loading state and cancelled stale request cannot overwrite latest search",
+    "Clear resets query/filters/results; empty query rejected with focus and labelled validation",
+    "Directory loads without query or sign-in; area filter and reset work",
+    "Keyboard Enter submits medicine search; desktop search, empty and error screenshots captured",
+    "320/390/768/1440 layouts, Arabic RTL, keyboard focus and no browser exceptions"
+  ],
+  "realApi": "directory and empty-stock medicine search use isolated PostgreSQL; successful cards/error/stale UI cases use controlled responses",
+  "remaining": "Real eligible-stock search is verified in the PostgreSQL suite; full owner onboarding and team participation remain pending"
+}

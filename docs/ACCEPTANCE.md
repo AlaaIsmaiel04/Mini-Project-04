@@ -1,6 +1,6 @@
 # Core acceptance checklist
 
-After implementation, run against real endpoints with the team-authored PostgreSQL seed. The foundation implements none of these feature scenarios; members must build them. API owners automate meaningful rule tests; Alaa coordinates the final full-flow demo. Freeze the test clock for date boundaries.
+Run against real endpoints and a dedicated PostgreSQL database. Implemented APIs now have automated coverage; owner administration remains pending. The current per-scenario results and evidence are in [Day 12 acceptance](DAY-12-ACCEPTANCE.md). API owners maintain meaningful rule tests; Alaa coordinates the final full-flow demo. Freeze the test clock for date boundaries. A passing fixture test does not replace real endpoint acceptance or the team rehearsal.
 
 | ID  | Required scenario                                                                                                                          | Main owner                |
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------- |

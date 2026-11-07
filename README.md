@@ -91,4 +91,6 @@ Shared types, browser routes and database needs are prepared and approved by Ala
 
 Public frontend verification and remaining dependencies: [Yousef progress](docs/YOUSEF-PROGRESS.md).
 
+Current CORE results and remaining owner/team gates: [Day 12 acceptance report](docs/DAY-12-ACCEPTANCE.md). Independent setup evidence must be recorded by another member in the [second-laptop checklist](docs/SECOND-LAPTOP-CHECK.md).
+
 The public welcome page is `/`; medicine search is `/search`, the pharmacy directory is `/pharmacies`, and staff sign-in is `/login`. The brand and Home navigation link return to the welcome page. Theme verification and screenshots are recorded in `output/theme/browser-checks.json`.
