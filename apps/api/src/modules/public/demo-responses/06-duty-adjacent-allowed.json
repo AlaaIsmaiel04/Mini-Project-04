@@ -1,0 +1,16 @@
+{
+  "request": {
+    "method": "POST",
+    "path": "/pharmacist/duty-periods",
+    "body": {
+      "startsAt": "2026-12-21T08:00:00+03:00",
+      "endsAt": "2026-12-21T10:00:00+03:00"
+    }
+  },
+  "status": 201,
+  "response": {
+    "id": "61befd16-f283-41f5-8928-90467cf30ab0",
+    "startsAt": "2026-12-21T05:00:00.000Z",
+    "endsAt": "2026-12-21T07:00:00.000Z"
+  }
+}

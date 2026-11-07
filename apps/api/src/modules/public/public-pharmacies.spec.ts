@@ -7,7 +7,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { SUBSCRIPTION_STATUS } from '../pharmacy/adapters/temporary-subscription-status.adapter';
+import { SUBSCRIPTION_STATUS } from '../pharmacy/adapters/subscription-status-reader';
 import { CLOCK } from '../pharmacy/clock';
 import { DUTY_PERIOD_STORE } from '../pharmacy/stores/duty-period.store';
 import { PHARMACY_STORE } from '../pharmacy/stores/pharmacy.store';
@@ -503,7 +503,7 @@ describe('GET /public/pharmacies', () => {
   });
 });
 
-describe('GET /public/pharmacies with the real temporary adapters', () => {
+describe('GET /public/pharmacies alone, with no database or sign-in bound', () => {
   let app: INestApplication;
   let url: string;
 

@@ -7,12 +7,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import type { DutyPeriod, ListResponse } from '@smartshelf/contracts';
-import type { PharmacistActor } from './adapters/temporary-auth.adapter';
+import type { PharmacistActor } from './adapters/jwt-pharmacist.guard';
 import {
   assertSubscriptionActive,
   SUBSCRIPTION_STATUS,
   type SubscriptionStatusReader,
-} from './adapters/temporary-subscription-status.adapter';
+} from './adapters/subscription-status-reader';
 import type { DutyInputDto } from './dto/duty-input.dto';
 import { dutyPeriodsOverlap } from './duty-overlap';
 import { PharmacyLock } from './pharmacy-lock';

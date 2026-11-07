@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { toBusinessDate } from './temporary-business-date.adapter';
+import { businessDate } from '../../common/business-date';
 
-describe('toBusinessDate', () => {
+describe('businessDate', () => {
   const cases: [string, string, string][] = [
     [
       'one millisecond before midnight',
@@ -24,7 +24,7 @@ describe('toBusinessDate', () => {
 
   for (const [label, instant, expected] of cases) {
     it(`gives ${expected} at ${label}`, () => {
-      assert.equal(toBusinessDate(new Date(instant)), expected);
+      assert.equal(businessDate(new Date(instant)), expected);
     });
   }
 
@@ -37,7 +37,7 @@ describe('toBusinessDate', () => {
       for (const zone of ['UTC', 'America/New_York', 'Asia/Tokyo']) {
         process.env.TZ = zone;
         localDays.add(instant.getDate());
-        assert.equal(toBusinessDate(instant), '2026-11-05');
+        assert.equal(businessDate(instant), '2026-11-05');
       }
     } finally {
       if (original === undefined) delete process.env.TZ;

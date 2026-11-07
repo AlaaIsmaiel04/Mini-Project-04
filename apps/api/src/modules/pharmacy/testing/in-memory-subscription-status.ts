@@ -1,5 +1,5 @@
 import type { SubscriptionStatus } from '@smartshelf/contracts';
-import type { SubscriptionStatusReader } from '../adapters/temporary-subscription-status.adapter';
+import type { SubscriptionStatusReader } from '../adapters/subscription-status-reader';
 
 // Test only: never bind this in a module.
 export class InMemorySubscriptionStatus implements SubscriptionStatusReader {

@@ -17,12 +17,12 @@ import type { ProfileResponse } from '@smartshelf/contracts';
 import {
   CurrentPharmacist,
   type PharmacistActor,
-  TemporaryPharmacistGuard,
-} from './adapters/temporary-auth.adapter';
+  JwtPharmacistGuard,
+} from './adapters/jwt-pharmacist.guard';
 import {
   ApiErrors,
   CHANGE_FORBIDDEN,
-  DATA_UNAVAILABLE,
+  SERVER_ERROR,
   type DocumentedError,
   NOT_A_PHARMACIST,
   NOT_SIGNED_IN,
@@ -41,7 +41,7 @@ const PROFILE_NOT_FOUND: DocumentedError = {
 @ApiTags('pharmacist')
 @ApiBearerAuth()
 // Compatibility guard delegates authentication to the shared JWT guard.
-@UseGuards(TemporaryPharmacistGuard)
+@UseGuards(JwtPharmacistGuard)
 @Controller('pharmacist/profile')
 export class ProfileController {
   constructor(
@@ -57,12 +57,7 @@ export class ProfileController {
     type: ProfileResponseDto,
     description: 'Your pharmacy and its effective subscription status.',
   })
-  @ApiErrors(
-    NOT_SIGNED_IN,
-    NOT_A_PHARMACIST,
-    PROFILE_NOT_FOUND,
-    DATA_UNAVAILABLE,
-  )
+  @ApiErrors(NOT_SIGNED_IN, NOT_A_PHARMACIST, PROFILE_NOT_FOUND, SERVER_ERROR)
   @Get()
   getProfile(
     @CurrentPharmacist() actor: PharmacistActor,
@@ -89,7 +84,7 @@ export class ProfileController {
     NOT_SIGNED_IN,
     CHANGE_FORBIDDEN,
     PROFILE_NOT_FOUND,
-    DATA_UNAVAILABLE,
+    SERVER_ERROR,
   )
   @UseFilters(RejectedChangeFilter)
   @Patch()

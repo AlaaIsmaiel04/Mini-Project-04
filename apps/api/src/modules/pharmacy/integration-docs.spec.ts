@@ -2,15 +2,23 @@ import assert from 'node:assert/strict';
 import { join } from 'node:path';
 import { before, describe, it, mock } from 'node:test';
 import { type ExecutionContext, Module } from '@nestjs/common';
-import { toBusinessDate } from '../public/adapters/temporary-business-date.adapter';
-import { TemporaryPharmacistGuard } from './adapters/temporary-auth.adapter';
-import { SUBSCRIPTION_STATUS } from './adapters/temporary-subscription-status.adapter';
+import { JwtService } from '@nestjs/jwt';
+import { businessDate } from '../../common/business-date';
+import { JwtAuthGuard } from '../../common/security';
+import { PrismaService } from '../../prisma/prisma.service';
+import { JwtPharmacistGuard } from './adapters/jwt-pharmacist.guard';
+import {
+  PrismaDutyPeriodStore,
+  PrismaPharmacyStore,
+  PrismaSubscriptionStatus,
+} from './adapters/prisma-stores';
+import { NOT_A_PHARMACIST, NOT_SIGNED_IN, SERVER_ERROR } from './api-errors';
+import { SUBSCRIPTION_STATUS } from './adapters/subscription-status-reader';
 import { DutyInputDto } from './dto/duty-input.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { DutyPeriodController } from './duty-period.controller';
 import { DutyPeriodService } from './duty-period.service';
 import { PharmacyLock } from './pharmacy-lock';
-import { PharmacyModule } from './pharmacy.module';
 import { ProfileController } from './profile.controller';
 import { ProfileService } from './profile.service';
 import { DUTY_PERIOD_STORE } from './stores/duty-period.store';
@@ -77,7 +85,13 @@ const { toApiInstant, toInputValue } = new Function(
 };
 
 // tsx does not emit decorator metadata, so add the parameter types tsc emits for
-// the running API. ValidationPipe needs them to know which DTO to validate against.
+// the running API. ValidationPipe needs them to know which DTO to validate against,
+// and Nest needs them to build JwtAuthGuard, which has no explicit @Inject.
+Reflect.defineMetadata(
+  'design:paramtypes',
+  [JwtService, PrismaService],
+  JwtAuthGuard,
+);
 Reflect.defineMetadata(
   'design:paramtypes',
   [Object, UpdateProfileDto],
@@ -97,30 +111,72 @@ Reflect.defineMetadata(
   'update',
 );
 
+// The real JWT guard and Prisma stores, as in the running API. Only the database client is
+// replaced, so these answers cannot differ from what the API really says.
+async function captureLiveAnswers() {
+  const jwt = new JwtService({ secret: 'guide-examples-only' });
+  let databaseIsUp = true;
+
+  class LiveAnswersModule {}
+  Module({
+    controllers: [ProfileController, DutyPeriodController],
+    providers: [
+      ProfileService,
+      DutyPeriodService,
+      PharmacyLock,
+      JwtAuthGuard,
+      { provide: JwtService, useValue: jwt },
+      {
+        provide: PrismaService,
+        useValue: {
+          account: {
+            findUnique: async () => {
+              if (!databaseIsUp) throw new Error("Can't reach database server");
+              return { id: USER, role: 'OWNER', pharmacyId: null };
+            },
+          },
+        },
+      },
+      { provide: PHARMACY_STORE, useClass: PrismaPharmacyStore },
+      { provide: DUTY_PERIOD_STORE, useClass: PrismaDutyPeriodStore },
+      { provide: SUBSCRIPTION_STATUS, useClass: PrismaSubscriptionStatus },
+    ],
+  })(LiveAnswersModule);
+
+  const ownerToken = jwt.sign({ sub: USER, role: 'OWNER', pharmacyId: null });
+  const signedInAsOwner = `Bearer ${ownerToken}`;
+
+  return withRunningApp(LiveAnswersModule, async (api) => {
+    const noToken = await api(401, 'GET', PROFILE, undefined, null);
+    const badToken = await api(401, 'GET', PROFILE);
+    const owner = await api(403, 'GET', PROFILE, undefined, signedInAsOwner);
+    databaseIsUp = false;
+    const databaseDown = await api(
+      500,
+      'GET',
+      PROFILE,
+      undefined,
+      signedInAsOwner,
+    );
+
+    return { noToken, badToken, owner, databaseDown };
+  });
+}
+
 async function captureExamples() {
+  const liveAnswers = await captureLiveAnswers();
+
+  // Test only: from here on this stands in for sign-in, so the rules behind the guard can run.
   let signedIn: object = pharmacist(CENTRAL);
   const signIn = (actor: object) => {
     signedIn = actor;
   };
-
-  // First the real temporary adapters, which is what the running API answers today.
-  const answersToday = await withRunningApp(PharmacyModule, async (real) => {
-    const notSignedIn = await real(401, 'GET', PROFILE);
-
-    // Test only: from here on this stands in for sign-in, so the rules behind the guard can run.
-    mock.method(TemporaryPharmacistGuard.prototype, 'canActivate', ((
-      context: ExecutionContext,
-    ) => {
-      context.switchToHttp().getRequest().actor = signedIn;
-      return true;
-    }) as never);
-
-    return {
-      notSignedIn,
-      databaseUnavailable: await real(503, 'GET', PROFILE),
-      statusUnavailable: await real(503, 'PATCH', PROFILE, VALID_PROFILE),
-    };
-  });
+  mock.method(JwtPharmacistGuard.prototype, 'canActivate', ((
+    context: ExecutionContext,
+  ) => {
+    context.switchToHttp().getRequest().actor = signedIn;
+    return true;
+  }) as never);
 
   // Then the real controllers, validation and services, with fixed test data.
   const subscriptions = new InMemorySubscriptionStatus();
@@ -261,10 +317,6 @@ async function captureExamples() {
     signIn(pharmacist(NO_SUCH_PHARMACY));
     const profileMissing = await api(404, 'GET', PROFILE);
 
-    // An owner on a pharmacist route.
-    signIn({ userId: USER, role: 'OWNER', pharmacyId: null });
-    const owner = await api(403, 'GET', PROFILE);
-
     // A pharmacy that is not active can read, but not change anything.
     signIn(pharmacist(NORTHERN));
     subscriptions.set(NORTHERN, 'EXPIRED');
@@ -301,7 +353,6 @@ async function captureExamples() {
       periodMissing,
       periodOfAnotherPharmacy,
       profileMissing,
-      owner,
       expiredRead,
       expiredProfile,
       expiredDuty,
@@ -311,7 +362,7 @@ async function captureExamples() {
   });
   mock.restoreAll();
 
-  return { ...answersToday, ...answers };
+  return { ...liveAnswers, ...answers };
 }
 
 type Examples = Awaited<ReturnType<typeof captureExamples>>;
@@ -338,7 +389,7 @@ function renderGuide(x: Examples): string {
     '# Pharmacist profile and duty periods: integration guide',
     'For Mohammad: the Pharmacy Profile & Duty page.',
     "**This guide cannot drift from the code.** Every request and response below was produced by the real controllers, validation, services and response mappers, using fixed test data. `npm test` produces them again and fails if this file differs. After an intended change, run `UPDATE_INTEGRATION_DOCS=1 npm test` (in PowerShell: `$env:UPDATE_INTEGRATION_DOCS='1'; npm test; Remove-Item Env:UPDATE_INTEGRATION_DOCS`) and commit the result.",
-    '**Where things stand:** the full application now uses shared JWT authentication and Prisma stores for profile/duty requests. The examples below use fixed test fixtures to demonstrate wire shapes. PostgreSQL persistence, inactive reads/write restrictions and cross-instance duty locking are checked separately in dashboard-pharmacy.integration.spec.ts. Decide from `statusCode`, not exact adapter error text.',
+    '**Where things stand:** the full application uses shared JWT authentication and Prisma stores for profile and duty requests. The 401, owner 403 and 500 examples come from the real JWT guard and Prisma stores; the others use fixed test data to show the wire shapes. PostgreSQL persistence, inactive reads and write restrictions, and duty locking across API instances are proven in `dashboard-pharmacy.integration.spec.ts`. Decide from `statusCode`, not the message text.',
 
     '## Basics',
     [
@@ -402,7 +453,7 @@ function renderGuide(x: Examples): string {
     ].join('\n'),
 
     '## Errors',
-    'Every error has `statusCode` and `message`, and `error` is the status name. `message` can be **one string or a list of strings**, so handle both:',
+    'Every error has `statusCode` and `message`, and `error` is the status name, except on a 500, which has no `error`. `message` can be **one string or a list of strings**, so handle both:',
     codeBlock(
       'js',
       'const reasons = Array.isArray(error.message) ? error.message : [error.message];',
@@ -416,7 +467,7 @@ function renderGuide(x: Examples): string {
       '| 403 | Not a pharmacist, or the subscription is not `ACTIVE` | Show the reason and keep the page read-only |',
       '| 404 | The record is not in your pharmacy | Show the message and reload the list |',
       '| 409 | The times overlap another period | Show the message and keep what the user typed |',
-      '| 503 | The data cannot be read right now and nothing was saved | Show an error state with a retry |',
+      '| 500 | The database is down or something else failed, and nothing was saved | Show an error state with a retry |',
     ].join('\n'),
     '### 400 Bad Request',
     'A missing or invalid profile field gives a list of reasons:',
@@ -430,8 +481,8 @@ function renderGuide(x: Examples): string {
     'An ID that is not a UUID:',
     show(x.badId),
     '### 401 Unauthorized',
-    "This is what the running API answers today, for every pharmacist request. The status stays the same when Mustafa's guards merge, but the message will come from them.",
-    show(x.notSignedIn),
+    'No token, and then a token that is invalid or expired:',
+    show(x.noToken, x.badToken),
     '### 403 Forbidden',
     'The subscription is not `ACTIVE`, with a different reason for each status. Profile and duty changes give the same answer. In order: `EXPIRED` on the profile and on a duty period, then `SUSPENDED`, then `NONE`:',
     show(x.expiredProfile, x.expiredDuty, x.suspended, x.noSubscription),
@@ -447,9 +498,9 @@ function renderGuide(x: Examples): string {
     show(x.overlap),
     'Periods of other pharmacies never conflict. A period that starts exactly when another one ends is also allowed:',
     show(x.adjacent),
-    '### 503 Service Unavailable',
-    'Nothing was changed. The messages below are the temporary ones, so rely on the status rather than the text.',
-    show(x.databaseUnavailable, x.statusUnavailable),
+    '### 500 Internal Server Error',
+    'The database is down or something else failed on the server. Nothing was changed, and the answer never includes any detail:',
+    show(x.databaseDown),
   ].join('\n\n')}\n`;
 }
 
@@ -468,13 +519,13 @@ describe('pharmacist integration guide', () => {
     const errors = [
       [400, examples.profileInvalid],
       [400, examples.sameDayOvernight],
-      [401, examples.notSignedIn],
+      [401, examples.noToken],
+      [401, examples.badToken],
       [403, examples.expiredProfile],
       [403, examples.owner],
       [404, examples.periodMissing],
       [404, examples.profileMissing],
       [409, examples.overlap],
-      [503, examples.databaseUnavailable],
     ] as const;
 
     for (const [status, exchange] of errors) {
@@ -484,6 +535,25 @@ describe('pharmacist integration guide', () => {
       assert.ok(body.message);
       assert.ok(body.error);
     }
+  });
+
+  it('a database failure is a 500 that reveals nothing', () => {
+    assert.deepEqual(responseJson(examples.databaseDown), {
+      statusCode: 500,
+      message: 'Internal server error',
+    });
+  });
+
+  it('the Swagger examples are the live messages', () => {
+    assert.equal(responseJson(examples.noToken).message, NOT_SIGNED_IN.message);
+    assert.equal(
+      responseJson(examples.owner).message,
+      NOT_A_PHARMACIST.message,
+    );
+    assert.equal(
+      responseJson(examples.databaseDown).message,
+      SERVER_ERROR.message,
+    );
   });
 
   it('an empty input value gets the promised 400', () => {
@@ -524,9 +594,9 @@ describe('pharmacist integration guide', () => {
         const lastMinute = new Date(toApiInstant(`${date}T23:59`));
         const minuteBefore = new Date(firstMinute.getTime() - 60_000);
 
-        assert.equal(toBusinessDate(firstMinute), date);
-        assert.equal(toBusinessDate(lastMinute), date);
-        assert.notEqual(toBusinessDate(minuteBefore), date);
+        assert.equal(businessDate(firstMinute), date);
+        assert.equal(businessDate(lastMinute), date);
+        assert.notEqual(businessDate(minuteBefore), date);
       });
     }
   });

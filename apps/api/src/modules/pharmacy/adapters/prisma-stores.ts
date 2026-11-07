@@ -11,10 +11,11 @@ import type { UpdateProfileInput } from '@smartshelf/contracts';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { businessDate } from '../../../common/business-date';
 import { effectiveSubscriptionStatus } from '../../../common/subscription-status';
+import { escapeLikePattern } from './like-pattern';
 import {
   INACTIVE_SUBSCRIPTION_REASONS,
   type SubscriptionStatusReader,
-} from './temporary-subscription-status.adapter';
+} from './subscription-status-reader';
 import type { PharmacyStore, PharmacyFilter } from '../stores/pharmacy.store';
 import type { DutyPeriodStore, DutyTimes } from '../stores/duty-period.store';
 import { CLOCK, type Clock } from '../clock';
@@ -67,7 +68,12 @@ export class PrismaPharmacyStore implements PharmacyStore {
   list(filter: PharmacyFilter) {
     return this.db.pharmacy.findMany({
       where: filter.area
-        ? { area: { equals: filter.area.trim(), mode: 'insensitive' } }
+        ? {
+            area: {
+              equals: escapeLikePattern(filter.area.trim()),
+              mode: 'insensitive',
+            },
+          }
         : {},
       orderBy: [{ name: 'asc' }, { id: 'asc' }],
     });

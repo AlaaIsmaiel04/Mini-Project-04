@@ -1,0 +1,8 @@
+{
+  "request": {
+    "method": "DELETE",
+    "path": "/pharmacist/duty-periods/61befd16-f283-41f5-8928-90467cf30ab0"
+  },
+  "status": 204,
+  "response": null
+}

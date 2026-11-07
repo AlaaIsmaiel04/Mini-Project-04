@@ -1,0 +1,16 @@
+{
+  "request": {
+    "method": "POST",
+    "path": "/pharmacist/duty-periods",
+    "body": {
+      "startsAt": "2026-12-21T02:00:00+03:00",
+      "endsAt": "2026-12-21T10:00:00+03:00"
+    }
+  },
+  "status": 409,
+  "response": {
+    "message": "This duty period overlaps an existing duty period. Choose times that do not overlap; a period may start exactly when another one ends.",
+    "error": "Conflict",
+    "statusCode": 409
+  }
+}

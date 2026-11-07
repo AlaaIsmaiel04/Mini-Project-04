@@ -36,12 +36,13 @@ function requester(baseUrl: string) {
     method: string,
     path: string,
     requestBody?: unknown,
+    authorization: string | null = 'Bearer example-token',
   ): Promise<Exchange> => {
     const response = await fetch(`${baseUrl}${path}`, {
       method,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer example-token',
+        ...(authorization ? { Authorization: authorization } : {}),
       },
       body: requestBody === undefined ? undefined : JSON.stringify(requestBody),
     });
@@ -61,6 +62,22 @@ function requester(baseUrl: string) {
     };
   };
 }
+
+/** A Prisma client whose database is down: every query fails, as in the running API. */
+export const unreachablePrisma = () =>
+  new Proxy(
+    {},
+    {
+      get: () =>
+        new Proxy(
+          {},
+          {
+            get: () => () =>
+              Promise.reject(new Error("Can't reach database server")),
+          },
+        ),
+    },
+  );
 
 /**
  * Runs the app only while `capture` runs. The app closes even when a request gets the

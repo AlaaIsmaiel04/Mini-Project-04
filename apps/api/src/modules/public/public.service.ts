@@ -1,9 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { ListResponse, PublicPharmacy } from '@smartshelf/contracts';
+import { businessDate } from '../../common/business-date';
 import {
   SUBSCRIPTION_STATUS,
   type SubscriptionStatusReader,
-} from '../pharmacy/adapters/temporary-subscription-status.adapter';
+} from '../pharmacy/adapters/subscription-status-reader';
 import { CLOCK, type Clock } from '../pharmacy/clock';
 import {
   DUTY_PERIOD_STORE,
@@ -14,7 +15,6 @@ import {
   type PharmacyRecord,
   type PharmacyStore,
 } from '../pharmacy/stores/pharmacy.store';
-import { toBusinessDate } from './adapters/temporary-business-date.adapter';
 import type { MedicineSearchQueryDto } from './dto/medicine-search-query.dto';
 import type { PublicPharmaciesQueryDto } from './dto/public-pharmacies-query.dto';
 import { toPublicPharmacy } from './public-pharmacy.mapper';
@@ -56,7 +56,7 @@ export class PublicService {
     onDutyNow,
   }: MedicineSearchQueryDto): Promise<ListResponse<PublicPharmacy>> {
     const now = this.clock.now();
-    const today = toBusinessDate(now);
+    const today = businessDate(now);
     const batches = await this.medicines.listBatchesOfMatchingMedicines(q);
     const stocked = new Set(
       batches

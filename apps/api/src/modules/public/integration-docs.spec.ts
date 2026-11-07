@@ -2,7 +2,13 @@ import assert from 'node:assert/strict';
 import { join } from 'node:path';
 import { before, describe, it } from 'node:test';
 import { Module } from '@nestjs/common';
-import { SUBSCRIPTION_STATUS } from '../pharmacy/adapters/temporary-subscription-status.adapter';
+import { PrismaService } from '../../prisma/prisma.service';
+import {
+  PrismaDutyPeriodStore,
+  PrismaPharmacyStore,
+  PrismaSubscriptionStatus,
+} from '../pharmacy/adapters/prisma-stores';
+import { SUBSCRIPTION_STATUS } from '../pharmacy/adapters/subscription-status-reader';
 import { CLOCK } from '../pharmacy/clock';
 import { DUTY_PERIOD_STORE } from '../pharmacy/stores/duty-period.store';
 import { PHARMACY_STORE } from '../pharmacy/stores/pharmacy.store';
@@ -16,12 +22,13 @@ import {
   type Exchange,
   renderExchange,
   responseJson,
+  unreachablePrisma,
   withRunningApp,
 } from '../pharmacy/testing/integration-docs';
+import { PrismaMedicineAvailabilityStore } from './adapters/prisma-medicine-availability.store';
 import { MedicineSearchQueryDto } from './dto/medicine-search-query.dto';
 import { PublicPharmaciesQueryDto } from './dto/public-pharmacies-query.dto';
 import { PublicController } from './public.controller';
-import { PublicModule } from './public.module';
 import { PublicService } from './public.service';
 import { MEDICINE_AVAILABILITY_STORE } from './stores/medicine-availability.store';
 import { InMemoryMedicineAvailabilityStore } from './testing/in-memory-medicine-availability.store';
@@ -95,11 +102,31 @@ const amoxil = (pharmacyId: string, quantity: number, expiryDate = FRESH) => ({
 });
 
 async function captureExamples() {
-  // First the real temporary adapters, which is what the running API answers today.
-  const answersToday = await withRunningApp(PublicModule, async (real) => ({
-    directoryUnavailable: await real(503, 'GET', PHARMACIES),
-    searchUnavailable: await real(503, 'GET', `${MEDICINES}?q=amox`),
-  }));
+  // First the real Prisma stores with the database down, as in the running API.
+  class DatabaseDownModule {}
+  Module({
+    controllers: [PublicController],
+    providers: [
+      PublicService,
+      { provide: PrismaService, useValue: unreachablePrisma() },
+      { provide: PHARMACY_STORE, useClass: PrismaPharmacyStore },
+      { provide: DUTY_PERIOD_STORE, useClass: PrismaDutyPeriodStore },
+      { provide: SUBSCRIPTION_STATUS, useClass: PrismaSubscriptionStatus },
+      { provide: CLOCK, useValue: new FixedClock(new Date(NOW)) },
+      {
+        provide: MEDICINE_AVAILABILITY_STORE,
+        useClass: PrismaMedicineAvailabilityStore,
+      },
+    ],
+  })(DatabaseDownModule);
+
+  const databaseDown = await withRunningApp(
+    DatabaseDownModule,
+    async (real) => ({
+      directoryDown: await real(500, 'GET', PHARMACIES),
+      searchDown: await real(500, 'GET', `${MEDICINES}?q=amox`),
+    }),
+  );
 
   // Then the real controller, validation, service and allowlist mapper, with fixed data.
   const subscriptions = new InMemorySubscriptionStatus();
@@ -208,7 +235,7 @@ async function captureExamples() {
     unknownField: await api(400, 'GET', `${PHARMACIES}?pharmacyId=x`),
   }));
 
-  return { ...answersToday, ...answers };
+  return { ...databaseDown, ...answers };
 }
 
 type Examples = Awaited<ReturnType<typeof captureExamples>>;
@@ -222,7 +249,7 @@ function renderGuide(x: Examples): string {
     '# Public search and directory: integration guide',
     'For Yousef: the Public Search and Pharmacy Directory pages.',
     "**This guide cannot drift from the code.** Every request and response below was produced by the real controller, validation, service and privacy mapper, using fixed test data. `npm test` produces them again and fails if this file differs. After an intended change, run `UPDATE_INTEGRATION_DOCS=1 npm test` (in PowerShell: `$env:UPDATE_INTEGRATION_DOCS='1'; npm test; Remove-Item Env:UPDATE_INTEGRATION_DOCS`) and commit the result.",
-    "**Where things stand:** the directory now uses shared Prisma pharmacy/duty stores and effective subscription status. Public medicine-stock persistence is still pending, so valid medicine searches can return 503. These fixed-fixture examples demonstrate wire shapes and do not prove the remaining public stock integration.",
+    '**Where things stand:** the directory and medicine search use the shared Prisma stores and effective subscription status. These fixed-fixture examples show the wire shapes; `public.integration.spec.ts` proves the same routes against real PostgreSQL.',
 
     '## Basics',
     [
@@ -269,7 +296,7 @@ function renderGuide(x: Examples): string {
     show(x.emptySearch, x.emptyDirectory),
 
     '## Errors',
-    'Every error has `statusCode` and `message`, and `error` is the status name. `message` is a list of reasons on a 400 and a single string on a 503.',
+    'Every error has `statusCode` and `message`, and `error` is the status name. `message` is a list of reasons on a 400. A 500 has a single string and no `error`.',
     '### 400 Bad Request',
     '`q` is missing, or empty after surrounding spaces are removed. Do not call the API until the search box has text:',
     show(x.qMissing, x.qBlank),
@@ -278,9 +305,9 @@ function renderGuide(x: Examples): string {
     'An unknown query field:',
     show(x.unknownField),
     'A blank `area` is not an error. It means no area filter.',
-    '### 503 Service Unavailable',
-    'The data cannot be read right now, and there is never a partial list. Show an error state with a retry, not the empty state. The messages may change, so rely on the status rather than the text.',
-    show(x.directoryUnavailable, x.searchUnavailable),
+    '### 500 Internal Server Error',
+    'The database is down or something else failed on the server. There is never a partial list and the answer includes no detail. Show an error state with a retry, not the empty state.',
+    show(x.directoryDown, x.searchDown),
   ].join('\n\n')}\n`;
 }
 

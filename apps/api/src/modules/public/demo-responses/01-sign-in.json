@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "POST",
+    "path": "/auth/login",
+    "body": {
+      "email": "active@smartshelf.test",
+      "password": "<removed>"
+    }
+  },
+  "status": 200,
+  "response": {
+    "accessToken": "<removed>",
+    "user": {
+      "id": "00000001-0000-4000-8000-000000000002",
+      "email": "active@smartshelf.test",
+      "role": "PHARMACIST",
+      "pharmacyId": "00000002-0000-4000-8000-000000000001"
+    }
+  }
+}
