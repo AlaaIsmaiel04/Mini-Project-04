@@ -1,49 +1,38 @@
 # Yousef scope: implementation and handoff
 
-6 November 2026. Implemented by Codex at Alaa's request on `alaa`.
-This records implemented work without attributing commits or a presentation to Yousef.
+Updated 7 November 2026 after Hamid's PR #18 and Alaa's theme integration. Implemented by Codex at Alaa's request on `alaa`; this does not attribute commits or a presentation to Yousef.
 
 ## Daily checklist
 
-| Days  | Delivered                                                                                                                                                    | Remaining                                                                                                                                                                           |
-| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1-4   | Two routed public pages, explicit medicine submit, area/duty filters, shared pharmacy cards, phone links, current/next/null periods and inventory timestamps | None for frontend implementation                                                                                                                                                    |
-| 5-7   | Loading, initial, empty and error states; retry, responsive cards, labels and desktop/mobile screenshots                                                     | Yousef should review and understand the delivered code                                                                                                                              |
-| 8-9   | Real directory requests verified against PostgreSQL; search sends partial/scientific text and combined filters to Hamid's endpoint                           | Real medicine search returns 503: Hamid must connect the medicine-availability store to Prisma, using Mustafa's existing stock schema. Then repeat real name/case/filter acceptance |
-| 10-11 | Abort/stale-request protection, submitted-query retry, result count, reset and accurate duty wording; Jordan timezone and null values                        | None for frontend implementation                                                                                                                                                    |
-| 12    | EN/AR labels, RTL, keyboard submit/focus and 320/390/768/1440 layouts checked                                                                                | Dark-mode check waits for the theme implementation; dark mode is not implemented by these pages                                                                                     |
-| 13-14 | Citizen demonstration script and privacy checks prepared below                                                                                               | Full live stock-search rehearsal and Yousef's own English presentation need the working backend and his participation                                                               |
+| Days | Delivered | Remaining |
+| --- | --- | --- |
+| 1-4 | Public search/directory, explicit submit, area/duty filters, cards, phone links, current/next/null duty and timestamps | None for frontend implementation |
+| 5-7 | Initial/loading/empty/error states, retry, responsive cards and labels | Yousef should understand the delivered code |
+| 8-9 | Real directory and medicine search use Hamid's Prisma adapter; database tests cover partial/scientific/case matching, filters, eligible stock and privacy | Full owner-onboarding acceptance needs Shiam |
+| 10-11 | Stale-request cancellation, submitted-query retry, result count/reset and Jordan duty times | None for frontend implementation |
+| 12 | Shared EN/AR, RTL, keyboard controls and Light/Dark/System integration; responsive layouts and contrast checked | Physical-device testing remains a team check |
+| 13-14 | Live search/directory browser flows and privacy tests pass; script prepared below | Actual team rehearsal and Yousef's English presentation |
 
-## Verification
+## Current verification
 
-- Typecheck and production build pass.
-- 435 API tests and 14 frontend tests pass. Three new public request/privacy/time tests cover query encoding, explicit false, no bearer token, cancellation signal, directory field allowlisting, nested response allowlisting and failure without sample fallback.
-- Headless browser checks: real unauthenticated directory uses isolated PostgreSQL, includes an active pharmacy and excludes a suspended one. Null duty/timestamp fields render clearly. Real valid medicine search shows the expected 503 with Retry.
-- Frontend success scenarios use explicitly intercepted API responses: simultaneous filters, scientific query submission, phone link, result count, current/next overnight times, empty results, failed-request retry retaining filters, pending indicator and stale-result cancellation.
-- Browser checks also cover clear/reset, empty-query validation/focus, keyboard Enter, Arabic RTL and narrow layouts without horizontal overflow or JavaScript exceptions. These checks do not prove real medicine-stock availability.
-- Temporary fixtures are removed. No database schema, backend feature or production sample fallback was added.
+- Typecheck and production build pass; 485 API unit tests and 23 frontend tests pass.
+- All 36 PostgreSQL/HTTP tests pass through the integration runner, including public search, eligible stock, subscription lifecycle visibility, literal filters, duty boundaries and exact nested public fields.
+- Real browser checks use a separate seeded database: unauthenticated medicine search returns the eligible pharmacy, directory results render, and sign-in/dashboard/inventory/profile/duty flows work.
+- Shared theme checks cover persisted Light/Dark preferences, live System changes, before-paint boot, blocked storage, keyboard controls, drafts/session preservation, English/Arabic and 320/390/768/1024/1440 layouts.
+- Existing frontend tests/checks cover clear/reset, empty-query validation, retry retaining submitted filters, phone links, empty/error states and failure without a sample fallback.
+- Owner forms are checked through synthetic development previews; real owner APIs remain Shiam's dependency.
 
-Evidence: `output/yousef/browser-checks.json`, `directory-desktop.png`,
-`directory-arabic-mobile.png`, `search-desktop.png`, `search-empty.png` and
-`search-error.png`. Screenshots use controlled test data.
+Current evidence: `output/theme/browser-checks.json` and its screenshots. Older `output/yousef/` captures use controlled data and remain historical evidence, not live stock screenshots.
 
-## Manual acceptance after the stock adapter is ready
+## Team rehearsal with the live stock adapter
 
-1. Use real seeded data: an active pharmacy with eligible stock, one expired-only,
-   one zero-stock, and one inactive pharmacy. Include overlapping display/scientific names.
-2. At `/search`, submit a partial name and then an uppercase scientific-name fragment.
-   Eligible pharmacies should appear once each. No expired-only, zero-stock or
-   inactive result should appear. Do not calculate availability in React.
-3. Combine area and on-duty filters; test a nonexistent area and a no-match name.
-   Confirm the visible count, clear/reset and retry retain the intended behavior.
-4. At `/pharmacies`, confirm active pharmacies with no stock still appear.
-   Check current, next and absent duty periods, and missing inventory timestamps.
-5. Navigate using Tab/Shift+Tab and Enter, repeat at 390 px in English and Arabic,
-   and confirm only public fields appear in the DOM and network response.
+1. Use real seeded data: an ACTIVE pharmacy with eligible stock, expired-only stock, zero stock and an inactive pharmacy.
+2. At `/search`, submit partial and uppercase scientific-name fragments. Eligible pharmacies appear once each; inactive/expired-only/zero-only results stay hidden.
+3. Combine area/on-duty filters. Check no-match results, counts, clear/reset and retry.
+4. At `/pharmacies`, verify active pharmacies without stock, current/next/null duty and missing timestamps.
+5. Repeat keyboard and 390px flows in English/Arabic and both themes. Inspect DOM/network responses for public-only fields.
 
-Hamid owns the public stock adapter and public response privacy. Mustafa can help
-with the existing Prisma schema. Shiam's unfinished owner UI/API does not block
-building these public pages; full onboarding-to-public acceptance still needs it.
+Hamid's persisted search adapter is merged. Shiam's owner API does not block public browsing, but full onboarding-to-public acceptance still needs it. Automated checks do not replace the team's rehearsal.
 
 ## English presentation script
 
@@ -61,7 +50,4 @@ is unavailable, we show an error and let you retry without losing your search.
 The directory lists active pharmacies independently of medicine availability.
 Both pages work on mobile and support English and Arabic.”
 
-Until the stock adapter is connected, explicitly explain that real medicine search
-is unavailable. Do not present intercepted or fixture results as live stock.
-
-No commit or push was performed for this work.
+Use the running API and dedicated seeded database for the live demonstration. Do not present intercepted or fixture results as live stock.

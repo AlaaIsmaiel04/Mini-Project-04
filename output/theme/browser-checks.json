@@ -1,0 +1,394 @@
+{
+  "checkedAt": "2026-11-07T08:08:02.279Z",
+  "checks": [
+    "Light/Dark/System in both headers",
+    "Saved preference survives reload; System follows device changes; manual override wins",
+    "Inline theme applied without React before first paint",
+    "Blocked storage does not prevent changing theme",
+    "Keyboard select and focus ring; drafts and signed-in session preserved",
+    "Real public search, directory, login and pharmacist read flows",
+    "EN/AR at 320/390/768/1024/1440; owner/inventory previews use synthetic data"
+  ],
+  "issues": [],
+  "contrasts": [],
+  "captures": [
+    "output/theme/--light-en-1440.png",
+    "output/theme/-search-light-en-1440.png",
+    "output/theme/-pharmacies-light-en-1440.png",
+    "output/theme/-login-light-en-1440.png",
+    "output/theme/-dev-owner-light-en-1440.png",
+    "output/theme/-dev-inventory-light-en-1440.png",
+    "output/theme/--dark-en-1440.png",
+    "output/theme/-search-dark-en-1440.png",
+    "output/theme/-pharmacies-dark-en-1440.png",
+    "output/theme/-login-dark-en-1440.png",
+    "output/theme/-dev-owner-dark-en-1440.png",
+    "output/theme/-dev-inventory-dark-en-1440.png",
+    "output/theme/--light-ar-390.png",
+    "output/theme/-search-light-ar-390.png",
+    "output/theme/-pharmacies-light-ar-390.png",
+    "output/theme/-login-light-ar-390.png",
+    "output/theme/-dev-owner-light-ar-390.png",
+    "output/theme/-dev-inventory-light-ar-390.png",
+    "output/theme/--dark-ar-390.png",
+    "output/theme/-search-dark-ar-390.png",
+    "output/theme/-pharmacies-dark-ar-390.png",
+    "output/theme/-login-dark-ar-390.png",
+    "output/theme/-dev-owner-dark-ar-390.png",
+    "output/theme/-dev-inventory-dark-ar-390.png",
+    "output/theme/-pharmacist-light-en-1440.png",
+    "output/theme/-pharmacist-dark-en-1440.png",
+    "output/theme/-pharmacist-inventory-light-en-1440.png",
+    "output/theme/-pharmacist-inventory-dark-en-1440.png",
+    "output/theme/-pharmacist-profile-light-en-1440.png",
+    "output/theme/-pharmacist-profile-dark-en-1440.png",
+    "output/theme/-search-light-en-1440.png",
+    "output/theme/-search-dark-en-1440.png",
+    "output/theme/-pharmacies-light-en-1440.png",
+    "output/theme/-pharmacies-dark-en-1440.png",
+    "output/theme/-pharmacist-light-ar-390.png",
+    "output/theme/-pharmacist-dark-ar-390.png",
+    "output/theme/-pharmacist-inventory-light-ar-390.png",
+    "output/theme/-pharmacist-inventory-dark-ar-390.png",
+    "output/theme/-pharmacist-profile-light-ar-390.png",
+    "output/theme/-pharmacist-profile-dark-ar-390.png",
+    "output/theme/-search-light-ar-390.png",
+    "output/theme/-search-dark-ar-390.png",
+    "output/theme/-pharmacies-light-ar-390.png",
+    "output/theme/-pharmacies-dark-ar-390.png"
+  ],
+  "requests": [
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/medicines",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/login",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/dashboard",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/medicines",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/medicines",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/duty-periods",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/profile",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/duty-periods",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/profile",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/dashboard",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/dashboard",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/medicines",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/medicines",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/duty-periods",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/profile",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/duty-periods",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/profile",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/dashboard",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/dashboard",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/medicines",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/medicines",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/duty-periods",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/duty-periods",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/profile",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/profile",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/dashboard",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/dashboard",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/medicines",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/medicines",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/duty-periods",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/duty-periods",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/profile",
+      "status": 200
+    },
+    {
+      "path": "/api/pharmacist/profile",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    },
+    {
+      "path": "/api/public/pharmacies",
+      "status": 200
+    }
+  ]
+}

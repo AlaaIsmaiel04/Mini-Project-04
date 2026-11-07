@@ -1,6 +1,6 @@
 # English / Arabic interface
 
-Alaa took over Hamid's Day 11 task at the user's request on 4 November 2026. This work is independent of Mustafa and Shiam's pending APIs. The Figma styling and language changes are delivered together.
+Alaa took over Hamid's Day 11 task at the user's request on 4 November 2026. The language foundation was built independently; Mustafa's APIs are now merged and Shiam's owner APIs remain pending. The Figma styling and language changes are delivered together.
 
 ## Implemented
 
@@ -21,10 +21,16 @@ Use `translateMessage` only for known application messages; unknown server detai
 
 Owner/inventory labels, forms, help text, statuses, counts, confirmation dialogs, local validation, success feedback and development-preview controls now translate on selection. Messages stored in component state stay in their canonical form so they also translate when the language changes after an error or successful save. Dynamic pharmacy/account success messages store a key and parameters instead of a sentence in the previous language.
 
-User-entered values, pharmacy names/addresses, medicine names/categories and batch data stay exactly as supplied. Unknown server error details remain visible in their original language; a translation cannot safely be invented for an arbitrary backend message. Native browser validation messages follow the browser's own language. Dashboard/profile/duty screens now translate labels, validation and feedback through pharmacist-messages.ts, preserving drafts. Their real API browser flows and RTL layouts passed at 320/390/768/1440px. Public screens and dark mode remain separate work.
+User-entered values, pharmacy names/addresses, medicine names/categories and batch data stay exactly as supplied. Unknown server error details remain visible in their original language; a translation cannot safely be invented for an arbitrary backend message. Native browser validation messages follow the browser's own language. Dashboard/profile/duty screens now translate labels, validation and feedback through pharmacist-messages.ts, preserving drafts. Their real API browser flows and RTL layouts passed at 320/390/768/1440px. Public search/directory also use the shared language provider. Hamid's Light/Dark/System implementation is now connected to both headers alongside the language selector.
 
 ## Checks
 
 Eight frontend tests pass, including dictionary/fallback/storage cases. Browser checks cover persisted selection after reload, translated sign-in errors, preserved drafts, blocked storage, LTR fields, a right-hand desktop sidebar, mobile menu/Escape/focus and skip navigation. Arabic login, public placeholders, owner and inventory layouts were checked at 320/390/768/1440px without horizontal overflow. Functional owner/inventory/session regression checks use development fixtures or simulated API responses; real backend acceptance remains pending.
 
 On 5 November 2026, Arabic owner/inventory workflows passed browser checks: search/filter/clear, pharmacy and account creation, date validation, subscription save/suspend/reactivate/delete/cancel, medicine/batch creation and editing, read-only fields, inactive write restrictions, validation feedback, and success/error retranslation after switching. Values and drafts were preserved. Arabic layouts passed at 320/390/768/1280/1440px; the existing English owner/inventory/session regressions also passed. Preview samples and simulated API responses are development evidence, not persisted acceptance results.
+
+## Current preferences integration - 7 November 2026
+
+The earlier check counts above describe the original language rollout. The current app has 23 passing frontend tests, including language fallback/interpolation and theme storage/system behavior. `ThemeProvider` sits inside `LanguageProvider`; `theme.css` loads after the shared styling, and the inline boot script restores the theme before React loads.
+
+Light/Dark/System labels are available in both languages. Theme changes preserve unsaved forms and the in-memory sign-in session. Saved theme and language are independent; System follows live device changes. Blocked storage leaves both controls usable with safe fallbacks. Browser checks cover EN/AR, both themes, keyboard controls, first-paint theme, draft/session preservation and 320/390/768/1024/1440 layouts. Evidence: `output/theme/browser-checks.json`. Owner form evidence uses previews; public/pharmacist reads use a separate real database. Full owner integration and team rehearsal remain pending.

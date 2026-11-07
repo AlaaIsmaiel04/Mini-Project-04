@@ -2,7 +2,7 @@
 
 **Status: Approved by Alaa as team leader on 1 November 2026.**
 
-All backend paths start with `/api`. Only `/health` is implemented. Shared request/response types are declared in `packages/contracts/src/index.ts` for all feature areas below. Alaa approved these interface definitions as the Day 1 baseline; the feature endpoints remain to be implemented. API owners still write DTOs, controllers, services, guards, response mappers and tests.
+All backend paths start with `/api`. Shared request/response types are declared in `packages/contracts/src/index.ts`. The Day 1 interfaces remain the approved baseline. As of 7 November 2026, health, authentication, inventory, dashboard, profile/duty and public directory/medicine search endpoints are implemented; owner administration remains pending. See Swagger for current DTOs and examples.
 
 Use the [frontend routes](FRONTEND-ROUTES.md) and [Day 1 agreements](DAY-1-AGREEMENTS.md) as the approved baseline. Coordinate any interface changes with Alaa and the affected feature owners.
 
@@ -16,7 +16,7 @@ Use the [frontend routes](FRONTEND-ROUTES.md) and [Day 1 agreements](DAY-1-AGREE
 - `q`: trim, partial case-insensitive matching. Inventory/public match display or scientific name; owner matches pharmacy name. Public medicine search requires nonempty q. Area: case-insensitive exact match after trimming.
 - Owner status enum: ACTIVE, EXPIRED, SUSPENDED, NONE. Inventory status: HEALTHY, EXPIRING_SOON, LOW_STOCK, EXPIRED. No filter means all; reject invalid values.
 - Parse `onDutyNow=true|false` explicitly; `false` means no duty restriction. Never use Boolean('false').
-- POST create -> 201, GET/PATCH -> 200, DELETE -> 204 without body. Error: `{statusCode, message: string|string[], error?}`. Use 400/401/403/404/409 clearly; do not leak raw database errors.
+- POST create -> 201, GET/PATCH -> 200, DELETE -> 204 without body. Error: `{statusCode, message: string|string[], error?}`. Use 400/401/403/404/409 clearly. Unexpected failures, including database outages, return 500 with `Internal server error`; never leak raw database errors. Clients also handle temporary 503 responses safely.
 - JWT: `{sub: userId, role: 'OWNER'|'PHARMACIST', pharmacyId: UUID|null}`, HS256, 1h. `/auth/me` loads current account. Normalize emails to trimmed lowercase; hash initial passwords with bcrypt. Never log/return hashes, passwords or tokens (except login's accessToken).
 - Derive pharmacist pharmacyId from authentication. Never trust a pharmacist-submitted pharmacyId. Owner has no pharmacy and cannot edit stock.
 

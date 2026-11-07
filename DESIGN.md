@@ -4,7 +4,7 @@
 
 Adapted from [SmartShelf Complete UI/UX](https://www.figma.com/design/08Fxp25B9QPT0iFPfSamGN/SmartShelf-Complete-UI-UX?node-id=5-5). The saved screen exports and handoff in `output/design/` were used with Alaa's approval because the live Figma connector was rate-limited. The initial English adaptation was approved; Alaa subsequently authorized the Day 11 English/Arabic language foundation and RTL layout. This is a responsive adaptation, not a claim of pixel-identical Arabic screens.
 
-The shared shell, sign-in, owner pharmacy/account/subscription screens, and medicine/batch screens use this design. Dashboard/profile/duty screens now reuse these tokens and responsive surfaces, with EN/AR labels and feedback. Public search/directory now reuse the same tokens, responsive filters and pharmacy cards; theme remains pending. Shared, sign-in, owner/inventory and pharmacist EN/AR translations and direction are implemented. Public search/directory labels are also translated through the shared provider.
+The shared shell, sign-in, owner pharmacy/account/subscription screens, and medicine/batch screens use this design. Dashboard/profile/duty screens now reuse these tokens and responsive surfaces, with EN/AR labels and feedback. Public search/directory reuse the same tokens, responsive filters and pharmacy cards. Light/Dark/System is connected across the application; see the 7 November integration update below. Shared, sign-in, owner/inventory and pharmacist EN/AR translations and direction are implemented. Public search/directory labels are also translated through the shared provider.
 
 ## Shared foundations
 
@@ -58,7 +58,7 @@ existing development fixtures. Impeccable's detector returned no findings.
 Typecheck, production build, smoke, 435 API tests and 14 frontend tests passed.
 Screenshots and detailed scope are in `output/refresh/visual-checks.json`.
 
-Dark mode and the known owner/public-stock backend dependencies remain separate.
+At this 6 November checkpoint, dark mode and public-stock persistence were still pending. See the 7 November integration update below for the current state; owner administration remains pending.
 
 ## Public welcome page - 6 November 2026
 
@@ -86,3 +86,11 @@ or keyboard focus, mirrored in Arabic. No motion loops and no new library is
 required. Reduced motion keeps the complete static artwork and directional arrows,
 without entrance animations or spatial feedback. Verification evidence is recorded
 in `output/home/motion-checks.json`.
+
+## Connected display preferences - 7 November 2026
+
+Hamid's theme is connected through ThemeProvider and ThemeControl in both application headers. Light retains cream/forest; Dark uses the supplied deep green surfaces with mint controls. System is the default and follows live device changes; manual choices persist independently of language. The inline head script applies the theme before the app module executes. A mandatory test guards its presence and order.
+
+The two selects form one wrapping header group. Mobile workspace headings use their own row so theme/language controls remain reachable. Shared tokens cover home, search, directory, login, owner/inventory and pharmacist pages, with EN/AR direction intact. Theme/language changes preserve form drafts and the in-memory signed-in session. No theme-change animation or new animation dependency is introduced.
+
+Browser evidence in `output/theme/browser-checks.json` covers persistence, System changes, blocked storage, first paint, keyboard/focus, draft/session preservation, rendered text contrast and EN/AR responsive layouts. Owner/account/subscription and stock-form cases use development previews; public search and pharmacist reads use an isolated PostgreSQL database. Real owner onboarding and physical-device/team rehearsal remain pending. Hamid's persisted public stock adapter is now merged.
