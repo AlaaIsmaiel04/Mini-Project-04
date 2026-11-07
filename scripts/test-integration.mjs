@@ -56,6 +56,7 @@ run(
     '--test',
     'src/inventory.integration.spec.ts',
     'src/dashboard-pharmacy.integration.spec.ts',
+    'src/modules/public/public.integration.spec.ts',
   ],
   api,
 );
